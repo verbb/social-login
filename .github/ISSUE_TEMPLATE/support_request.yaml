@@ -7,6 +7,7 @@ body:
       value: |
         Before you send through your question, please ensure you have taken these steps first:
         
+          ✅ I‘ve searched the [documentation](https://verbb.io/craft-plugins/social-login/docs).
           ✅ I‘ve searched open and closed issues.
           ✅ This is not a bug report, just a general question.
 
