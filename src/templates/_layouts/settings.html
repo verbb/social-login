@@ -1,0 +1,27 @@
+{% extends 'social-login/_layouts' %}
+
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% requireAdmin %}
+
+{% set crumbs = [
+    { label: 'Social Login' | t('social-login'), url: url('social-login') },
+    { label: 'Settings' | t('app'), url: url('social-login/settings') },
+] %}
+
+{% set navItems = {
+    general: { label: 'General Settings' | t('social-login'), url: url('social-login/settings') },
+    providers: { label: 'Providers' | t('social-login'), url: url('social-login/settings/providers') },
+} %}
+
+{% set title = 'Settings' | t('social-login') %}
+{% set docTitle = navItems[selectedNavItem].label ~ ' - ' ~ title %}
+
+{% block sidebar %}
+    {% include '_includes/nav' with {
+        label: title,
+        items: navItems,
+        selectedItem: selectedNavItem,
+    } only %}
+{% endblock %}

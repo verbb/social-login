@@ -1,0 +1,21 @@
+{% do view.registerAssetBundle('verbb\\sociallogin\\assetbundles\\SocialLoginAsset') %}
+
+{% set providers = craft.socialLogin.getCpLoginProviders() %}
+
+{% if providers %}
+    <div id="social-login-form" class="ss-login-form">
+        <div class="ss-buttons-wrap">
+            <p class="ss-divider">{{ 'or sign in with' | t('social-login') }}</p>
+
+            <div class="ss-buttons">
+                {% for provider in providers %}
+                    <div class="ss-provider" style="--bg-color: {{ provider.primaryColor }}; --size: 35px; --padding: 8px;">
+                        <button class="ss-provider-icon" type="button" aria-label="{{ 'Sign in with {provider}' | t('social-login', { provider: provider.name }) }}" data-social-provider="{{ provider.handle }}">
+                            {{ provider.icon | raw }}
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}

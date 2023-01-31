@@ -1,0 +1,14 @@
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% include 'social-login/providers/_oauth' %}
+
+{{ forms.booleanMenuField({
+    label: 'Proxy Redirect URI' | t('social-login'),
+    instructions: 'Whether to proxy the redirect URI through Verbb‘s servers. This should **only** be used for local testing. See [docs](https://verbb.io/craft-plugins/social-login/docs/feature-tour/providers#local-testing-proxy) for more.' | t('social-login') | md,
+    name: 'proxyRedirect',
+    includeEnvVars: true,
+    value: provider.proxyRedirect ?? false,
+    warning: macros.configWarning('proxyRedirect', 'social-login'),
+    errors: provider.getErrors('proxyRedirect'),
+}) }}

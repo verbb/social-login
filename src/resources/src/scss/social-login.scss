@@ -1,0 +1,112 @@
+// ==========================================================================
+
+// Social Login for Craft CMS
+// Author: Verbb - https://verbb.io/
+
+// ==========================================================================
+
+.ss-provider {
+    display: flex;
+    align-items: center;
+
+    --size: 22px;
+    --padding: 5px;
+    --border-radius: 4px;
+    --margin: 7px;
+}
+
+.ss-provider-icon {
+    height: var(--size);
+    width: var(--size);
+    min-width: var(--size);
+    line-height: var(--size);
+    background-color: var(--bg-color);
+    color: #fff;
+    border-radius: var(--border-radius);
+    margin-right: var(--margin);
+    padding: var(--padding);
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+
+//
+// Provider Settings
+//
+
+.ss-settings-block {
+    padding: 16px;
+    background: #f3f7fc;
+    border-radius: 3px;
+    border: 1px solid #cbd6e2;
+    margin-bottom: 24px;
+
+    ul {
+        list-style-type: disc;
+    }
+
+    ol, ul {
+        padding-left: 20px !important;
+    }
+}
+
+
+//
+// User Sidebar Widget
+//
+
+.ss-user-pane {
+    margin: 0 -24px;
+    padding: 0;
+
+    .ss-user-pane-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        border-bottom: 1px solid #e3e5e8;
+
+        &:last-child {
+            border: 0;
+        }
+    }
+
+    .btn {
+        margin-left: auto;
+    }
+}
+
+
+//
+// CP Login Form
+//
+
+.ss-login-form {
+    text-align: center;
+    margin-top: 24px;
+
+    .ss-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .ss-provider-icon {
+        margin: 0;
+    }
+}
+
+// CP Login Session Ended Modal
+
+#loginmodal .ss-login-form {
+    margin-top: -15px;
+    margin-bottom: 15px;
+
+    .ss-buttons {
+        flex-wrap: wrap;
+    }
+}
+

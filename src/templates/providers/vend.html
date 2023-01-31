@@ -1,0 +1,15 @@
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% include 'social-login/providers/_oauth' %}
+
+{{ forms.autosuggestField({
+    label: 'Store Name' | t('social-login'),
+    instructions: 'Enter your {provider} Store Name here.' | t('social-login', { provider: provider.name }),
+    name: 'storeName',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.storeName ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.storeName", 'social-login'),
+    errors: provider.getErrors('storeName'),
+}) }}

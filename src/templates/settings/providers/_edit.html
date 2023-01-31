@@ -1,0 +1,238 @@
+{% extends 'social-login/_layouts' %}
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% set crumbs = [
+    { label: 'Social Login' | t('social-login'), url: url('social-login/settings') },
+    { label: 'Providers' | t('social-login'), url: url('social-login/settings/providers') }
+] %}
+
+{% set fullPageForm = true %}
+{% set title = provider.name %}
+
+{% set hasMappingError = provider.hasErrors('fieldMapping.*') %}
+
+{% set tabs = {
+    general: { label: 'Settings' | t('social-login'), url: '#settings-general' },
+} %}
+
+{% if craft.socialLogin.getPlugin().settings.enableRegistration %}
+    {% set tabs = tabs | merge({
+        advanced: { label: 'Advanced' | t('social-login'), url: '#settings-advanced' },
+    }) %}
+{% endif %}
+
+{% if craft.socialLogin.getPlugin().settings.populateProfile %}
+    {% set tabs = tabs | merge({
+        mapping: { label: 'Field Mapping' | t('social-login'), url: '#settings-mapping', class: hasMappingError ? 'error' },
+    }) %}
+{% endif %}
+
+{% set fullPageForm = true %}
+{% set saveShortcutRedirect = 'social-login/settings/providers/edit/' ~ provider.handle %}
+
+{% set formActions = [
+    {
+        label: 'Save and continue editing' | t('app'),
+        redirect: saveShortcutRedirect | hash,
+        shortcut: true,
+        retainScroll: true,
+    }
+] %}
+
+{% block blockContent %}
+
+<input type="hidden" name="action" value="social-login/providers/save">
+<input type="hidden" name="handle" value="{{ provider.handle }}">
+{{ redirectInput('social-login/settings/providers') }}
+
+{% namespace 'settings' %}
+    <div id="general">
+        {{ provider.getSettingsHtml() | raw }}
+    </div>
+
+    <div id="advanced" class="hidden">
+        {% if craft.socialLogin.getPlugin().settings.enableRegistration %}
+            <div class="field">
+                <div class="heading">
+                    <label id="field-mapping-label" for="field-mapping">{{ 'Match Existing User' | t('social-login') }}<span class="required" aria-hidden="true"></span></label>
+
+                    <div class="instructions">
+                        <p>{{ 'Select a field or attribute to use to match against existing users.' | t('social-login') }}</p>
+                    </div>
+                </div>
+
+                <div class="input ltr">
+                    <input type="hidden" name="fieldMapping">
+
+                    <table id="field-mapping" class="editable fullwidth">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="singleline-cell textual">{{ 'User Field' | t('social-login') }}</th>
+                                <th scope="col" class="select-cell">{{ '{provider} Field' | t('social-login', { provider: provider.name }) }}</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% set matchUserSource = provider.matchUserSource ?? 'email' %}
+                            {% set matchUserDestination = provider.matchUserDestination ?? 'email' %}
+
+                            <tr>
+                                <td class="select-cell" style="width: 50%;">
+                                    <div class="flex flex-nowrap">
+                                        <div class="select small">
+                                            <select name="matchUserDestination">
+                                                <option value="">{{ 'Don’t Include' | t('social-login') }}</option>
+
+                                                {% for userField in provider.getCraftUserFields() %}
+                                                    {% set selected = matchUserDestination == userField.handle ? 'selected' %}
+
+                                                    <option {{ selected }} value="{{ userField.handle }}">{{ userField.name | t('social-login') }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="select-cell" style="width: 50%;">
+                                    <div class="flex flex-nowrap">
+                                        <div class="select small">
+                                            <select name="matchUserSource">
+                                                <option value="">{{ 'Don’t Include' | t('social-login') }}</option>
+
+                                                {% for profileField in provider.getUserProfileOptions() %}
+                                                    {% set selected = matchUserSource == profileField.value ? 'selected' %}
+
+                                                    <option {{ selected }} value="{{ profileField.value }}">{{ profileField.label | t('social-login') }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div id="mapping" class="hidden">
+        <div class="field">
+            <div class="heading">
+                <label id="field-mapping-label" for="field-mapping">{{ 'User Field Mapping' | t('social-login') }}</label>
+
+                <div class="instructions">
+                    <p>{{ 'Choose which provider fields should map to your users.' | t('social-login') }}</p>
+                </div>
+            </div>
+
+            <div class="input ltr">
+                <input type="hidden" name="fieldMapping">
+
+                <table id="field-mapping" class="editable fullwidth">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="singleline-cell textual">{{ 'User Field' | t('social-login') }}</th>
+                            <th scope="col" class="select-cell">{{ '{provider} Field' | t('social-login', { provider: provider.name }) }}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for userField in provider.getCraftUserFields() %}
+                            {% set cellError = provider.getErrors('fieldMapping.' ~ userField.handle) %}
+                            {% set cellValue = provider.fieldMapping[userField.handle] ?? null %}
+
+                            <tr data-id="{{ loop.index }}">
+                                <td class="singleline-cell textual {{ cellError ? 'error' }}" style="width: 50%;">
+                                    <span class="fui-table-label {{ userField.required ? 'required' }}">{{ userField.name | t('social-login') }}</span>
+                                </td>
+
+                                <td class="select-cell {{ cellError ? 'error' }}" style="width: 50%;">
+                                    <div class="flex flex-nowrap">
+                                        <div class="select small">
+                                            <select name="fieldMapping[{{ userField.handle }}]">
+                                                <option value="">{{ 'Don’t Include' | t('social-login') }}</option>
+
+                                                {% for profileField in provider.getUserProfileOptions() %}
+                                                    {% set selected = cellValue == profileField.value ? 'selected' %}
+
+                                                    <option {{ selected }} value="{{ profileField.value }}">{{ profileField.label | t('social-login') }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% if provider.hasErrors('fieldMapping.*') %}
+            {% for errorKey, errors in provider.getErrors() %}
+                {% if errorKey starts with 'fieldMapping.' %}
+                    {% for error in errors %}
+                        <ul class="errors">
+                            <li>{{ error }}</li>
+                        </ul>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endnamespace %}
+
+{% endblock %}
+
+{% block details %}
+
+{% namespace 'settings' %}
+    
+<div class="meta">
+    {{ forms.lightswitchField({
+        first: true,
+        label: 'Enabled' | t('social-login'),
+        id: 'enabled',
+        name: 'enabled',
+        on: provider.enabled,
+        toggle: 'enabled-toggles',
+    }) }}
+</div>
+
+{% if provider.supportsLogin() %}
+    <div id="enabled-toggles" class="meta {{ not provider.enabled ? 'hidden' }}">
+        {{ forms.lightswitchField({
+            label: 'Site Login Enabled' | t('social-login'),
+            id: 'loginEnabled',
+            name: 'loginEnabled',
+            on: provider.loginEnabled,
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: 'Control Panel Login Enabled' | t('social-login'),
+            id: 'cpLoginEnabled',
+            name: 'cpLoginEnabled',
+            on: provider.cpLoginEnabled,
+        }) }}
+    </div>
+{% else %}
+    <p class="warning with-icon">{{ 'This provider does not support login or registration. It can only be used to link existing user accounts.' | t('social-login') }}</p>
+{% endif %}
+
+{% endnamespace %}
+
+{% endblock %}
+
+{% css %}
+
+.fui-table-label {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+    text-align: left;
+}
+
+{% endcss %}

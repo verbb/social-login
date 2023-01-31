@@ -1,0 +1,37 @@
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% include 'social-login/providers/_oauth' %}
+
+{{ forms.autosuggestField({
+    label: 'Region' | t('social-login'),
+    instructions: 'Enter your {provider} Region here.' | t('social-login', { provider: provider.name }),
+    name: 'region',
+    required: true,
+    suggestEnvVars: true,
+    suggestions: [
+        {
+            label: 'Regions',
+            data: [
+                { name: 'us', hint: 'US' },
+                { name: 'eu', hint: 'EU' },
+                { name: 'au', hint: 'AU' },
+                { name: 'jp', hint: 'JP' },
+            ],
+        },
+    ],
+    value: provider.region ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.region", 'social-login'),
+    errors: provider.getErrors('region'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Account' | t('social-login'),
+    instructions: 'Enter your {provider} Account here.' | t('social-login', { provider: provider.name }),
+    name: 'account',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.account ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.account", 'social-login'),
+    errors: provider.getErrors('account'),
+}) }}

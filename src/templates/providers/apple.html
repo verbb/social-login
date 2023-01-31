@@ -1,0 +1,63 @@
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% set instructions %}
+To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-login/docs/providers/all-providers" target="_blank" rel="noopener">{name} provider guide</a>.
+{% endset %}
+
+<div class="ss-settings-block">
+    {{ instructions | t('social-login', { name: provider.name, plugin: 'Social Login' }) | md }}
+</div>
+
+{{ forms.textField({
+    readonly: true,
+    label: 'Redirect URI' | t('social-login'),
+    instructions: 'Use this URI when setting up your {provider} app.' | t('social-login', { provider: provider.name }),
+    value: provider.getRedirectUri(),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Client ID' | t('social-login'),
+    instructions: 'Enter your {provider} Client ID key here.' | t('social-login', { provider: provider.name }),
+    name: 'clientId',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.clientId ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.clientId", 'social-login'),
+    errors: provider.getErrors('clientId'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Team ID' | t('social-login'),
+    instructions: 'Enter your {provider} Team ID here.' | t('social-login', { provider: provider.name }),
+    name: 'teamId',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.teamId ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.teamId", 'social-login'),
+    errors: provider.getErrors('teamId'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Key File ID' | t('social-login'),
+    instructions: 'Enter your {provider} Key File ID here.' | t('social-login', { provider: provider.name }),
+    name: 'keyFileId',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.keyFileId ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.keyFileId", 'social-login'),
+    errors: provider.getErrors('keyFileId'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Key File Path' | t('social-login'),
+    instructions: 'Enter your {provider} Key File Path here.' | t('social-login', { provider: provider.name }),
+    name: 'keyFilePath',
+    required: true,
+    suggestEnvVars: true,
+    suggestions: suggestions,
+    value: provider.keyFilePath ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.keyFilePath", 'social-login'),
+    errors: provider.getErrors('keyFilePath'),
+}) }}
+

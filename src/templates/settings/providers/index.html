@@ -1,0 +1,72 @@
+{% extends 'social-login/_layouts' %}
+
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+{% set crumbs = [
+    { label: 'Social Login' | t('social-login'), url: url('social-login/settings') },
+    { label: 'Providers' | t('social-login'), url: url('social-login/settings/providers') }
+] %}
+
+{% block blockContent %}
+
+<div id="providers-vue-admin-table"></div>
+
+{% endblock %}
+
+{% set tableData = [] %}
+
+{% for provider in providers %}
+    {% set tableData = tableData | merge([{
+        id: provider.handle,
+        name: { name: provider.name | t('site') | e, icon: provider.icon, color: provider.primaryColor, url: url('social-login/settings/providers/edit/' ~ provider.handle) },
+        handle: provider.handle,
+        enabled: provider.enabled,
+        isConfigured: provider.isConfigured,
+    }]) %}
+{% endfor %}
+
+{% js %}
+    var columns = [
+        { name: 'name', title: Craft.t('app', 'Name'), callback: function(provider) {
+            let $icon = '';
+            let $label = '';
+
+            if (provider.url) {
+                $label = '<a href="' + provider.url + '">' + provider.name + '</a>';
+            } else {
+                $label = provider.name;
+            }
+
+            if (provider.icon) {
+                $icon = '<span class="ss-provider-icon">' + provider.icon + '</span>';
+            }
+
+            return '<div class="ss-provider" style="--bg-color: ' + provider.color + '">' +
+                $icon +
+                '<span class="ss-provider-label cell-bold">' + $label + '</span>' +
+            '</div>';
+        } },
+        { name: '__slot:handle', title: Craft.t('app', 'Handle') },
+        { name: 'enabled', title: Craft.t('app', 'Status'), callback: function(value) {
+            if (value) {
+                return '<span class="status on"></span>' + Craft.t('social-login', 'Enabled');
+            } else {
+                return '<span class="status"></span>' + Craft.t('social-login', 'Disabled');
+            }
+        } },
+        { name: 'isConfigured', title: Craft.t('app', 'Configured'), callback: function(value) {
+            if (value) {
+                return '<span class="status on"></span>' + Craft.t('social-login', 'Configured');
+            } else {
+                return '<span class="status"></span>' + Craft.t('social-login', 'Not configured');
+            }
+        } },
+    ];
+
+    new Craft.VueAdminTable({
+        columns: columns,
+        container: '#providers-vue-admin-table',
+        emptyMessage: Craft.t('social-login', 'No providers exist yet.'),
+        tableData: {{ tableData | json_encode | raw }},
+    });
+{% endjs %}

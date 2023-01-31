@@ -1,0 +1,90 @@
+{% extends 'social-login/_layouts/settings' %}
+
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% set selectedNavItem = 'general' %}
+{% set fullPageForm = true %}
+
+{% block content %}
+
+<h2>{{ 'General Settings' | t('social-login') }}</h2>
+
+{{ actionInput('social-login/settings/save-settings') }}
+{{ redirectInput('social-login/settings') }}
+{{ csrfInput() }}
+
+{% namespace 'settings' %}
+    {{ forms.lightswitchField({
+        first: true,
+        label: 'Enable Social Login' | t('social-login'),
+        instructions: 'Whether to enable social login for the front-end.' | t('social-login'),
+        name: 'enableLogin',
+        on: settings.enableLogin,
+        errors: settings.getErrors('enableLogin'),
+        warning: macros.configWarning('enableLogin', 'social-login'),
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: 'Enable Social Control Panel Login' | t('social-login'),
+        instructions: 'Whether to enable social login for the control panel.' | t('social-login'),
+        name: 'enableCpLogin',
+        on: settings.enableCpLogin,
+        errors: settings.getErrors('enableCpLogin'),
+        warning: macros.configWarning('enableCpLogin', 'social-login'),
+        toggle: 'cp-login',
+    }) }}
+
+    <div id="cp-login" class="{{ not settings.enableCpLogin ? 'hidden' }}">
+        {{ forms.autosuggestField({
+            label: 'Control Panel Login Template' | t('social-login'),
+            instructions: 'Provide a custom template to render the social login icons for the control panel. Leave empty to use the default.' | t('social-login'),
+            id: 'cpLoginTemplate',
+            name: 'cpLoginTemplate',
+            suggestions: craft.cp.getTemplateSuggestions(),
+            suggestEnvVars: true,
+            value: settings.cpLoginTemplate,
+            errors: settings.getErrors('cpLoginTemplate'),
+            warning: macros.configWarning('cpLoginTemplate', 'social-login'),
+        }) }}
+    </div>
+
+    {{ forms.lightswitchField({
+        label: 'Enable User Registration' | t('social-login'),
+        instructions: 'Whether new users should be created if they don‘t already exist in Craft.' | t('social-login'),
+        name: 'enableRegistration',
+        on: settings.enableRegistration,
+        errors: settings.getErrors('enableRegistration'),
+        warning: macros.configWarning('enableRegistration', 'social-login'),
+        toggle: 'user-registration',
+    }) }}
+
+    <div id="user-registration" class="{{ not settings.enableRegistration ? 'hidden' }}">
+        {{ forms.lightswitchField({
+            label: 'Populate User Profile' | t('social-login'),
+            instructions: 'Whether new users have their profile populated from providers. This can be fine-tuned with field mapping for each provider.' | t('social-login'),
+            name: 'populateProfile',
+            on: settings.populateProfile,
+            errors: settings.getErrors('populateProfile'),
+            warning: macros.configWarning('populateProfile', 'social-login'),
+        }) }}
+
+        {% set groups = [] %}
+
+        {% for group in craft.app.userGroups.getAllGroups() %}
+            {% set groups = groups | merge([{ label: group.name, value: group.uid }]) %}
+        {% endfor %}
+
+        {{ forms.checkboxGroupField({
+            label: 'User Groups' | t('social-login'),
+            instructions: 'Choose which user groups to assign new users to.' | t('social-login'),
+            name: 'userGroups',
+            options: groups,
+            values: settings.userGroups,
+            errors: settings.getErrors('userGroups'),
+            warning: macros.configWarning('userGroups', 'social-login'),
+        }) }}
+    </div>
+{% endnamespace %}
+
+{% endblock %}

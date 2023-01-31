@@ -1,0 +1,37 @@
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% include 'social-login/providers/_oauth' %}
+
+{{ forms.autosuggestField({
+    label: 'Username' | t('social-login'),
+    instructions: 'Enter your {provider} Username here.' | t('social-login', { provider: provider.name }),
+    name: 'username',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.username ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.username", 'social-login'),
+    errors: provider.getErrors('username'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Password' | t('social-login'),
+    instructions: 'Enter your {provider} Password here.' | t('social-login', { provider: provider.name }),
+    name: 'password',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.password ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.password", 'social-login'),
+    errors: provider.getErrors('password'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Company Name' | t('social-login'),
+    instructions: 'Enter your {provider} Company Name here.' | t('social-login', { provider: provider.name }),
+    name: 'companyName',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.companyName ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.companyName", 'social-login'),
+    errors: provider.getErrors('companyName'),
+}) }}

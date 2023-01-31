@@ -1,0 +1,53 @@
+[
+    {
+        "title": "Get Started",
+        "collapsable": false,
+        "children": [
+            "get-started/installation-setup",
+            "get-started/requirements",
+            "get-started/configuration"
+        ]
+    },
+    {
+        "title": "Feature Tour",
+        "collapsable": false,
+        "children": [
+            "feature-tour/login",
+            "feature-tour/registration",
+            "feature-tour/connecting",
+            "feature-tour/requests"
+        ]
+    },
+    {
+        "title": "Providers",
+        "collapsable": false,
+        "children": [
+            "providers/all-providers",
+            "providers/apple",
+            "providers/facebook",
+            "providers/github",
+            "providers/google",
+            "providers/instagram",
+            "providers/linkedin",
+            "providers/microsoft",
+            "providers/twitter"
+        ]
+    },
+    {
+        "title": "Template Guides",
+        "collapsable": false,
+        "children": [
+            "template-guides/available-variables",
+            "template-guides/login-form"
+        ]
+    },
+    {
+        "title": "Developers",
+        "collapsable": false,
+        "children": [
+            "developers/provider",
+            "developers/custom-provider",
+            "developers/events"
+        ]
+    }
+]

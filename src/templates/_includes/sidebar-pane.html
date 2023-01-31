@@ -1,0 +1,27 @@
+{% do view.registerAssetBundle('verbb\\sociallogin\\assetbundles\\SocialLoginAsset') %}
+
+{% set providers = [] %}
+
+{% for provider in craft.socialLogin.getEnabledProviders() %}
+    {% if craft.socialLogin.isConnected(provider.handle) %}
+        {% set providers = providers | merge([provider]) %}
+    {% endif %}
+{% endfor %}
+
+{% if providers %}
+    <div class="ss-user-pane pane">
+        {% for provider in providers %}
+            <div class="ss-user-pane-item">
+                <div class="ss-provider" style="--bg-color: {{ provider.primaryColor }}; --size: 18px; --padding: 4px;">
+                    {% if provider.icon %}
+                        <span class="ss-provider-icon">{{ provider.icon | raw }}</span>
+                    {% endif %}
+
+                    <span class="ss-provider-label bold">{{ provider.name }}</span>
+                </div>
+
+                <a class="formsubmit btn small" href="{{ craft.socialLogin.getDisconnectUrl(provider.handle) }}">{{ 'Disconnect' | t('social-login') }}</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
