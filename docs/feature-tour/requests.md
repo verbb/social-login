@@ -18,9 +18,10 @@ For example, let's say we want to fetch some Instagram posts from our connected 
     {% for media in mediaItems %}
         {# ... #}
     {% endfor %}
-{% endif %}```
+{% endif %}
+```
 
-```twig PHP
+```php PHP
 use verbb\sociallogin\SocialLogin;
 
 $provider = SocialLogin::$plugin->getProviders()->getProviderByHandle('instagram');
