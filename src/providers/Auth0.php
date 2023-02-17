@@ -24,6 +24,7 @@ class Auth0 extends OAuthProvider
     public static string $handle = 'auth0';
     public ?string $region = null;
     public ?string $account = null;
+    public ?string $customDomain = null;
 
 
     // Public Methods
@@ -39,6 +40,11 @@ class Auth0 extends OAuthProvider
         return App::parseEnv($this->account);
     }
 
+    public function getCustomDomain(): ?string
+    {
+        return App::parseEnv($this->customDomain);
+    }
+
     public function defineRules(): array
     {
         $rules = parent::defineRules();
@@ -52,6 +58,7 @@ class Auth0 extends OAuthProvider
         $config = parent::getOAuthProviderConfig();
         $config['region'] = $this->getRegion();
         $config['account'] = $this->getAccount();
+        $config['customDomain'] = $this->getCustomDomain();
 
         return $config;
     }

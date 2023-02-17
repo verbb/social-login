@@ -35,3 +35,13 @@
     warning: macros.configWarning("providers.#{provider.handle}.account", 'social-login'),
     errors: provider.getErrors('account'),
 }) }}
+
+{{ forms.autosuggestField({
+    label: 'Custom Domain' | t('social-login'),
+    instructions: 'Enter your {provider} Custom Domain if using here.' | t('social-login', { provider: provider.name }),
+    name: 'customDomain',
+    suggestEnvVars: true,
+    value: provider.customDomain ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.customDomain", 'social-login'),
+    errors: provider.getErrors('customDomain'),
+}) }}
