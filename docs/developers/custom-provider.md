@@ -20,6 +20,7 @@ Create the following class to house your Provider logic.
 <?php
 namespace modules;
 
+use Craft;
 use verbb\sociallogin\base\OAuthProvider;
 
 use League\OAuth2\Client\Provider\SomeProvider;
