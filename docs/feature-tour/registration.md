@@ -11,7 +11,7 @@ Not all providers support authenticating a user to allow them to register on you
 You don't need to adjust anything to your front-end templates. When the user returns from the offsite provider, they'll be auto-registered and logged into their new account.
 
 ## Control Panel Registration
-Registration via the control panel is not allowed, as this would be a major security risk. All it would take is for someone to discover your 
+Registration via the control panel is not allowed, as this would be a major security risk. All it would take is for someone to discover your login page to your control panel, click to sign in with their own social media account, and they would be instantly granted access to your control panel. As such, this isn't a great idea by any means!
 
 More to the point - even if users were able to be registered in this way, it would require you to give all new users control panel user permission, which is almost certainly not desired.
 
