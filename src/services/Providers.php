@@ -72,6 +72,7 @@ class Providers extends Component
             providerTypes\Meetup::class,
             providerTypes\Microsoft::class,
             providerTypes\Myob::class,
+            providerTypes\NeonCrm::class,
             providerTypes\PayPal::class,
             providerTypes\Pinterest::class,
             providerTypes\Pipedrive::class,

@@ -41,6 +41,7 @@ Social Login integrates with the following providers:
 - [Meetup](https://meetup.com)
 - [Microsoft](https://microsoft.com)
 - [Myob](https://myob.com)
+- [Neon CRM](https://neoncrm.com)
 - [PayPal](https://paypal.com)
 - [Pinterest](https://pinterest.com)
 - [Pipedrive](https://pipedrive.com)
@@ -499,7 +500,26 @@ Follow the below steps to connect to the Myob API.
 1. Click the **Register Application** button.
 1. Copy the **API Key** from Myob and paste in the **Client ID** field in Social Login.
 1. Copy the **API Secret** from Myob and paste in the **Client Secret** field in Social Login.
-1. Enter your **Username**, **Password** and **Company Name** for your Myob account into the fields below.
+1. Enter your **Username**, **Password** and **Company Name** for your Myob account into the fields Social Login.
+
+
+## Neon CRM
+Follow the below steps to connect to the Neon CRM API.
+
+### Connect to the Neon CRM API
+1. Go to <a href="https://app.neoncrm.com/np/admin" target="_blank">Neon CRM</a> and login to your account.
+1. Click the **Settings** icon in the header.
+1. Click the **Global Settings** link.
+1. Click the **OAuth Configuration** link under **Third-Party Integrations**.
+1. Copy the **client_id** from Neon CRM and paste in the **Client ID** field in Social Login.
+1. Copy the **client_secret** from Neon CRM and paste in the **Client Secret** field in Social Login.
+1. Click the **Settings** icon in the header.
+1. Click the **Organization Profile** link.
+1. Copy the **Organization ID** from Neon CRM and paste in the **Organization ID** field in Social Login.
+1. Click the **Settings** icon in the header.
+1. Click the **User Management** link.
+1. Create a new user that is specifically used for API access.
+1. Copy the **API Key** from Neon CRM and paste in the **API Key** field in Social Login.
 
 
 ## PayPal
@@ -567,7 +587,7 @@ Follow the below steps to connect to the Slack API.
 1. Go to the <a href="https://api.slack.com/apps?new_app=1" target="_blank">Slack App Center</a>.
 1. Create a new app, by entering an **App Name** and **Development Slack Workspace**.
 1. In the left-hand sidebar, under **Settings**, click **Basic Information**.
-1. Under the **App Credentials** section, copy the **Client ID** and **Client Secret** values and paste into the fields below.
+1. Under the **App Credentials** section, copy the **Client ID** and **Client Secret** values and paste into the fields Social Login.
 1. In the left-hand sidebar, under **Features**, click **OAuth & Permissions**.
 1. In the section **Redirect URLs**, click the **Add New Redirect URL** button and enter the value from the **Redirect URI** field in Social Login.
 1. Then click the **Add** button, then click the **Save URLs** button.
