@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 - 2023-04-12
+
+### Fixed
+- Fix an error when setting custom scopes for providers.
+
 ## 1.0.1 - 2023-04-07
 
 ### Added
