@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - 2023-04-25
+
+### Fixed
+- Fix an incorrect foreign key constraint with connections.
+
 ## 1.0.2 - 2023-04-12
 
 ### Fixed
