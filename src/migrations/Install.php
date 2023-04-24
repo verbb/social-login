@@ -49,7 +49,6 @@ class Install extends Migration
 
     public function addForeignKeys(): void
     {
-        $this->addForeignKey(null, '{{%social_login_connections}}', 'id', '{{%elements}}', 'id', 'CASCADE', null);
         $this->addForeignKey(null, '{{%social_login_connections}}', 'userId', '{{%users}}', 'id', 'CASCADE', null);
     }
 

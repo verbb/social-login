@@ -19,7 +19,7 @@ class SocialLogin extends Plugin
     // Properties
     // =========================================================================
 
-    public string $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.0.1';
     public bool $hasCpSettings = true;
 
 
