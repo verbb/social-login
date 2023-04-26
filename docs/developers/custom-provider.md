@@ -2,7 +2,7 @@
 You can register your own Provider to add support for other social media platforms, or even extend an existing Provider.
 
 ```php
-use modules\MyProvider;
+namespace modules\MyProvider;
 
 use craft\events\RegisterComponentTypesEvent;
 use verbb\sociallogin\services\Providers;
