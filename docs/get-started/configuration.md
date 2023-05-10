@@ -28,6 +28,14 @@ return [
 - `populateProfile` - Whether new users have their profile populated from providers. This can be fine-tuned with field mapping for each provider.
 - `providers` - A collection of settings for a provider.
 
+### User Groups
+A collection of User Group UIDs should be provided.
+
+```php
+'userGroups' => [
+    '2a99c0a5-3066-45dc-8168-ec7572041f2e',
+],
+```
 
 ## Provider Settings
 You can set provider settings by adding the `handle` of a provider, and passing in any setting specific to that provider. Typically, this will be OAuth settings.
