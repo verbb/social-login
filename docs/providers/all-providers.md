@@ -71,7 +71,6 @@ Social Login integrates with the following providers:
 
 The following however **do not** support being used as login or registration providers. This is due to either API limitations, or it being against the providers T&C's. These are supported by connecting to an existing Craft user account.
 
-- Azure
 - Bitbucket
 - Buddy
 - DeviantArt

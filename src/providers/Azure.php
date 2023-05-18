@@ -1,8 +1,9 @@
 <?php
 namespace verbb\sociallogin\providers;
 
-use craft\helpers\App;
 use verbb\sociallogin\base\OAuthProvider;
+
+use craft\helpers\App;
 
 use verbb\auth\providers\Azure as AzureProvider;
 
@@ -26,7 +27,6 @@ class Azure extends OAuthProvider
     // =========================================================================
 
     public static string $handle = 'azure';
-
     public ?string $tenant = 'common';
 
 
@@ -34,19 +34,17 @@ class Azure extends OAuthProvider
     // =========================================================================
 
 
-    public function getTenant() : ?string
+    public function getTenant(): ?string
     {
         return App::parseEnv($this->tenant);
     }
 
     public function getOAuthProviderConfig(): array
     {
-        return [
-            'clientId' => $this->clientId,
-            'clientSecret' => $this->clientSecret,
-            'tenant' => $this->tenant,
-            'redirectUri' => $this->getRedirectUri(),
-        ];
+        $config = parent::getOAuthProviderConfig();
+        $config['tenant'] = $this->getTenant();
+
+        return $config;
     }
 
     public function getUserProfileFields(): array
