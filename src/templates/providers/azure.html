@@ -1,1 +1,49 @@
-{% include 'social-login/providers/_oauth' %}
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% set instructions %}
+To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-login/docs/providers/all-providers" target="_blank" rel="noopener">{name} provider guide</a>.
+{% endset %}
+
+<div class="ss-settings-block">
+    {{ instructions | t('social-login', { name: provider.name, plugin: 'Social Login' }) | md }}
+</div>
+
+{{ forms.textField({
+readonly: true,
+label: 'Redirect URI' | t('social-login'),
+instructions: 'Use this URI when setting up your {provider} app.' | t('social-login', { provider: provider.name }),
+value: provider.getRedirectUri(),
+}) }}
+
+{{ forms.autosuggestField({
+label: 'Client ID' | t('social-login'),
+instructions: 'Enter your {provider} Client ID key here.' | t('social-login', { provider: provider.name }),
+name: 'clientId',
+required: true,
+suggestEnvVars: true,
+value: provider.clientId ?? '',
+warning: macros.configWarning("providers.#{provider.handle}.clientId", 'social-login'),
+errors: provider.getErrors('clientId'),
+}) }}
+
+{{ forms.autosuggestField({
+label: 'Client Secret' | t('social-login'),
+instructions: 'Enter your {provider} Client Secret here.' | t('social-login', { provider: provider.name }),
+name: 'clientSecret',
+required: true,
+suggestEnvVars: true,
+value: provider.clientSecret ?? '',
+warning: macros.configWarning("providers.#{provider.handle}.clientSecret", 'social-login'),
+errors: provider.getErrors('clientSecret'),
+}) }}
+{{ forms.autosuggestField({
+label: 'Tenant ' | t('social-login'),
+instructions: 'Enter your {provider} Tenant here.' | t('social-login', { provider: provider.name }),
+name: 'tenant',
+required: false,
+suggestEnvVars: true,
+value: provider.tenant ?? '',
+warning: macros.configWarning("providers.#{provider.handle}.tenant", 'social-login'),
+errors: provider.getErrors('tenant'),
+}) }}
