@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4 - 2023-05-27
+
+### Added
+- Add current site support to Redirect URI for multi-sites.
+- Add support for Azure for custom tenants.
+
 ## 1.0.3 - 2023-04-25
 
 ### Fixed
