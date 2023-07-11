@@ -65,7 +65,7 @@ abstract class OAuthProvider extends Provider implements OAuthProviderInterface
 
         // Combine default scopes at the provider level, with account level ones, and any in the config.
         $defaultScopes = $this->getOAuthProvider()->defaultScopes();
-        $options['scope'] = array_values(array_unique(array_merge($defaultScopes, $this->getDefaultScopes(), $this->scopes)));
+        $options['scope'] = array_values(array_unique(array_merge($defaultScopes, $this->scopes)));
 
         return $options;
     }
