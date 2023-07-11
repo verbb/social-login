@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.6 - 2023-07-12
+
+### Fixed
+- Fix scopes when merging array values.
+
 ## 1.0.5 - 2023-07-11
 
 ### Fixed
