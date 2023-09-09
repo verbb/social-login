@@ -33,7 +33,6 @@ class Azure extends OAuthProvider
     // Public Methods
     // =========================================================================
 
-
     public function getTenant(): ?string
     {
         return App::parseEnv($this->tenant);
