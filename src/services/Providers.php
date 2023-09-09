@@ -86,6 +86,7 @@ class Providers extends Component
             providerTypes\StackExchange::class,
             providerTypes\Strava::class,
             providerTypes\Stripe::class,
+            providerTypes\Telegram::class,
             providerTypes\TikTok::class,
             providerTypes\Trello::class,
             providerTypes\Tumblr::class,
