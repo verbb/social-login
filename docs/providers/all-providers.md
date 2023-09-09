@@ -55,6 +55,7 @@ Social Login integrates with the following providers:
 - [StackExchange](https://stackexchange.com)
 - [Strava](https://strava.com)
 - [Stripe](https://stripe.com)
+- [Telegram](https://telegram.org)
 - [TikTok](https://tiktok.com)
 - [Trello](https://trello.com)
 - [Tumblr](https://tumblr.com)
@@ -677,8 +678,19 @@ Follow the below steps to connect to the Stripe API.
 1. On the top-right of your screen, ensure the **Test Mode** lightswitch is in the **off** position if you wish to use Live details, or **on** if you wish to use Test details.
 1. On the top-right of your screen, click **Developers**.
 1. On the left-hand sidebar, click **API Keys**.
-1. Copy the **Publishable Key** from Stripe and paste in the **Publishable Key** field in Social Login.
-1. Copy the **Secret Key** from Stripe and paste in the **Secret Key** field in Social Login.
+1. Copy the **Publishable Key** from Stripe and paste in the **Client ID** field in Social Login.
+1. Copy the **Secret Key** from Stripe and paste in the **Client Secret** field in Social Login.
+
+
+## Telegram
+Follow the below steps to connect to the Telegram API.
+
+### Connect to the Telegram API
+1. You'll be creating a <a href="https://core.telegram.org/bots" target="_blank">Telegram Bot</a> in order to allow users to login.
+1. Ensure you have a Telegram account, and the appropriate app for your device.
+1. Message `@BotFather` on Telegram to register your bot and receive its authentication token.
+1. Copy the **Access Token** from your chat and paste in the **Client ID** and **Client Secret** fields in Social Login.
+1. Continue to message `@BotFather`, with `/setdomain`. Select your bot and enter your full domain name. e.g. `https://my-site.test`
 
 
 ## TikTok
