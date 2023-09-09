@@ -1,1 +1,15 @@
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
 {% include 'social-login/providers/_oauth' %}
+
+{{ forms.autosuggestField({
+    label: 'Shop Subdomain' | t('social-login'),
+    instructions: 'Enter your {provider} Shop Subdomain here.' | t('social-login', { provider: provider.name }),
+    name: 'subdomain',
+    required: true,
+    suggestEnvVars: true,
+    value: provider.subdomain ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.subdomain", 'social-login'),
+    errors: provider.getErrors('subdomain'),
+}) }}
