@@ -3,6 +3,8 @@ namespace verbb\sociallogin\providers;
 
 use verbb\sociallogin\base\OAuthProvider;
 
+use craft\helpers\App;
+
 use verbb\auth\providers\PayPal as PayPalProvider;
 
 class PayPal extends OAuthProvider
@@ -20,10 +22,24 @@ class PayPal extends OAuthProvider
     // =========================================================================
 
     public static string $handle = 'payPal';
+    public bool|string $useSandbox = false;
 
 
     // Public Methods
     // =========================================================================
+
+    public function getUseSandbox(): string
+    {
+        return App::parseBooleanEnv($this->useSandbox);
+    }
+
+    public function getOAuthProviderConfig(): array
+    {
+        $config = parent::getOAuthProviderConfig();
+        $config['isSandbox'] = $this->getUseSandbox();
+
+        return $config;
+    }
 
     public function getUserProfileFields(): array
     {
