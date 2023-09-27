@@ -54,6 +54,7 @@ class Providers extends Component
             providerTypes\Facebook::class,
             providerTypes\Fitbit::class,
             providerTypes\Foursquare::class,
+            providerTypes\FreeAgent::class,
             providerTypes\GitHub::class,
             providerTypes\GitLab::class,
             providerTypes\Google::class,
