@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.7 - 2023-10-05
+> {warning} If you are using LinkedIn, your LinkedIn app will need to now include the **Sign In with LinkedIn using OpenID Connect** product.
+
+### Added
+- Add FreeAgent provider.
+- Add Telegram provider.
+- Add “Use Sandbox” setting for PayPal.
+
+### Changed
+- Change LinkedIn to use new OpenID Connect API.
+
+### Fixed
+- Fix Shopify provider not including a configurable “Shop” setting.
+
 ## 1.0.6 - 2023-07-12
 
 ### Fixed
