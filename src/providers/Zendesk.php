@@ -33,14 +33,6 @@ class Zendesk extends OAuthProvider
         return App::parseEnv($this->subdomain);
     }
 
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-        $rules[] = [['subdomain'], 'required'];
-
-        return $rules;
-    }
-
     public function getOAuthProviderConfig(): array
     {
         $config = parent::getOAuthProviderConfig();
@@ -54,6 +46,18 @@ class Zendesk extends OAuthProvider
         return [
             'name',
         ];
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['subdomain'], 'required'];
+
+        return $rules;
     }
 
 }

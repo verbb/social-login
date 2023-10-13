@@ -26,7 +26,7 @@ abstract class Provider extends SavableComponent implements ProviderInterface
 
     public static function log(Provider $provider, string $message, bool $throwError = false): void
     {
-        SocialLogin::log($provider->name . ': ' . $message);
+        SocialLogin::info($provider->name . ': ' . $message);
 
         if ($throwError) {
             throw new Exception($message);
@@ -73,29 +73,6 @@ abstract class Provider extends SavableComponent implements ProviderInterface
         $attributes[] = 'fieldMapping';
 
         return $attributes;
-    }
-
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-
-        $settings = SocialLogin::$plugin->getSettings();
-        $enableRegistration = $settings->enableRegistration;
-        $populateProfile = $settings->populateProfile;
-
-        $rules[] = [
-            ['matchUserSource', 'matchUserDestination'], 'required', 'when' => function($model) use ($enableRegistration) {
-                return $model->enabled && $enableRegistration;
-            },
-        ];
-
-        $rules[] = [
-            ['fieldMapping'], 'validateFieldMapping', 'when' => function($model) use ($populateProfile) {
-                return $model->enabled && $populateProfile;
-            },
-        ];
-
-        return $rules;
     }
 
     public function getName(): string
@@ -240,6 +217,33 @@ abstract class Provider extends SavableComponent implements ProviderInterface
                 $this->addError($attribute . '.' . $field->handle, Craft::t('social-login', '{name} must be mapped.', ['name' => $field->name]));
             }
         }
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+
+        $settings = SocialLogin::$plugin->getSettings();
+        $enableRegistration = $settings->enableRegistration;
+        $populateProfile = $settings->populateProfile;
+
+        $rules[] = [
+            ['matchUserSource', 'matchUserDestination'], 'required', 'when' => function($model) use ($enableRegistration) {
+                return $model->enabled && $enableRegistration;
+            },
+        ];
+
+        $rules[] = [
+            ['fieldMapping'], 'validateFieldMapping', 'when' => function($model) use ($populateProfile) {
+                return $model->enabled && $populateProfile;
+            },
+        ];
+
+        return $rules;
     }
 
 

@@ -50,14 +50,6 @@ class Myob extends OAuthProvider
         return App::parseEnv($this->companyName);
     }
 
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-        $rules[] = [['username', 'password', 'companyName'], 'required'];
-
-        return $rules;
-    }
-
     public function getOAuthProviderConfig(): array
     {
         $config = parent::getOAuthProviderConfig();
@@ -66,6 +58,18 @@ class Myob extends OAuthProvider
         $config['companyName'] = $this->getCompanyName();
 
         return $config;
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['username', 'password', 'companyName'], 'required'];
+
+        return $rules;
     }
 
 }

@@ -45,14 +45,6 @@ class Auth0 extends OAuthProvider
         return App::parseEnv($this->customDomain);
     }
 
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-        $rules[] = [['region', 'account'], 'required'];
-
-        return $rules;
-    }
-
     public function getOAuthProviderConfig(): array
     {
         $config = parent::getOAuthProviderConfig();
@@ -71,6 +63,18 @@ class Auth0 extends OAuthProvider
             'identities',
             'pictureUrl',
         ];
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['region', 'account'], 'required'];
+
+        return $rules;
     }
 
 }

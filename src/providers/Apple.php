@@ -46,14 +46,6 @@ class Apple extends OAuthProvider
         return App::parseEnv($this->keyFilePath);
     }
 
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-        $rules[] = [['clientId', 'teamId', 'keyFileId', 'keyFilePath'], 'required'];
-
-        return $rules;
-    }
-
     public function isConfigured(): bool
     {
         return $this->clientId && $this->teamId && $this->keyFileId && $this->keyFilePath;
@@ -110,6 +102,18 @@ class Apple extends OAuthProvider
             'firstName',
             'lastName',
         ];
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['clientId', 'teamId', 'keyFileId', 'keyFilePath'], 'required'];
+
+        return $rules;
     }
 
 }

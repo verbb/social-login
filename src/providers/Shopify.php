@@ -33,14 +33,6 @@ class Shopify extends OAuthProvider
         return App::parseEnv($this->subdomain);
     }
 
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-        $rules[] = [['subdomain'], 'required'];
-
-        return $rules;
-    }
-
     public function getOAuthProviderConfig(): array
     {
         $config = parent::getOAuthProviderConfig();
@@ -57,6 +49,18 @@ class Shopify extends OAuthProvider
             'country',
             'shopOwner',
         ];
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['subdomain'], 'required'];
+
+        return $rules;
     }
 
 }

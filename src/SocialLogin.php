@@ -19,8 +19,8 @@ class SocialLogin extends Plugin
     // Properties
     // =========================================================================
 
-    public string $schemaVersion = '1.0.1';
     public bool $hasCpSettings = true;
+    public string $schemaVersion = '1.0.1';
 
 
     // Traits
@@ -38,8 +38,6 @@ class SocialLogin extends Plugin
 
         self::$plugin = $this;
 
-        $this->_registerComponents();
-        $this->_registerLogTarget();
         $this->_registerVariables();
 
         if (Craft::$app->getRequest()->getIsCpRequest()) {
@@ -52,8 +50,11 @@ class SocialLogin extends Plugin
             $this->_registerSiteRoutes();
         }
 
-        // Check to register the plugin for CP login
-        $this->getService()->renderCpLogin();
+        // Defer most setup tasks until Craft is fully initialized:
+        Craft::$app->onInit(function() {
+            // Check to register the plugin for CP login
+            $this->getService()->renderCpLogin();
+        });
     }
 
     public function getSettingsResponse(): mixed

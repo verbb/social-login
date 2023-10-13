@@ -33,20 +33,24 @@ class Vend extends OAuthProvider
         return App::parseEnv($this->storeName);
     }
 
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-        $rules[] = [['storeName'], 'required'];
-
-        return $rules;
-    }
-
     public function getOAuthProviderConfig(): array
     {
         $config = parent::getOAuthProviderConfig();
         $config['storeName'] = $this->getStoreName();
 
         return $config;
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['storeName'], 'required'];
+
+        return $rules;
     }
 
 }

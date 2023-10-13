@@ -79,21 +79,14 @@ You can of course extend and create as many additional settings as you like. The
 ```php
 use craft\helpers\App;
 
-// Properties
-// =========================================================================
-
 public ?string $extraSetting = null;
-
-
-// Public Methods
-// =========================================================================
 
 public function getExtraSetting(): ?string
 {
     return App::parseEnv($this->extraSetting);
 }
 
-public function defineRules(): array
+protected function defineRules(): array
 {
     $rules = parent::defineRules();
     $rules[] = [['extraSetting'], 'required'];

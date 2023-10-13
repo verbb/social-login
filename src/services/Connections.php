@@ -96,7 +96,7 @@ class Connections extends Component
         }
 
         if ($runValidation && !$connection->validate()) {
-            SocialLogin::log('Connection not saved due to validation error.');
+            SocialLogin::info('Connection not saved due to validation error.');
             return false;
         }
 

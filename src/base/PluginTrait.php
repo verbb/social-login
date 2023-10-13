@@ -7,40 +7,41 @@ use verbb\sociallogin\services\Providers;
 use verbb\sociallogin\services\Service;
 use verbb\sociallogin\services\Users;
 
-use Craft;
-
-use yii\log\Logger;
+use verbb\base\LogTrait;
+use verbb\base\helpers\Plugin;
 
 use verbb\auth\Auth;
-use verbb\base\BaseHelper;
 
 trait PluginTrait
 {
-    // Static Properties
+    // Properties
     // =========================================================================
 
-    public static SocialLogin $plugin;
+    public static ?SocialLogin $plugin = null;
 
 
-    // Public Methods
+    // Traits
     // =========================================================================
 
-    public static function log($message, $attributes = []): void
+    use LogTrait;
+    
+
+    // Static Methods
+    // =========================================================================
+
+    public static function config(): array
     {
-        if ($attributes) {
-            $message = Craft::t('social-login', $message, $attributes);
-        }
+        Auth::registerModule();
+        Plugin::bootstrapPlugin('social-login');
 
-        Craft::getLogger()->log($message, Logger::LEVEL_INFO, 'social-login');
-    }
-
-    public static function error($message, $attributes = []): void
-    {
-        if ($attributes) {
-            $message = Craft::t('social-login', $message, $attributes);
-        }
-
-        Craft::getLogger()->log($message, Logger::LEVEL_ERROR, 'social-login');
+        return [
+            'components' => [
+                'connections' => Connections::class,
+                'providers' => Providers::class,
+                'service' => Service::class,
+                'users' => Users::class,
+            ],
+        ];
     }
 
 
@@ -65,28 +66,6 @@ trait PluginTrait
     public function getUsers(): Users
     {
         return $this->get('users');
-    }
-
-
-    // Private Methods
-    // =========================================================================
-
-    private function _registerComponents(): void
-    {
-        $this->setComponents([
-            'connections' => Connections::class,
-            'providers' => Providers::class,
-            'service' => Service::class,
-            'users' => Users::class,
-        ]);
-
-        Auth::registerModule();
-        BaseHelper::registerModule();
-    }
-
-    private function _registerLogTarget(): void
-    {
-        BaseHelper::setFileLogging('social-login');
     }
 
 }
