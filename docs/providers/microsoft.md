@@ -1,7 +1,11 @@
 # Microsoft
 Follow the below steps to connect to the Microsoft API.
 
-### Connect to the Microsoft API
+:::tip
+Be sure to use the **Azure** login provider, and not the Microsoft provider. The latter is for legacy use only.
+:::
+
+### Connect to the Microsoft/Azure API
 1. Go to the <a href="https://portal.azure.com/" target="_blank">Azure Portal</a> and login to your account.
 1. Navigate to **App registrations**.
 1. Click the **Register an application** button.
