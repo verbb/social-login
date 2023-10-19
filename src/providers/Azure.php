@@ -49,7 +49,6 @@ class Azure extends OAuthProvider
     public function getUserProfileFields(): array
     {
         return [
-            'email',
             'given_name',
             'unique_name',
             'upn',
