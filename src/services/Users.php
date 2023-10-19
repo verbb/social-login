@@ -120,14 +120,6 @@ class Users extends Component
     {
         $settings = SocialLogin::$plugin->getSettings();
 
-        // Some providers (Instagram) don't support emails, which is the bare-minimum requirement.
-        if (!$userProfile->email) {
-            SocialLogin::error('Provider “{provider}” does not support emails, unable to create user.', ['provider' => $provider->handle]);
-            SocialLogin::error($userProfile->response);
-
-            return false;
-        }
-
         // Find an existing Craft user with the same email
         $user = $this->_matchExistingUser($provider, $userProfile);
 
@@ -162,6 +154,14 @@ class Users extends Component
         }
 
         $user = $event->user;
+
+        // Some providers (Instagram) don't support emails, which is the bare-minimum requirement.
+        if (!$user->email) {
+            SocialLogin::error('Provider “{provider}” does not support emails, unable to create user.', ['provider' => $provider->handle]);
+            SocialLogin::error($userProfile->response);
+
+            return false;
+        }
 
         if (!Craft::$app->getElements()->saveElement($user)) {
             $error = Craft::t('social-login', 'Unable to register user: {json}.', ['json' => Json::encode($user->getErrors())]);
