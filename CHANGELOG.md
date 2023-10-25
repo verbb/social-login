@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.8 - 2023-10-25
+
+### Fixed
+- Fix an issue where providers were flagging an error when email values from were returning anything other than `email`.
+- Fix some duplicated user profile field handles for some clients.
+
 ## 1.0.7 - 2023-10-05
 > {warning} If you are using LinkedIn, your LinkedIn app will need to now include the **Sign In with LinkedIn using OpenID Connect** product.
 
