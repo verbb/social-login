@@ -55,6 +55,11 @@ abstract class OAuthProvider extends Provider implements OAuthProviderInterface
         // Use the current or primary site for the redirect
         $siteId = Craft::$app->getSites()->getCurrentSite()->id ?? Craft::$app->getSites()->getPrimarySite()->id;
 
+        // Special-case for when `cpTrigger` is empty to signify split front/back end Craft installs
+        if (!Craft::$app->getConfig()->getGeneral()->cpTrigger) {
+            return UrlHelper::actionUrl('social-login/auth/callback');
+        }
+
         return UrlHelper::siteUrl('social-login/auth/callback', null, null, $siteId);
     }
 
