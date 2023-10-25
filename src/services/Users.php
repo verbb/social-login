@@ -128,8 +128,7 @@ class Users extends Component
         }
 
         // Check if we're allowing user registration at all
-        // or, is a control panel request, deny creating the user. Else anyone can gain access.
-        if (!$settings->enableRegistration || Session::get('isCpRequest')) {
+        if (!$settings->enableRegistration) {
             return false;
         }
 
