@@ -173,7 +173,9 @@ class Users extends Component
         }
 
         // Force-activation, regardless of site settings, so we can login immediately
-        Craft::$app->getUsers()->activateUser($user);
+        if ($settings->forceActivate) {
+            Craft::$app->getUsers()->activateUser($user);
+        }
 
         // Assign the User Groups according to settings
         foreach ($settings->userGroups as $userGroupUid) {
