@@ -90,8 +90,10 @@ abstract class OAuthProvider extends Provider implements OAuthProviderInterface
     {
         $currentUser = Craft::$app->getUser()->getIdentity();
 
-        if ($connection = SocialLogin::$plugin->getConnections()->getConnectionByUserAndProvider($currentUser->id, $this->handle)) {
-            return $connection->getToken();
+        if ($currentUser) {
+            if ($connection = SocialLogin::$plugin->getConnections()->getConnectionByUserAndProvider($currentUser->id, $this->handle)) {
+                return $connection->getToken();
+            }
         }
 
         return null; 
