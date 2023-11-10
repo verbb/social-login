@@ -52,6 +52,7 @@ class AuthController extends Controller
             // Keep track of CP requests and if resuming a session
             Session::set('isCpRequest', $this->request->getIsCpRequest());
             Session::set('loginName', $this->request->getParam('loginName'));
+            Session::set('rememberMe', $this->request->getParam('rememberMe'));
 
             // Redirect to the provider platform to login and authorize
             return Auth::$plugin->getOAuth()->connect('social-login', $provider);

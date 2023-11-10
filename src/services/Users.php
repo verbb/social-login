@@ -96,7 +96,16 @@ class Users extends Component
 
         $user = $event->user;
 
-        if (!Craft::$app->getUser()->login($user)) {
+        $generalConfig = Craft::$app->getConfig()->getGeneral();
+        $rememberMe = (bool)Session::get('rememberMe');
+
+        if ($rememberMe && $generalConfig->rememberedUserSessionDuration !== 0) {
+            $duration = $generalConfig->rememberedUserSessionDuration;
+        } else {
+            $duration = $generalConfig->userSessionDuration;
+        }
+
+        if (!Craft::$app->getUser()->login($user, $duration)) {
             Session::setError('social-login', Craft::t('social-login', 'Unable to login.'));
 
             return false;
