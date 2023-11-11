@@ -60,8 +60,8 @@ You can set provider settings by adding the `handle` of a provider, and passing 
         ],
 
         // OAuth settings
-        'clientId' => 'xxxxxxxxxxxx',
-        'clientSecret' => 'xxxxxxxxxxxx',
+        'clientId' => '••••••••••••••••••••••••••••',
+        'clientSecret' => '••••••••••••••••••••••••••••',
 
         // Add in any additional OAuth scopes
         'scopes' => [
