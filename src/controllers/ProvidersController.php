@@ -39,10 +39,9 @@ class ProvidersController extends Controller
     public function actionSave(): ?Response
     {
         $this->requirePostRequest();
-        $request = Craft::$app->getRequest();
 
-        $handle = $request->getParam('handle');
-        $settings = $request->getParam('settings');
+        $handle = $this->request->getParam('handle');
+        $settings = $this->request->getParam('settings');
 
         $provider = SocialLogin::$plugin->getProviders()->getProviderByHandle($handle);
 
