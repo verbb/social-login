@@ -41,44 +41,49 @@ A collection of User Group UIDs should be provided.
 You can set provider settings by adding the `handle` of a provider, and passing in any setting specific to that provider. Typically, this will be OAuth settings.
 
 ```php
-'providers' => [
-    'facebook' => [
-        'enabled' => true,
-        'loginEnabled' => true,
-        'cpLoginEnabled' => true,
+return [
+    '*' => [
+        // ...
+        'providers' => [
+            'facebook' => [
+                'enabled' => true,
+                'loginEnabled' => true,
+                'cpLoginEnabled' => true,
 
-        // Matching registration fields (provider-side, Craft-side)
-        'matchUserSource' => 'email',
-        'matchUserDestination' => 'email',
+                // Matching registration fields (provider-side, Craft-side)
+                'matchUserSource' => 'email',
+                'matchUserDestination' => 'email',
 
-        // Field mapping
-        'fieldMapping' => [
-            'username' => 'email',
-            'email' => 'email',
-            'field:myFieldHandle' => 'description',
-            'field:text' => 'response',
+                // Field mapping
+                'fieldMapping' => [
+                    'username' => 'email',
+                    'email' => 'email',
+                    'field:myFieldHandle' => 'description',
+                    'field:text' => 'response',
+                ],
+
+                // OAuth settings
+                'clientId' => '••••••••••••••••••••••••••••',
+                'clientSecret' => '••••••••••••••••••••••••••••',
+
+                // Add in any additional OAuth scopes
+                'scopes' => [
+                     'user_birthday',
+                 ],
+
+                 // Add in any additional OAuth authorization options, used when redirecting
+                 // to the provider to start the OAuth authorization process
+                 'authorizationOptions' => [
+                    'extra' => 'value',
+                 ],
+
+                 // Add in any additional provider-based fields to map from
+                 // (depends on the provider API with what's available)
+                 'customProfileFields' => [
+                     'birthday',
+                 ],
+            ],
         ],
-
-        // OAuth settings
-        'clientId' => 'xxxxxxxxxxxx',
-        'clientSecret' => 'xxxxxxxxxxxx',
-
-        // Add in any additional OAuth scopes
-        'scopes' => [
-             'user_birthday',
-         ],
-
-         // Add in any additional OAuth authorization options, used when redirecting
-         // to the provider to start the OAuth authorization process
-         'authorizationOptions' => [
-            'extra' => 'value',
-         ],
-
-         // Add in any additional provider-based fields to map from
-         // (depends on the provider API with what's available)
-         'customProfileFields' => [
-             'birthday',
-         ],
     ],
-],
+];
 ```

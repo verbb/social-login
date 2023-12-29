@@ -22,7 +22,7 @@ Follow the below steps to connect to the Instagram API.
 1. Switch the **App Mode** toggle to **Live**.
 1. Click **Request Permissions or Features**.
 1. Locate the **email** permission and click the **Get advanced access** button.
-1. Navigate to **Settings* → **Basic**.
+1. Navigate to **App Settings* → **Basic**.
 1. Copy the **App ID** from Instagram and paste in the **Client ID** field in Social Login.
 1. Copy the **App Secret** from Instagram and paste in the **Client Secret** field in Social Login.
 

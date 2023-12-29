@@ -45,6 +45,15 @@ class Google extends OAuthProvider
         return $uri;
     }
 
+    public function getAuthorizationUrlOptions(): array
+    {
+        $options = parent::getAuthorizationUrlOptions();
+        $options['access_type'] = 'offline';
+        $options['prompt'] = 'consent';
+        
+        return $options;
+    }
+
     public function getUserProfileFields(): array
     {
         return [

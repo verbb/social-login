@@ -8,14 +8,16 @@ Not all providers support authenticating a user to allow them to register on you
 :::
 
 ## Front-end Registration
-You don't need to adjust anything to your front-end templates. When the user returns from the offsite provider, they'll be auto-registered and logged into their new account.
+You don't need to adjust anything to your front-end templates. When the user returns from the offsite provider, they'll be auto-registered and logged into their new account. A new User element will be created, populated by their user profile from the provider.
 
 ## Control Panel Registration
-Registration via the control panel is not allowed, as this would be a major security risk. All it would take is for someone to discover your login page to your control panel, click to sign in with their own social media account, and they would be instantly granted access to your control panel. As such, this isn't a great idea by any means!
+Registration is allowed for the control panel, but it won't work out of the box, as new users will require the "Access the control panel" user permission. But as you can assign a user group to be assigned to new registrations, you can create one that has control panel access.
 
-More to the point - even if users were able to be registered in this way, it would require you to give all new users control panel user permission, which is almost certainly not desired.
+However, if you were to enable this setting, it is **highly** recommended you turn off "Force Activation" setting in Social Login, and ensure that your User Craft settings verifies new registrations. This ensures that not just anyone with a valid provider account can gain automatic access to your control panel.
 
-As such, control panel handling is limited to _just_ login.
+:::danger
+Please read the above carefully if you wish to enable control panel registration, so as not to compromise your install.
+:::
 
 ## User Mapping
 You can also populate the new Craft user's details from their social media profile. Commonly, you would pull in the user's first/last name, or even their avatar.

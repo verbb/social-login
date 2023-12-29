@@ -96,7 +96,16 @@ class Users extends Component
 
         $user = $event->user;
 
-        if (!Craft::$app->getUser()->login($user)) {
+        $generalConfig = Craft::$app->getConfig()->getGeneral();
+        $rememberMe = (bool)Session::get('rememberMe');
+
+        if ($rememberMe && $generalConfig->rememberedUserSessionDuration !== 0) {
+            $duration = $generalConfig->rememberedUserSessionDuration;
+        } else {
+            $duration = $generalConfig->userSessionDuration;
+        }
+
+        if (!Craft::$app->getUser()->login($user, $duration)) {
             Session::setError('social-login', Craft::t('social-login', 'Unable to login.'));
 
             return false;
@@ -120,14 +129,6 @@ class Users extends Component
     {
         $settings = SocialLogin::$plugin->getSettings();
 
-        // Some providers (Instagram) don't support emails, which is the bare-minimum requirement.
-        if (!$userProfile->email) {
-            SocialLogin::error('Provider “{provider}” does not support emails, unable to create user.', ['provider' => $provider->handle]);
-            SocialLogin::error($userProfile->response);
-
-            return false;
-        }
-
         // Find an existing Craft user with the same email
         $user = $this->_matchExistingUser($provider, $userProfile);
 
@@ -136,8 +137,7 @@ class Users extends Component
         }
 
         // Check if we're allowing user registration at all
-        // or, is a control panel request, deny creating the user. Else anyone can gain access.
-        if (!$settings->enableRegistration || Session::get('isCpRequest')) {
+        if (!$settings->enableRegistration) {
             return false;
         }
 
@@ -163,6 +163,14 @@ class Users extends Component
 
         $user = $event->user;
 
+        // Some providers (Instagram) don't support emails, which is the bare-minimum requirement.
+        if (!$user->email) {
+            SocialLogin::error('Provider “{provider}” does not support emails, unable to create user.', ['provider' => $provider->handle]);
+            SocialLogin::error($userProfile->response);
+
+            return false;
+        }
+
         if (!Craft::$app->getElements()->saveElement($user)) {
             $error = Craft::t('social-login', 'Unable to register user: {json}.', ['json' => Json::encode($user->getErrors())]);
 
@@ -173,7 +181,9 @@ class Users extends Component
         }
 
         // Force-activation, regardless of site settings, so we can login immediately
-        Craft::$app->getUsers()->activateUser($user);
+        if ($settings->forceActivate) {
+            Craft::$app->getUsers()->activateUser($user);
+        }
 
         // Assign the User Groups according to settings
         foreach ($settings->userGroups as $userGroupUid) {

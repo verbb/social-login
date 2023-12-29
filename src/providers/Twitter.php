@@ -30,7 +30,6 @@ class Twitter extends OAuthProvider
         return [
             'name',
             'nickname',
-            'email',
             'location',
             'description',
             'imageUrl',

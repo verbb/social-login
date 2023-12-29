@@ -1,5 +1,40 @@
 # Changelog
 
+## 1.0.9 - 2023-12-08
+
+### Added
+- Control Panel registrations are now enabled.
+- Add `forceActivate` plugin setting to override Craft’s user verification handling and login users immediately and automatically.
+- Add support for “Remember Me” handling, as per your Craft config settings, and when providing a `rememberMe` param for login.
+- Add full name as a user field. (thanks @kennethormandy).
+- Add session errors for fatal errors when processing login callback.
+
+### Fixed
+- Fix an error when calling `Provider::getToken()` for unauthenticated users.
+- Fix callback URI when Craft’s `cpTrigger` is null (for detached CPs).
+- Fix an error when saving plugin settings, overwriting provider settings.
+- Fix Google offline access type.
+
+## 1.0.8 - 2023-10-25
+
+### Fixed
+- Fix an issue where providers were flagging an error when email values from were returning anything other than `email`.
+- Fix some duplicated user profile field handles for some clients.
+
+## 1.0.7 - 2023-10-05
+> {warning} If you are using LinkedIn, your LinkedIn app will need to now include the **Sign In with LinkedIn using OpenID Connect** product.
+
+### Added
+- Add FreeAgent provider.
+- Add Telegram provider.
+- Add “Use Sandbox” setting for PayPal.
+
+### Changed
+- Change LinkedIn to use new OpenID Connect API.
+
+### Fixed
+- Fix Shopify provider not including a configurable “Shop” setting.
+
 ## 1.0.6 - 2023-07-12
 
 ### Fixed

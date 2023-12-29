@@ -31,6 +31,9 @@ class SettingsController extends Controller
         $settings = SocialLogin::$plugin->getSettings();
         $settings->setAttributes($this->request->getParam('settings'), false);
 
+        // Ensure we don't override provider settings
+        $settings->providers = SocialLogin::$plugin->getSettings()->getProviderSettings();
+
         if (!$settings->validate()) {
             Craft::$app->getSession()->setError(Craft::t('social-login', 'Couldn’t save settings.'));
 

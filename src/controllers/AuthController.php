@@ -52,6 +52,7 @@ class AuthController extends Controller
             // Keep track of CP requests and if resuming a session
             Session::set('isCpRequest', $this->request->getIsCpRequest());
             Session::set('loginName', $this->request->getParam('loginName'));
+            Session::set('rememberMe', $this->request->getParam('rememberMe'));
 
             // Redirect to the provider platform to login and authorize
             return Auth::$plugin->getOAuth()->connect('social-login', $provider);
@@ -111,6 +112,11 @@ class AuthController extends Controller
 
             return $this->redirect($redirect);
         } catch (Throwable $e) {
+            Session::setError('social-login', Craft::t('social-login', 'Unable to process callback for “{provider}”: “{message}”', [
+                    'provider' => $providerHandle,
+                    'message' => $e->getMessage(),
+                ]));
+
             SocialLogin::error('Unable to process callback for “{provider}”: “{message}” {file}:{line}', [
                 'provider' => $providerHandle,
                 'message' => $e->getMessage(),

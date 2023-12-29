@@ -44,11 +44,9 @@ class FreeAgent extends OAuthProvider
     public function getUserProfileFields(): array
     {
         return [
-            'id',
             'name',
             'firstName',
             'lastName',
-            'email',
         ];
     }
 
