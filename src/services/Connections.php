@@ -10,6 +10,7 @@ use Craft;
 use craft\base\MemoizableArray;
 use craft\db\Query;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Db;
 
 use yii\base\Component;
 
@@ -161,9 +162,7 @@ class Connections extends Component
             ]));
         }
 
-        Craft::$app->getDb()->createCommand()
-            ->delete('{{%social_login_connections}}', ['id' => $connection->id])
-            ->execute();
+        Db::delete('{{%social_login_connections}}', ['id' => $connection->id]);
 
         // Also delete any tokens
         Auth::$plugin->getTokens()->deleteTokenByOwnerReference('social-login', $connection->id);
