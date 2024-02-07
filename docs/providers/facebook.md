@@ -1,7 +1,7 @@
 # Facebook
 Follow the below steps to connect to the Facebook API.
 
-### Connect to the Facebook API
+## Connect to the Facebook API
 1. Go to the <a href="https://developers.facebook.com/apps/" target="_blank">Meta for Developers</a> page.
 1. Click the **Create App** button.
 1. Select **Other** and **Consumer** as the app type, and fill in the rest of the details.
@@ -23,5 +23,26 @@ Follow the below steps to connect to the Facebook API.
 1. Copy the **App Secret** from Facebook and paste in the **Client Secret** field in Social Login.
 
 :::tip
-Ensure that you pick **Facebook Login for Business** and not **Facebook Login**, which are different products. If you must use **Facebook Login for Business**, you'll need to provide additional scopes. 
+Ensure that you pick **Facebook Login** and not **Facebook Login for Business**, which are different products. If you must use **Facebook Login for Business**, you'll need to provide additional scopes, as per the below. 
 :::
+
+### Facebook Login for Business
+If you require the use of the **Facebook Login for Business** product in your Facebook App, you may do so, but note that you'll need to supply additional scopes in your [configuration](docs:get-started/configuration).
+
+```php
+<?php
+
+return [
+    '*' => [
+        // ...
+        'providers' => [
+            'facebook' => [
+                // ...
+                'scopes' => [
+                    'business_management',
+                ],
+            ],
+        ],
+    ]
+];
+```
