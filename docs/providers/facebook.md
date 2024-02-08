@@ -7,7 +7,7 @@ Follow the below steps to connect to the Facebook API.
 1. Select **Other** and **Consumer** as the app type, and fill in the rest of the details.
 1. Once created, in the left-hand sidebar, click the **Add Product** button and select **Facebook Login**.
 1. Select **Web** as the type and your website address into **Site URL**.
-1. Navigate to **Facebook Login** section in the left-hand siderbar, click **Settings**.
+1. Navigate to **Facebook Login** section in the left-hand sidebar, click **Settings**.
 1. For the **Valid OAuth Redirect URIs** setting, enter the value from the **Redirect URI** field in Social Login.
 1. Click the **Save Changes** button.
 1. Navigate to **App Review** → **Requests**.
