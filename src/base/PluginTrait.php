@@ -31,7 +31,6 @@ trait PluginTrait
 
     public static function config(): array
     {
-        Auth::registerModule();
         Plugin::bootstrapPlugin('social-login');
 
         return [
