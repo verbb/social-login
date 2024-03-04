@@ -1,5 +1,5 @@
-# Social Login plugin for Craft CMS
-<img width="500" src="https://verbb.imgix.net/plugins/social-login/social-login-social-card.png?v=3">
+<p align="center"><img src="https://verbb.imgix.net/plugins/social-login/social-login-icon.svg" width="100" height="100" alt="Social Login icon"></p>
+<h1 align="center">Social Login for Craft CMS</h1>
 
 Social Login adds SSO (Single Sign-On) capabilities to your Craft site to let your users login or register via their own social media accounts like Facebook, Google, Microsoft, Apple and loads more. It's also a handy plugin to use when you want to "connect" user accounts to these providers, along with helpers for calling APIs.
 
