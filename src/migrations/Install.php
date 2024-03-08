@@ -29,7 +29,8 @@ class Install extends Migration
         $this->removeTables();
 
         // Delete all tokens for this plugin
-        Auth::$plugin->getTokens()->deleteTokensByOwner('social-login');
+        // Use `Auth::getInstance()` not `Auth::$plugin` as it doesn't seem to work well in migrations
+        Auth::getInstance()->getTokens()->deleteTokensByOwner('social-login');
 
         return true;
     }
