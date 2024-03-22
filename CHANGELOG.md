@@ -3,7 +3,7 @@
 ## 1.0.10 - 2024-03-22
 
 ### Added
- - Add IdentityServer4 provider.
+- Add IdentityServer4 provider.
 
 ## 1.0.9 - 2023-12-08
 
