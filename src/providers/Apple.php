@@ -49,6 +49,19 @@ class Apple extends OAuthProvider
     public function defineRules(): array
     {
         $rules = parent::defineRules();
+
+        // Remove the parent `clientSecret` rule, we don't need it for Apple
+        foreach ($rules as $key => &$rule) {
+            if (isset($rule[0]) && is_array($rule[0]) && in_array('clientSecret', $rule[0])) {
+                $index = array_search('clientSecret', $rule[0]);
+    
+                // If "clientSecret" key exists, remove it
+                if ($index !== false) {
+                    unset($rule[0][$index]);
+                }
+            }
+        }
+
         $rules[] = [['clientId', 'teamId', 'keyFileId', 'keyFilePath'], 'required'];
 
         return $rules;
