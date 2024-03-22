@@ -62,6 +62,7 @@ class Providers extends Component
             providerTypes\Harvest::class,
             providerTypes\Heroku::class,
             providerTypes\HubSpot::class,
+            providerTypes\IdentityServer4::class,
             providerTypes\Imgur::class,
             providerTypes\Instagram::class,
             providerTypes\Jira::class,
