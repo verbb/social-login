@@ -4,6 +4,7 @@ namespace verbb\sociallogin\controllers;
 use verbb\sociallogin\SocialLogin;
 
 use Craft;
+use craft\helpers\Json;
 use craft\web\Controller;
 
 use yii\web\HttpException;
@@ -58,6 +59,8 @@ class ProvidersController extends Controller
             Craft::$app->getUrlManager()->setRouteParams([
                 'provider' => $provider,
             ]);
+
+            SocialLogin::error(Craft::t('social-login', 'Couldn’t save provider - {e}.', ['e' => Json::encode($provider->getErrors())]));
 
             return null;
         }
