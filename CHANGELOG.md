@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.11 - 2024-03-26
+
+### Added
+- Add Salesforce provider.
+- Add logging when a provider cannot be saved.
+
+### Fixed
+- Fix Apple provider not saving.
+
 ## 1.0.10 - 2024-03-22
 
 ### Added

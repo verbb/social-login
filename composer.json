@@ -2,7 +2,7 @@
     "name": "verbb/social-login",
     "description": "Add SSO (Single Sign-On) user login, registration and connecting to social media platforms.",
     "type": "craft-plugin",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "keywords": [
         "craft",
         "cms",
