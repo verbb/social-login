@@ -79,6 +79,7 @@ class Providers extends Component
             providerTypes\Pinterest::class,
             providerTypes\Pipedrive::class,
             providerTypes\Reddit::class,
+            providerTypes\Salesforce::class,
             providerTypes\Shopify::class,
             providerTypes\Slack::class,
             providerTypes\Snapchat::class,

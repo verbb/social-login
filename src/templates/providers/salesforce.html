@@ -1,0 +1,14 @@
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% include 'social-login/providers/_oauth' %}
+
+{{ forms.booleanMenuField({
+    label: 'Use Sandbox' | t('social-login'),
+    instructions: 'Whether to use the {provider} sandbox.' | t('social-login', { provider: provider.name }),
+    name: 'useSandbox',
+    includeEnvVars: true,
+    value: provider.useSandbox ?? false,
+    warning: macros.configWarning('useSandbox', 'social-login'),
+    errors: provider.getErrors('useSandbox'),
+}) }}
