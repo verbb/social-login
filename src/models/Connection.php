@@ -53,7 +53,7 @@ class Connection extends Model
     public function getToken(): ?Token
     {
         if ($this->id) {
-            return Auth::$plugin->getTokens()->getTokenByOwnerReference('social-login', $this->id);
+            return Auth::getInstance()->getTokens()->getTokenByOwnerReference('social-login', $this->id);
         }
 
         return null;

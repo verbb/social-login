@@ -122,7 +122,7 @@ class Connections extends Component
 
         // We should also create or update the OAuth token. Use the connection as a reference.
         $token->reference = $connection->id;
-        Auth::$plugin->getTokens()->upsertToken($token);
+        Auth::getInstance()->getTokens()->upsertToken($token);
 
         return true;
     }
@@ -165,7 +165,7 @@ class Connections extends Component
         Db::delete('{{%social_login_connections}}', ['id' => $connection->id]);
 
         // Also delete any tokens
-        Auth::$plugin->getTokens()->deleteTokenByOwnerReference('social-login', $connection->id);
+        Auth::getInstance()->getTokens()->deleteTokenByOwnerReference('social-login', $connection->id);
 
         // Fire an 'afterDeleteConnection' event
         if ($this->hasEventHandlers(self::EVENT_AFTER_DELETE_CONNECTION)) {

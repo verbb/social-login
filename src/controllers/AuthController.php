@@ -55,7 +55,7 @@ class AuthController extends Controller
             Session::set('rememberMe', $this->request->getParam('rememberMe'));
 
             // Redirect to the provider platform to login and authorize
-            return Auth::$plugin->getOAuth()->connect('social-login', $provider);
+            return Auth::getInstance()->getOAuth()->connect('social-login', $provider);
         } catch (Throwable $e) {
             SocialLogin::error('Unable to authorize login for “{provider}”: “{message}” {file}:{line}', [
                 'provider' => $providerHandle,
@@ -92,7 +92,7 @@ class AuthController extends Controller
 
         try {
             // Fetch the access token from the provider and create a Token for us to use
-            $token = Auth::$plugin->getOAuth()->callback('social-login', $provider);
+            $token = Auth::getInstance()->getOAuth()->callback('social-login', $provider);
 
             if (!$token) {
                 Session::setError('social-login', Craft::t('social-login', 'Unable to fetch token.'));
