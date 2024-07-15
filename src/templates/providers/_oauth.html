@@ -1,13 +1,17 @@
 {% import '_includes/forms' as forms %}
 {% import 'verbb-base/_macros' as macros %}
 
-{% set instructions %}
-To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-login/docs/providers/all-providers" target="_blank" rel="noopener">{name} provider guide</a>.
-{% endset %}
+{% if instructions is not defined %}
+    {%- set instructions -%}
+    To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-login/docs/providers/all-providers" target="_blank" rel="noopener">{name} provider guide</a>.
+    {%- endset -%}
+{% endif %}
 
-<div class="ss-settings-block">
-    {{ instructions | t('social-login', { name: provider.name, plugin: 'Social Login' }) | md }}
-</div>
+{% if instructions %}
+    <div class="ss-settings-block">
+        {{ instructions | t('social-login', { name: provider.name, plugin: 'Social Login' }) | md }}
+    </div>
+{% endif %}
 
 {{ forms.textField({
     readonly: true,
