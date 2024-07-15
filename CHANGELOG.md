@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.3 - 2024-07-15
+
+### Added
+- Add `sendActivationEmail` plugin setting.
+- Add the ability to set `data` for a login request, where users might want to store extra information.
+- Add Amazon Cognito provider.
+
+### Changed
+- Revert callback URI change for `cpTrigger = null` (for detached CPs).
+
+### Fixed
+- Fix race conditions with plugin initialization. (thanks @nfourtythree).
+- Fix activation email logic.
+
 ## 2.0.2 - 2024-05-29
 
 ### Added
@@ -37,14 +51,6 @@
 - Fix an error when uninstalling the plugin.
 - Fix Salesforce provider.
 - Fix Apple provider not saving.
-
-## Unreleased
-
-### Changed
-- Now requires Craft 4.3.5+.
-
-### Fixed
-- Fix race conditions with plugin initialization. (thanks @nfourtythree).
 
 ## 1.0.16 - 2024-07-15
 
