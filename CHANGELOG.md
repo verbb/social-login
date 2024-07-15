@@ -46,6 +46,21 @@
 ### Fixed
 - Fix race conditions with plugin initialization. (thanks @nfourtythree).
 
+## 1.0.16 - 2024-07-15
+
+### Added
+- Add `sendActivationEmail` plugin setting.
+- Add the ability to set `data` for a login request, where users might want to store extra information.
+- Add Amazon Cognito provider.
+
+### Changed
+- Now requires Craft 4.3.5+.
+- Revert callback URI change for `cpTrigger = null` (for detached CPs).
+
+### Fixed
+- Fix race conditions with plugin initialization. (thanks @nfourtythree).
+- Fix activation email logic.
+
 ## 1.0.15 - 2024-05-29
 
 ### Added

@@ -42,6 +42,9 @@ class Users extends Component
         // With the user authenticated, login or register
         $user = Craft::$app->getUser()->getIdentity();
 
+        // Fetch plugin settings
+        $settings = SocialLogin::$plugin->getSettings();
+
         if (!$user) {
             $user = $this->_getOrCreateUser($provider, $userProfile);
 
@@ -50,6 +53,12 @@ class Users extends Component
 
                 return false;
             }
+        } else if ($settings->populateProfile && $settings->syncProfile) {
+            // Ensure we sync the User's profile on each login/register request. This ensures profile data is synced
+            //  when using an edit profile URL from the SSO provider, for example.
+
+            $user = $this->_syncUserProfile($provider, $user, $userProfile);
+            Craft::$app->getElements()->saveElement($user);
         }
 
         // Are we resuming an already-logged in session (through the modal login)? Ensure that things match, 

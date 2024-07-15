@@ -36,6 +36,7 @@ class Providers extends Component
     {
         $providerTypes = [
             providerTypes\Amazon::class,
+            providerTypes\AmazonCognito::class,
             providerTypes\Apple::class,
             providerTypes\Auth0::class,
             providerTypes\Azure::class,
