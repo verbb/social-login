@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.4 - 2024-07-17
+
+### Fixed
+- Fix an error with Amazon Cognito provider.
+
 ## 2.0.3 - 2024-07-15
 
 ### Added
