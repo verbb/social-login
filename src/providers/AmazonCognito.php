@@ -4,6 +4,7 @@ namespace verbb\sociallogin\providers;
 use verbb\sociallogin\base\OAuthProvider;
 
 use Craft;
+use craft\helpers\App;
 
 use verbb\auth\providers\AmazonCognito as AmazonCognitoProvider;
 
@@ -27,10 +28,24 @@ class AmazonCognito extends OAuthProvider
     // =========================================================================
 
     public static string $handle = 'amazonCognito';
+    public ?string $domain = null;
 
 
     // Public Methods
     // =========================================================================
+
+    public function getDomain(): ?string
+    {
+        return App::parseEnv($this->domain);
+    }
+
+    public function getOAuthProviderConfig(): array
+    {
+        $config = parent::getOAuthProviderConfig();
+        $config['domain'] = $this->getDomain();
+
+        return $config;
+    }
 
     public function getUserProfileFields(): array
     {
@@ -38,6 +53,19 @@ class AmazonCognito extends OAuthProvider
             'name',
             'postalCode',
         ];
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+
+        $rules[] = [['domain'], 'required'];
+
+        return $rules;
     }
 
 }
