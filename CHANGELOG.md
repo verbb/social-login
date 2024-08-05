@@ -57,6 +57,11 @@
 - Fix Salesforce provider.
 - Fix Apple provider not saving.
 
+## 1.0.17 - 2024-07-17
+
+### Fixed
+- Fix an error with Amazon Cognito provider.
+
 ## 1.0.16 - 2024-07-15
 
 ### Added

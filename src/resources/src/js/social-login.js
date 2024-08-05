@@ -15,7 +15,7 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
     init: function(settings) {
         const self = this;
         this.renderedLogin = false;
-        this.html = settings.html;
+        this.html = '<div class="social-login-cp-container">' + settings.html + '</div>';
 
         this.bindSubmitButtons();
 

@@ -83,7 +83,7 @@ class Service extends Component
                 $template = $this->_getTemplate('social-login/_includes/cp-login', $settings->cpLoginTemplate);
 
                 if ($template) {
-                    $html = $view->renderTemplate($template);
+                    $html = $view->renderTemplate($template[0], [], $template[1]);
 
                     $view->registerAssetBundle(SocialLoginAsset::class);
                     $view->registerJs('new Craft.SocialLogin.CpLoginForm(' . Json::encode([
@@ -104,20 +104,20 @@ class Service extends Component
     // Private Methods
     // =========================================================================
 
-    private function _getTemplate(string $defaultTemplate, string $template): string
+    private function _getTemplate(string $defaultTemplate, string $template): array
     {
         $template = $template ?: $defaultTemplate;
         $view = Craft::$app->getView();
 
         if ($view->doesTemplateExist($template, $view::TEMPLATE_MODE_CP)) {
-            return $template;
+            return [$template, $view::TEMPLATE_MODE_CP];
         }
 
         if ($view->doesTemplateExist($template, $view::TEMPLATE_MODE_SITE)) {
-            return $template;
+            return [$template, $view::TEMPLATE_MODE_SITE];
         }
 
-        return '';
+        return [];
     }
 
 }

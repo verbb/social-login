@@ -32,4 +32,16 @@ class HubSpot extends OAuthProvider
         ];
     }
 
+    public function getAuthorizationUrlOptions(): array
+    {
+        $options = parent::getAuthorizationUrlOptions();
+
+        $options['scope'] = [
+            'oauth',
+            'crm.objects.owners.read',
+        ];
+        
+        return $options;
+    }
+
 }
