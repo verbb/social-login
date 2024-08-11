@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.18 - 2024-08-11
+
+### Changed
+- CP Login templates now are wrapped with a `.social-login-cp-container` div.
+- Update `syncProfile` to be disabled by default.
+- Update English translations.
+
+### Fixed
+- Fix custom CP login template not resolving correctly.
+- Fix HubSpot default scopes.
+
 ## 1.0.17 - 2024-07-17
 
 ### Fixed
