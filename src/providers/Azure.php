@@ -27,11 +27,17 @@ class Azure extends OAuthProvider
     // =========================================================================
 
     public static string $handle = 'azure';
+    public ?string $endpointVersion = '1.0';
     public ?string $tenant = 'common';
 
 
     // Public Methods
     // =========================================================================
+
+    public function getEndpointVersion(): ?string
+    {
+        return App::parseEnv($this->endpointVersion);
+    }
 
     public function getTenant(): ?string
     {
@@ -41,6 +47,7 @@ class Azure extends OAuthProvider
     public function getOAuthProviderConfig(): array
     {
         $config = parent::getOAuthProviderConfig();
+        $config['defaultEndPointVersion'] = $this->getEndpointVersion();
         $config['tenant'] = $this->getTenant();
 
         return $config;
