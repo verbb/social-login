@@ -68,6 +68,11 @@
 - Fix Salesforce provider.
 - Fix Apple provider not saving.
 
+## 1.0.19 - 2024-09-07
+
+### Added
+- Add the ability to set the endpoint version for Azure provider.
+
 ## 1.0.18 - 2024-08-11
 
 ### Changed
