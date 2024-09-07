@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.6 - 2024-09-07
+
+### Added
+- Add the ability to set the endpoint version for Azure provider.
+
 ## 2.0.5 - 2024-08-11
 
 ### Changed
