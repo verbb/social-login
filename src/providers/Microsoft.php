@@ -3,12 +3,19 @@ namespace verbb\sociallogin\providers;
 
 use verbb\sociallogin\base\OAuthProvider;
 
+use Craft;
+
 use verbb\auth\providers\Microsoft as MicrosoftProvider;
 
 class Microsoft extends OAuthProvider
 {
     // Static Methods
     // =========================================================================
+
+    public static function displayName(): string
+    {
+        return Craft::t('social-login', 'Microsoft (Legacy)');
+    }
 
     public static function getOAuthProviderClass(): string
     {
