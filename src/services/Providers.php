@@ -74,6 +74,7 @@ class Providers extends Component
             providerTypes\Mastodon::class,
             providerTypes\Meetup::class,
             providerTypes\Microsoft::class,
+            providerTypes\MicrosoftEntra::class,
             providerTypes\Myob::class,
             providerTypes\NeonCrm::class,
             providerTypes\PayPal::class,
