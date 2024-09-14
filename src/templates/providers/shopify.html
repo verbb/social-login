@@ -3,9 +3,9 @@
 
 {% include 'social-login/providers/_oauth' %}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Shop Subdomain' | t('social-login'),
-    instructions: 'Enter your {provider} Shop Subdomain here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
     name: 'subdomain',
     required: true,
     suggestEnvVars: true,

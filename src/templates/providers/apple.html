@@ -9,16 +9,16 @@ To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-
     {{ instructions | t('social-login', { name: provider.name, plugin: 'Social Login' }) | md }}
 </div>
 
-{{ forms.textField({
+{{ macros.proxyField(fieldVariables, 'textField', {
     readonly: true,
     label: 'Redirect URI' | t('social-login'),
-    instructions: 'Use this URI when setting up your {provider} app.' | t('social-login', { provider: provider.name }),
+    instructions: 'Use this URI when setting up your {provider} app.' | t('social-login'),
     value: provider.getRedirectUri(),
 }) }}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Client ID' | t('social-login'),
-    instructions: 'Enter your {provider} Client ID key here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
     name: 'clientId',
     required: true,
     suggestEnvVars: true,
@@ -27,9 +27,9 @@ To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-
     errors: provider.getErrors('clientId'),
 }) }}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Team ID' | t('social-login'),
-    instructions: 'Enter your {provider} Team ID here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
     name: 'teamId',
     required: true,
     suggestEnvVars: true,
@@ -38,9 +38,9 @@ To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-
     errors: provider.getErrors('teamId'),
 }) }}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Key File ID' | t('social-login'),
-    instructions: 'Enter your {provider} Key File ID here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
     name: 'keyFileId',
     required: true,
     suggestEnvVars: true,
@@ -49,9 +49,9 @@ To connect to {name}, follow our <a href="https://verbb.io/craft-plugins/social-
     errors: provider.getErrors('keyFileId'),
 }) }}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Key File Path' | t('social-login'),
-    instructions: 'Enter your {provider} Key File Path here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
     name: 'keyFilePath',
     required: true,
     suggestEnvVars: true,

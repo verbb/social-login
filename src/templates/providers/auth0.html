@@ -3,9 +3,9 @@
 
 {% include 'social-login/providers/_oauth' %}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Region' | t('social-login'),
-    instructions: 'Enter your {provider} Region here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
     name: 'region',
     required: true,
     suggestEnvVars: true,
@@ -25,9 +25,9 @@
     errors: provider.getErrors('region'),
 }) }}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Account' | t('social-login'),
-    instructions: 'Enter your {provider} Account here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
     name: 'account',
     required: true,
     suggestEnvVars: true,
@@ -36,9 +36,9 @@
     errors: provider.getErrors('account'),
 }) }}
 
-{{ forms.autosuggestField({
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
     label: 'Custom Domain' | t('social-login'),
-    instructions: 'Enter your {provider} Custom Domain if using here.' | t('social-login', { provider: provider.name }),
+    instructions: 'Enter your {provider} {label} if using here.' | t('social-login'),
     name: 'customDomain',
     suggestEnvVars: true,
     value: provider.customDomain ?? '',

@@ -3,9 +3,9 @@
 
 {% include 'social-login/providers/_oauth' %}
 
-{{ forms.booleanMenuField({
+{{ macros.proxyField(fieldVariables, 'booleanMenuField', {
     label: 'Use Sandbox' | t('social-login'),
-    instructions: 'Whether to use the {provider} sandbox.' | t('social-login', { provider: provider.name }),
+    instructions: 'Whether to use the {provider} sandbox.' | t('social-login'),
     name: 'useSandbox',
     includeEnvVars: true,
     value: provider.useSandbox ?? false,

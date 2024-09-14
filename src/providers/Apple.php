@@ -74,6 +74,8 @@ class Apple extends OAuthProvider
 
     public function getSettingsHtml(): ?string
     {
+        $variables = $this->getSettingsHtmlVariables();
+
         $keyFilePaths = [];
         $path = Craft::$app->getPath()->getConfigPath() . DIRECTORY_SEPARATOR . 'social-login';
 
@@ -100,10 +102,9 @@ class Apple extends OAuthProvider
             ]];
         }
 
-        return Craft::$app->getView()->renderTemplate('social-login/providers/apple', [
-            'provider' => $this,
-            'suggestions' => $keyFilePaths,
-        ]);
+        $variables['suggestions'] = $keyFilePaths;
+
+        return Craft::$app->getView()->renderTemplate('social-login/providers/apple', $variables);
     }
 
     public function getOAuthProviderConfig(): array
