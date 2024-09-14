@@ -106,10 +106,20 @@ abstract class Provider extends SavableComponent implements ProviderInterface
     public function getSettingsHtml(): ?string
     {
         $handle = StringHelper::toKebabCase(static::$handle);
+        $variables = $this->getSettingsHtmlVariables();
 
-        return Craft::$app->getView()->renderTemplate('social-login/providers/' . $handle, [
+        return Craft::$app->getView()->renderTemplate('social-login/providers/' . $handle, $variables);
+    }
+
+    public function getSettingsHtmlVariables(): array
+    {
+        return [
             'provider' => $this,
-        ]);
+            'fieldVariables' => [
+                'plugin' => 'social-login',
+                'provider' => $this->name,
+            ],
+        ];
     }
 
     public function getPrimaryColor(): ?string

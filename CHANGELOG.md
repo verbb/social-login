@@ -73,6 +73,11 @@
 - Fix Salesforce provider.
 - Fix Apple provider not saving.
 
+## 1.0.20 - 2024-09-14
+
+### Added
+- Add Microsoft Entra provider.
+
 ## 1.0.19 - 2024-09-07
 
 ### Added
