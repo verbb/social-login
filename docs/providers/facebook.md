@@ -4,7 +4,12 @@ Follow the below steps to connect to the Facebook API.
 ## Connect to the Facebook API
 1. Go to the <a href="https://developers.facebook.com/apps/" target="_blank">Meta for Developers</a> page.
 1. Click the **Create App** button.
-1. Select **Other** and **Consumer** as the app type, and fill in the rest of the details.
+1. Select **I don’t want to connect a business portfolio yet.** and click the **Next** button.
+1. Select **Other** and click the **Next** button.
+1. Select **Consumer** and click the **Next** button.
+1. Fill in the **App Name** and **App Contact Email**. The **Business Portfolio** is optional.
+
+## Setup Facebook Login
 1. Once created, in the left-hand sidebar, click the **Add Product** button and select **Facebook Login**.
 1. Select **Web** as the type and your website address into **Site URL**.
 1. Navigate to **Facebook Login** section in the left-hand sidebar, click **Settings**.

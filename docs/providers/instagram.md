@@ -4,7 +4,12 @@ Follow the below steps to connect to the Instagram API.
 ### Connect to the Instagram API
 1. Go to the <a href="https://developers.facebook.com/apps/" target="_blank">Meta for Developers</a> page.
 1. Click the **Create App** button.
-1. Select **None** as the **App Type**, and fill in the rest of the details.
+1. Select **I don’t want to connect a business portfolio yet.** and click the **Next** button.
+1. Select **Other** and click the **Next** button.
+1. Select **Business** and click the **Next** button.
+1. Fill in the **App Name** and **App Contact Email**. The **Business Portfolio** is optional.
+
+### Setup Instagram Basic Display
 1. Once created, in the left-hand sidebar, click the **Add Product** button and select **Instagram Basic Display**.
 1. At the bottom of the page, click the **Create New App** button.
 1. Enter the name of your new Facebook app, and click the **Click Create App** button.
