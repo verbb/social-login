@@ -26,12 +26,13 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
             this.renderLoginForm($form);
         }
 
+
         // Setup session-ended login form. More involved becuase it's triggered via JS
         // So we need to watch for the dynamically-added element
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 mutation.addedNodes.forEach(function(addedNode) {
-                    if (addedNode.id === 'loginmodal') {
+                    if (self.hasClasses(addedNode, ['modal', 'login-modal', 'fitted'])) {
                         self.renderLoginModalForm(addedNode);
                     }
                 });
@@ -81,6 +82,15 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
             });
         });
     },
+
+    hasClasses(element, classes) {
+        if (!element || !element.classList) {
+            return false;
+        }
+
+        return classes.every(cls => element.classList.contains(cls));
+    },
+
 });
 
 })(jQuery);
