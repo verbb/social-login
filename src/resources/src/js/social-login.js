@@ -14,7 +14,7 @@ if (typeof Craft.SocialLogin === typeof undefined) {
 Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
     init: function(settings) {
         const self = this;
-        this.renderedLogin = false;
+
         this.html = '<div class="social-login-cp-container">' + settings.html + '</div>';
 
         this.bindSubmitButtons();
@@ -25,7 +25,6 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         if ($form.length) {
             this.renderLoginForm($form);
         }
-
 
         // Setup session-ended login form. More involved becuase it's triggered via JS
         // So we need to watch for the dynamically-added element
@@ -40,18 +39,28 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         });
 
         observer.observe(document.body, { childList: true, subtree: true });
+
+        // Easy debug for elevated session login
+        // setTimeout(function() {
+        //     Craft.elevatedSessionManager.showLoginModal();
+        // }, 2000)
     },
 
     renderLoginForm($form) {
+        // Only insert it once, as due to session-pinging, this can fire multiple times
+        if ($('.social-login-cp-container').length) {
+            return;
+        }
+
         $(this.html).insertAfter($form);
     },
 
     renderLoginModalForm(form) {
         const $loginModal = $(form);
-        const $wrapper = $loginModal.find('.body');
+        const $wrapper = $loginModal.find('.body .login-modal-form .login-container');
 
         // Only insert it once, as due to session-pinging, this can fire multiple times
-        if (this.renderedLogin) {
+        if ($('.social-login-cp-container').length) {
             return;
         }
 
@@ -60,8 +69,6 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         // Resize the modal to fit
         $loginModal.trigger('updateSizeAndPosition');
         $(window).trigger('resize');
-
-        this.renderedLogin = true;
     },
 
     bindSubmitButtons() {
