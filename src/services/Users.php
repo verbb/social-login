@@ -181,7 +181,7 @@ class Users extends Component
         // Some providers (Instagram) don't support emails, which is the bare-minimum requirement.
         if (!$user->email) {
             SocialLogin::error('Provider “{provider}” does not support emails, unable to create user.', ['provider' => $provider->handle]);
-            SocialLogin::error($userProfile->response);
+            SocialLogin::error(Json::encode($userProfile->response));
 
             return false;
         }
