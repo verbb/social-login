@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.8 - 2025-04-12
+
+### Fixed
+- Fix compatibility with Craft 5.2+ and the session-expired login modal.
+- Fix an error for some providers (GitHub, GitLab, PayPal).
+
 ## 2.0.7 - 2024-09-14
 
 ### Added
