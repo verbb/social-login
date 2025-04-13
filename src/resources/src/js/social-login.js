@@ -73,20 +73,28 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
 
     bindSubmitButtons() {
         // `click` doesn't seem to work in the login modal...
-        $(document).on('mouseup', 'button[data-social-provider]', function(e) {
+        $(document).on('mouseup', 'button[data-social-provider]', async function(e) {
             e.preventDefault();
 
             let $btn = $(e.currentTarget);
             let $form = $('form#x');
 
-            Craft.submitForm($form, {
+            // Ensure that we ping the session endpoint again to get a valid CSRF token, 
+            // as the previous session has ended, and the current token is invalid.
+            const { data } = await Craft.sendActionRequest('GET', 'users/session-info');
+
+            const payload = {
                 action: 'social-login/auth/login',
                 redirect: null,
                 params: {
                     loginName: Craft.username,
                     provider: $btn.data('social-provider'),
                 },
-            });
+            };
+
+            payload.params[data.csrfTokenName] = data.csrfTokenValue;
+
+            Craft.submitForm($form, payload);
         });
     },
 
