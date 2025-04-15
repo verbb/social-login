@@ -14,6 +14,6 @@ Be sure to use the **Azure** login provider, and not the Microsoft provider. The
 1. On the **Overview** page copy the **Application ID** from Microsoft and paste in the **Client ID** field in Social Login.
 1. Navigate to **Certificates & secrets** → **Client secrets**.
 1. Click the **New client secret** button.
-1. Copy the **Client Secret** from Microsoft and paste in the **Client Secret** field in Social Login.
+1. Copy the **Value** from Microsoft and paste in the **Client Secret** field in Social Login.
 
 

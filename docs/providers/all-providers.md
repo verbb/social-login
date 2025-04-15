@@ -187,7 +187,7 @@ Follow the below steps to connect to the Azure API.
 1. On the **Overview** page copy the **Application ID** from Azure and paste in the **Client ID** field in Social Login.
 1. Navigate to **Certificates & secrets** → **Client secrets**.
 1. Click the **New client secret** button.
-1. Copy the **Client Secret** from Azure and paste in the **Client Secret** field in Social Login.
+1. Copy the **Value** from Azure and paste in the **Client Secret** field in Social Login.
 
 
 ## Basecamp
