@@ -39,7 +39,7 @@ class Google extends OAuthProvider
 
         // Allow a proxy to our server to forward on the request - just for local dev ease
         if ($this->getProxyRedirect()) {
-            return "https://formie.verbb.io?return=$uri";
+            return "https://proxy.verbb.io?return=$uri";
         }
 
         return $uri;
