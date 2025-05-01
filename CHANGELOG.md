@@ -3,7 +3,7 @@
 ## 1.0.21 - 2025-05-01
 
 ### Fixed
-- Fix an error when logging errors for unsuported email providers.
+- Fix an error when logging errors for unsupported email providers.
 
 ## 1.0.20 - 2024-09-14
 
