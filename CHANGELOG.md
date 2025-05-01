@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.9 - 2025-05-01
+
+### Fixed
+- Fix an error when logging errors for unsupported email providers.
+- Fix status indicator for various UI elements.
+- Fix compatibility with Craft 5.2+ and the session-expired login modal.
+
 ## 2.0.8 - 2025-04-12
 
 ### Fixed
