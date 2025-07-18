@@ -91,6 +91,11 @@
 - Fix Salesforce provider.
 - Fix Apple provider not saving.
 
+## 1.0.22 - 2025-07-18
+
+### Changed
+- Update English translations.
+
 ## 1.0.21 - 2025-05-01
 
 ### Fixed
@@ -205,6 +210,7 @@
 - Fix some duplicated user profile field handles for some clients.
 
 ## 1.0.7 - 2023-10-05
+
 > {warning} If you are using LinkedIn, your LinkedIn app will need to now include the **Sign In with LinkedIn using OpenID Connect** product.
 
 ### Added
