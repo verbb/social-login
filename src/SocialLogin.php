@@ -53,7 +53,7 @@ class SocialLogin extends Plugin
         // Defer most setup tasks until Craft is fully initialized:
         Craft::$app->onInit(function() {
             // Check to register the plugin for CP login
-            $this->getService()->renderCpLogin();
+            // $this->getService()->renderCpLogin();
         });
     }
 

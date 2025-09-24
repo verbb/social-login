@@ -2,7 +2,7 @@
     "name": "verbb/social-login",
     "description": "Add SSO (Single Sign-On) user login, registration and connecting to social media platforms.",
     "type": "craft-plugin",
-    "version": "2.0.10",
+    "version": "3.0.0-alpha.1",
     "keywords": [
         "craft",
         "cms",
@@ -24,10 +24,10 @@
         }
     ],
     "require": {
-        "php": "^8.2",
-        "craftcms/cms": "^5.0.0",
-        "verbb/auth": "^2.0.22",
-        "verbb/base": "^3.0.4"
+        "php": "^8.4",
+        "craftcms/cms": "6.x-dev",
+        "verbb/auth": "dev-craft-6",
+        "verbb/base": "dev-craft-6"
     },
     "autoload": {
         "psr-4": {
@@ -37,7 +37,9 @@
     "extra": {
         "name": "Social Login",
         "handle": "social-login",
-        "changelogUrl": "https://raw.githubusercontent.com/verbb/social-login/craft-5/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/verbb/social-login/craft-6/CHANGELOG.md",
         "class": "verbb\\sociallogin\\SocialLogin"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
