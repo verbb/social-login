@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.11 - 2025-11-06
+
+### Changed
+- Bump `verbb/auth`.
+
 ## 2.0.10 - 2025-07-18
 
 ### Changed
