@@ -96,6 +96,11 @@
 - Fix Salesforce provider.
 - Fix Apple provider not saving.
 
+## 1.0.23 - 2025-11-06
+
+### Changed
+- Bump `verbb/auth`.
+
 ## 1.0.22 - 2025-07-18
 
 ### Changed

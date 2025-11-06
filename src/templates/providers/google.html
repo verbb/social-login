@@ -5,7 +5,7 @@
 
 {{ macros.proxyField(fieldVariables, 'booleanMenuField', {
     label: 'Proxy Redirect URI' | t('social-login'),
-    instructions: 'Whether to proxy the redirect URI through Verbb‘s servers. This should **only** be used for local testing. See [docs](https://verbb.io/craft-plugins/social-login/docs/feature-tour/providers#local-testing-proxy) for more.' | t('social-login') | md,
+    instructions: 'Whether to proxy the redirect URI through Verbb‘s servers. This should **only** be used for local testing. See [docs](https://verbb.io/craft-plugins/social-login/docs/providers/google#local-testing-proxy) for more.' | t('social-login') | md,
     name: 'proxyRedirect',
     includeEnvVars: true,
     value: provider.proxyRedirect ?? false,
