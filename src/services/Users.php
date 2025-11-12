@@ -61,6 +61,18 @@ class Users extends Component
             Craft::$app->getElements()->saveElement($user);
         }
 
+        // Check if the user is in a state that cannot login
+        if ($user && ($user->suspended || !$user->active || $user->locked)) {
+            SocialLogin::error('User “{email}” is not allowed to login. isSuspended: {suspended}, isActive: {active}, isLocked: {locked}', [
+                'email' => $user->email,
+                'suspended' => $user->suspended,
+                'active' => $user->active,
+                'locked' => $user->locked,
+            ]);
+
+            return false;
+        }
+
         // Are we resuming an already-logged in session (through the modal login)? Ensure that things match, 
         // otherwise we risk auto-logging into another account that doesn't match the email.
         if ($loginName = Session::get('loginName')) {
