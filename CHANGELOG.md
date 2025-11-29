@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.12 - 2025-11-29
+
+### Changed
+- Bump `verbb/auth`.
+
+### Fixed
+- Fix inactive users being able to login.
+
 ## 2.0.11 - 2025-11-06
 
 ### Changed
