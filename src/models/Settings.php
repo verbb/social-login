@@ -19,6 +19,7 @@ class Settings extends Model
     public bool $syncProfile = false;
     public bool $forceActivate = true;
     public bool $sendActivationEmail = true;
+    public ?string $redirectUri = null;
 
     public array $providers = [];
 

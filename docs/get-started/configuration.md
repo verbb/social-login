@@ -11,6 +11,7 @@ return [
         'enableLogin' => true,
         'enableCpLogin' => true,
         'cpLoginTemplate' => '',
+        'redirectUri' => null,
         'enableRegistration' => true,
         'forceActivate' => true,
         'sendActivationEmail' => true,
@@ -25,6 +26,7 @@ return [
 - `enableLogin` - Whether to enable social login for the front-end.
 - `enableCpLogin` - Whether to enable social login for the control panel.
 - `cpLoginTemplate` - Provide a custom template to render the social login icons for the control panel. Leave empty to use the default.
+- `redirectUri` - Optionally override the OAuth redirect URI for detached or multi-domain setups. This applies to all providers.
 - `enableRegistration` - Whether new users should be created if they don‘t already exist in Craft.
 - `forceActivate` - Whether new users should be automatically activated without verifying their email (despite your User settings).
 - `sendActivationEmail` - 'Whether an activation email should be sent to the user.
@@ -39,6 +41,13 @@ A collection of User Group UIDs should be provided.
 'userGroups' => [
     '2a99c0a5-3066-45dc-8168-ec7572041f2e',
 ],
+```
+
+### Redirect URI Override
+By default, Social Login will continue to use its legacy callback URI. If you need to use a different callback URI, such as for detached domains or an `/actions/...` callback, set `redirectUri` at the plugin level.
+
+```php
+'redirectUri' => 'https://craft.example.com/actions/social-login/auth/callback',
 ```
 
 ## Provider Settings

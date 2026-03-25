@@ -49,6 +49,17 @@
         }) }}
     </div>
 
+    {{ forms.autosuggestField({
+        label: 'Redirect URI Override' | t('social-login'),
+        instructions: 'Set the OAuth Redirect URI, if you need to change it from the default.' | t('social-login'),
+        id: 'redirectUri',
+        name: 'redirectUri',
+        suggestEnvVars: true,
+        value: settings.redirectUri,
+        errors: settings.getErrors('redirectUri'),
+        warning: macros.configWarning('redirectUri', 'social-login'),
+    }) }}
+
     {{ forms.lightswitchField({
         label: 'Enable User Registration' | t('social-login'),
         instructions: 'Whether new users should be created if they don‘t already exist in Craft.' | t('social-login'),
