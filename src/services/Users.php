@@ -249,6 +249,14 @@ class Users extends Component
             $user = $this->_syncUserProfile($provider, $user, $userProfile);
         }
 
+        if (
+            Session::get('isCpRequest') &&
+            $provider::supportsAdminRegistration() &&
+            $provider->allowAdminRegistration
+        ) {
+            $user->admin = true;
+        }
+
         return $user;
     }
 

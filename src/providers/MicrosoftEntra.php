@@ -23,6 +23,11 @@ class MicrosoftEntra extends OAuthProvider
         return true;
     }
 
+    public static function supportsAdminRegistration(): bool
+    {
+        return true;
+    }
+
     public static function getOAuthProviderClass(): string
     {
         return MicrosoftEntraProvider::class;

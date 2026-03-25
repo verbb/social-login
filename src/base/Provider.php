@@ -24,6 +24,11 @@ abstract class Provider extends SavableComponent implements ProviderInterface
         return true;
     }
 
+    public static function supportsAdminRegistration(): bool
+    {
+        return false;
+    }
+
     public static function log(Provider $provider, string $message, bool $throwError = false): void
     {
         SocialLogin::info($provider->name . ': ' . $message);
@@ -49,6 +54,7 @@ abstract class Provider extends SavableComponent implements ProviderInterface
     public bool $enabled = false;
     public bool $loginEnabled = true;
     public bool $cpLoginEnabled = false;
+    public bool $allowAdminRegistration = false;
     public string $matchUserSource = 'email';
     public string $matchUserDestination = 'email';
     public array $fieldMapping = [];
@@ -70,6 +76,7 @@ abstract class Provider extends SavableComponent implements ProviderInterface
         $attributes[] = 'matchUserDestination';
         $attributes[] = 'loginEnabled';
         $attributes[] = 'cpLoginEnabled';
+        $attributes[] = 'allowAdminRegistration';
         $attributes[] = 'fieldMapping';
 
         return $attributes;

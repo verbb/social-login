@@ -17,6 +17,11 @@ class Auth0 extends OAuthProvider
         return Auth0Provider::class;
     }
 
+    public static function supportsAdminRegistration(): bool
+    {
+        return true;
+    }
+
 
     // Properties
     // =========================================================================

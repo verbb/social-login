@@ -2,6 +2,7 @@
 
 return [
   'Account' => 'Account',
+  'Allow Admin Registration' => 'Allow Admin Registration',
   'Advanced' => 'Advanced',
   'Amazon Cognito' => 'Amazon Cognito',
   'An error occurred when logging in.' => 'An error occurred when logging in.',
@@ -81,6 +82,7 @@ return [
   'Use Sandbox' => 'Use Sandbox',
   'Use this URI when setting up your {provider} app.' => 'Use this URI when setting up your {provider} app.',
   'Whether an activation email should be sent to the user.' => 'Whether an activation email should be sent to the user.',
+  'Whether newly-registered users should be created as admins when they first sign in to the control panel with this provider.' => 'Whether newly-registered users should be created as admins when they first sign in to the control panel with this provider.',
   'Whether existing users should have their profiles synced with the provider on subsequent logins.' => 'Whether existing users should have their profiles synced with the provider on subsequent logins.',
   'Whether new users have their profile populated from providers. This can be fine-tuned with field mapping for each provider.' => 'Whether new users have their profile populated from providers. This can be fine-tuned with field mapping for each provider.',
   'Whether new users should be created if they don‘t already exist in Craft.' => 'Whether new users should be created if they don‘t already exist in Craft.',

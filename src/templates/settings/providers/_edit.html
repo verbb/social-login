@@ -215,8 +215,20 @@
             id: 'cpLoginEnabled',
             name: 'cpLoginEnabled',
             on: provider.cpLoginEnabled,
+            toggle: provider.supportsAdminRegistration() and craft.socialLogin.getPlugin().settings.enableRegistration ? 'admin-registration' : null,
         }) }}
     </div>
+
+    {% if provider.supportsAdminRegistration() and craft.socialLogin.getPlugin().settings.enableRegistration %}
+        <div id="admin-registration" class="meta {{ not provider.cpLoginEnabled ? 'hidden' }}">
+            {{ forms.lightswitchField({
+                label: 'Allow Admin Registration' | t('social-login'),
+                id: 'allowAdminRegistration',
+                name: 'allowAdminRegistration',
+                on: provider.allowAdminRegistration,
+            }) }}
+        </div>
+    {% endif %}
 {% else %}
     <p class="warning with-icon">{{ 'This provider does not support login or registration. It can only be used to link existing user accounts.' | t('social-login') }}</p>
 {% endif %}

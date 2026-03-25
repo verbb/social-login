@@ -18,6 +18,11 @@ class AmazonCognito extends OAuthProvider
         return Craft::t('social-login', 'Amazon Cognito');
     }
 
+    public static function supportsAdminRegistration(): bool
+    {
+        return true;
+    }
+
     public static function getOAuthProviderClass(): string
     {
         return AmazonCognitoProvider::class;

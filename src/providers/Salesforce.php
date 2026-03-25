@@ -18,6 +18,11 @@ class Salesforce extends OAuthProvider
         return SalesforceProvider::class;
     }
 
+    public static function supportsAdminRegistration(): bool
+    {
+        return true;
+    }
+
     
     // Properties
     // =========================================================================
