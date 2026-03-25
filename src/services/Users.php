@@ -78,10 +78,10 @@ class Users extends Component
         if ($loginName = Session::get('loginName')) {
             $resumingUser = Craft::$app->getUsers()->getUserByUsernameOrEmail($loginName);
 
-            if ($resumingUser !== $user->email) {
-                SocialLogin::error('Tried to resume session for “{email1}”, but did not match “{email2}”.', [
-                    'email1' => $resumingUser,
-                    'email2' => $user->email,
+            if (!$resumingUser || $resumingUser->id !== $user->id) {
+                SocialLogin::error('Tried to resume session for “{expected}”, but authenticated as “{actual}”.', [
+                    'expected' => $resumingUser?->email ?? $loginName,
+                    'actual' => $user->email,
                 ]);
 
                 return false;
