@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.13 - 2026-03-28
+
+### Added
+- Add the ability for some providers to allow admin registration.
+- Add the ability to override the default Redirect URI as a plugin setting.
+
+### Fixed
+- Fix an error when trying to resume a session for a user.
+
 ## 2.0.12 - 2025-11-29
 
 ### Changed
