@@ -118,6 +118,11 @@
 - Fix Salesforce provider.
 - Fix Apple provider not saving.
 
+## 1.0.25 - 2026-05-03
+
+### Changed
+- Bump `verbb/auth` to allow `firebase/php-jwt` 7.x.
+
 ## 1.0.24 - 2025-11-29
 
 ### Changed
