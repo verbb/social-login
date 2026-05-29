@@ -2,7 +2,7 @@
 Rather than requiring your users to register a Craft user account, you can offer them to login with their existing account with a social media provider. It's a pretty common pattern these days to allow users to login to a website with their Facebook, Apple, Twitter or Google account. Social Login makes this a breeze.
 
 :::warning
-Not all providers support authenticating a user to allow them to login on your site. This is due to provider API limitations or their T&C's for using their APIs. Instead, you can use them to [connect](docs:feature=tour/connecting) an existing Craft account.
+Not all providers support authenticating a user to allow them to login on your site. This is due to provider API limitations or their T&C's for using their APIs. Instead, you can use them to [connect](docs:feature-tour/connecting) an existing Craft account.
 :::
 
 ## Front-end Login
