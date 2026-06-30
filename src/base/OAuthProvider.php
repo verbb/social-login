@@ -39,7 +39,12 @@ abstract class OAuthProvider extends Provider implements OAuthProviderInterface
 
     public function getRedirectUri(): ?string
     {
-        return RedirectUri::getCallbackUri(SocialLogin::$plugin->getSettings()->redirectUri, 'social-login/auth/callback', true);
+        return RedirectUri::getCallbackUri(
+            SocialLogin::$plugin->getSettings()->redirectUri,
+            'social-login/auth/callback',
+            useActionInHeadless: true,
+            useCpUrlWhenDetached: false,
+        );
     }
 
     public function getAuthorizationUrlOptions(): array
