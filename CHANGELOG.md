@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.15 - 2026-07-15
+
+### Changed
+- Bump `verbb/auth`.
+
+### Fixed
+- Fix front-end login failing on detached CP installs.
+
 ## 2.0.14 - 2026-05-03
 
 ### Changed
