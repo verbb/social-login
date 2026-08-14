@@ -27,7 +27,9 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         }
 
         // Setup session-ended login form. More involved becuase it's triggered via JS
-        // So we need to watch for the dynamically-added element
+        // So we need to watch for the dynamically-added element.
+        // Note: Craft's elevated-session ("Confirm your identity") modal shares the same
+        // `modal login-modal fitted` classes, but SSO cannot satisfy password elevation.
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 mutation.addedNodes.forEach(function(addedNode) {
@@ -39,11 +41,6 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         });
 
         observer.observe(document.body, { childList: true, subtree: true });
-
-        // Easy debug for elevated session login
-        // setTimeout(function() {
-        //     Craft.elevatedSessionManager.showLoginModal();
-        // }, 2000)
     },
 
     renderLoginForm($form) {
@@ -59,6 +56,12 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         const $loginModal = $(form);
         const $wrapper = $loginModal.find('.body .login-modal-form .login-container');
 
+        // Skip elevated-session reauth; keep SSO for session-expired re-login only.
+        // The "Keep me signed in" warning uses different classes and is ignored above.
+        if (this.isElevatedSessionModal($loginModal)) {
+            return;
+        }
+
         // Only insert it once, as due to session-pinging, this can fire multiple times
         if ($('.social-login-cp-container').length) {
             return;
@@ -69,6 +72,17 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         // Resize the modal to fit
         $loginModal.trigger('updateSizeAndPosition');
         $(window).trigger('resize');
+    },
+
+    isElevatedSessionModal($loginModal) {
+        if (Craft.elevatedSessionManager && Craft.elevatedSessionManager.showingLoginModal) {
+            return true;
+        }
+
+        // Fallback for translated heading Craft renders for elevated reauth
+        const heading = $loginModal.find('.login-modal-intro h1').text().trim();
+
+        return heading === Craft.t('app', 'Confirm your identity.');
     },
 
     bindSubmitButtons() {
