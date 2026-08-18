@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fix control panel social login not respecting the “Stay signed in” checkbox.
+
 ## 2.0.15 - 2026-07-15
 
 ### Changed

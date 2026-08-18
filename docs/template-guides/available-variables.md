@@ -17,7 +17,7 @@ Returns a collection of all control panel login-enabled [Provider](docs:develope
 Returns a [Provider](docs:developers/provider) for the provided handle.
 
 ### `craft.socialLogin.getLoginUrl(handle, options)`
-Returns the login URL for the provider.
+Returns the login URL for the provider. Pass `rememberMe: 1` in `options` to use Craft’s remembered session duration.
 
 ### `craft.socialLogin.getConnectUrl(handle, options)`
 Returns the connect URL for the provider.

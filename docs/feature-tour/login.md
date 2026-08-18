@@ -28,6 +28,30 @@ Here, this will output a link (or a form) that when clicked, will redirect away 
 
 Once authenticated with the provider, they'll be returned back to your website. If there's a Craft user account that matches the email with the remote provider account, then they'll automatically be logged in.
 
+### Remember Me
+By default, social login uses Craft’s `userSessionDuration` (1 hour unless you’ve changed it). To use the longer “Stay signed in” duration (`rememberedUserSessionDuration`), pass a `rememberMe` param.
+
+::: code
+```twig URL
+<a href="{{ craft.socialLogin.getLoginUrl('facebook', { rememberMe: 1 }) }}">Login to Facebook</a>
+```
+
+```twig Form
+<form method="POST">
+    {{ csrfInput() }}
+    {{ actionInput('social-login/auth/login') }}
+    {{ hiddenInput('provider', 'facebook') }}
+
+    <label>
+        <input type="checkbox" name="rememberMe" value="1">
+        Stay signed in
+    </label>
+
+    <button type="submit">Login to Facebook</button>
+</form>
+```
+:::
+
 :::tip
 What if the user doesn't have an account already? [User Registration](docs:feature-tour/registration) can help with that.
 :::
@@ -59,6 +83,8 @@ You can change this behaviour by specifying a redirect. Be sure to use the `hash
 You can allow your users to login to the control panel of Craft if you like! Buttons will be added below the main control panel login form as an alternative for users to login. Of course, these users will require user permissions to be able to access the control panel as well.
 
 They'll also be added to the "session ended" modal login form that pops up after a certain number of minutes of inactivity.
+
+If **Stay signed in** is checked on the control panel login form, social login will use the same persistent session duration as a normal Craft login.
 
 ### Template
 Social Login will create the buttons to login for you, but you also have full control over how the buttons look. Set the **Control Panel Login Template** setting to a template in your `templates` folder, and go for it. Here's a quick example:

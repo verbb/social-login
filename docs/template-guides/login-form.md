@@ -20,3 +20,11 @@ It would also be common to list out all your enabled login providers.
     <a href="{{ craft.socialLogin.getLoginUrl(provider.handle) }}">Login to {{ provider.name }}</a>
 {% endfor %}
 ```
+
+To persist the session (Craft’s “Stay signed in” / Remember Me duration), pass `rememberMe`:
+
+```twig
+<a href="{{ craft.socialLogin.getLoginUrl('facebook', { rememberMe: 1 }) }}">Login to Facebook</a>
+```
+
+Or include a `rememberMe` checkbox on a POST login form.

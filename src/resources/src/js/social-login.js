@@ -86,6 +86,8 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
     },
 
     bindSubmitButtons() {
+        const self = this;
+
         // `click` doesn't seem to work in the login modal...
         $(document).on('mouseup', 'button[data-social-provider]', async function(e) {
             e.preventDefault();
@@ -106,10 +108,26 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
                 },
             };
 
+            if (self.getRememberMe($btn)) {
+                payload.params.rememberMe = 1;
+            }
+
             payload.params[data.csrfTokenName] = data.csrfTokenValue;
 
             Craft.submitForm($form, payload);
         });
+    },
+
+    getRememberMe($btn) {
+        // Craft's CP checkbox uses class `login-remember-me` without a name.
+        // Front-end (and some custom CP templates) use `name="rememberMe"`.
+        const $checkbox = $btn
+            .closest('.login-container, .login-modal-form, body')
+            .find('.login-remember-me, input[name="rememberMe"]')
+            .filter(':checkbox')
+            .first();
+
+        return $checkbox.length ? !!$checkbox.prop('checked') : false;
     },
 
     hasClasses(element, classes) {
