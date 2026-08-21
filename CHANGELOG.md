@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## 2.0.16 - 2026-08-20
 
 ### Fixed
 - Fix control panel social login not respecting the “Stay signed in” checkbox.
+- Fix SSO buttons appearing in Craft’s elevated-session “Confirm your identity” modal. #58.
 
 ## 2.0.15 - 2026-07-15
 
