@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fix SSO buttons still appearing in Craft’s elevated-session “Confirm your identity” modal (including after validation errors and during MFA). #58.
+
 ## 2.0.16 - 2026-08-20
 
 ### Fixed

@@ -30,6 +30,7 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         // So we need to watch for the dynamically-added element.
         // Note: Craft's elevated-session ("Confirm your identity") modal shares the same
         // `modal login-modal fitted` classes, but SSO cannot satisfy password elevation.
+        // Only inject into the session-expired re-login modal.
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 mutation.addedNodes.forEach(function(addedNode) {
@@ -53,25 +54,70 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
     },
 
     renderLoginModalForm(form) {
+        const self = this;
         const $loginModal = $(form);
-        const $wrapper = $loginModal.find('.body .login-modal-form .login-container');
 
-        // Skip elevated-session reauth; keep SSO for session-expired re-login only.
-        // The "Keep me signed in" warning uses different classes and is ignored above.
-        if (this.isElevatedSessionModal($loginModal)) {
+        // Craft finishes modal setup (flags, intro copy, LoginForm) across the same turn /
+        // fade-in. Evaluate immediately and again on the next frame so we don't inject into
+        // elevated-session / MFA screens, and so we can strip a premature insert.
+        const tryRender = function() {
+            if (self.isElevatedSessionModal($loginModal)) {
+                self.removeSocialLoginFromModal($loginModal);
+                self.watchElevatedModal($loginModal);
+                return;
+            }
+
+            // Only session-expired re-login can use SSO from this modal.
+            if (!self.isSessionEndedModal($loginModal)) {
+                return;
+            }
+
+            if ($loginModal.find('.social-login-cp-container').length) {
+                return;
+            }
+
+            const $wrapper = $loginModal.find('.body .login-modal-form .login-container');
+
+            if (!$wrapper.length) {
+                return;
+            }
+
+            $(self.html).insertAfter($wrapper);
+
+            // Resize the modal to fit
+            $loginModal.trigger('updateSizeAndPosition');
+            $(window).trigger('resize');
+        };
+
+        tryRender();
+        requestAnimationFrame(tryRender);
+    },
+
+    removeSocialLoginFromModal($loginModal) {
+        const $sso = $loginModal.find('.social-login-cp-container');
+
+        if (!$sso.length) {
             return;
         }
 
-        // Only insert it once, as due to session-pinging, this can fire multiple times
-        if ($('.social-login-cp-container').length) {
-            return;
-        }
-
-        $(this.html).insertAfter($wrapper);
-
-        // Resize the modal to fit
+        $sso.remove();
         $loginModal.trigger('updateSizeAndPosition');
         $(window).trigger('resize');
+    },
+
+    watchElevatedModal($loginModal) {
+        if (!$loginModal.length || $loginModal.data('socialLoginElevatedWatch')) {
+            return;
+        }
+
+        $loginModal.data('socialLoginElevatedWatch', true);
+
+        const self = this;
+        const observer = new MutationObserver(function() {
+            self.removeSocialLoginFromModal($loginModal);
+        });
+
+        observer.observe($loginModal.get(0), { childList: true, subtree: true });
     },
 
     isElevatedSessionModal($loginModal) {
@@ -80,9 +126,19 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         }
 
         // Fallback for translated heading Craft renders for elevated reauth
-        const heading = $loginModal.find('.login-modal-intro h1').text().trim();
+        return this.modalHeadingEquals($loginModal, Craft.t('app', 'Confirm your identity.'));
+    },
 
-        return heading === Craft.t('app', 'Confirm your identity.');
+    isSessionEndedModal($loginModal) {
+        // Session-expired modal may use widont (nbsp before last word)
+        return this.modalHeadingEquals($loginModal, Craft.t('app', 'Your session has ended.'));
+    },
+
+    modalHeadingEquals($loginModal, expected) {
+        const heading = $loginModal.find('.login-modal-intro h1').text().replace(/\s+/g, ' ').trim();
+        const normalized = String(expected || '').replace(/\s+/g, ' ').trim();
+
+        return !!heading && heading === normalized;
     },
 
     bindSubmitButtons() {
