@@ -15,7 +15,11 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
     init: function(settings) {
         const self = this;
 
-        this.html = '<div class="social-login-cp-container">' + settings.html + '</div>';
+        this.settings = $.extend({
+            enableCpElevatedLogin: false,
+        }, settings);
+
+        this.html = '<div class="social-login-cp-container">' + this.settings.html + '</div>';
 
         this.bindSubmitButtons();
 
@@ -61,14 +65,16 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         // fade-in. Evaluate immediately and again on the next frame so we don't inject into
         // elevated-session / MFA screens, and so we can strip a premature insert.
         const tryRender = function() {
-            if (self.isElevatedSessionModal($loginModal)) {
+            const isElevated = self.isElevatedSessionModal($loginModal);
+
+            if (isElevated && !self.settings.enableCpElevatedLogin) {
                 self.removeSocialLoginFromModal($loginModal);
                 self.watchElevatedModal($loginModal);
                 return;
             }
 
-            // Only session-expired re-login can use SSO from this modal.
-            if (!self.isSessionEndedModal($loginModal)) {
+            // Session-expired re-login always supports SSO; elevated reauth is opt-in via config.
+            if (!isElevated && !self.isSessionEndedModal($loginModal)) {
                 return;
             }
 

@@ -88,6 +88,7 @@ class Service extends Component
                     $view->registerAssetBundle(SocialLoginAsset::class);
                     $view->registerJs('new Craft.SocialLogin.CpLoginForm(' . Json::encode([
                         'html' => $html,
+                        'enableCpElevatedLogin' => $settings->enableCpElevatedLogin,
                     ]) . ');');
                 }
             }

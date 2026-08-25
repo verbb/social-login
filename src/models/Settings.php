@@ -12,6 +12,7 @@ class Settings extends Model
 
     public bool $enableLogin = true;
     public bool $enableCpLogin = true;
+    public bool $enableCpElevatedLogin = false;
     public string $cpLoginTemplate = '';
     public bool $enableRegistration = true;
     public array $userGroups = [];

@@ -10,6 +10,7 @@ return [
     '*' => [
         'enableLogin' => true,
         'enableCpLogin' => true,
+        'enableCpElevatedLogin' => false,
         'cpLoginTemplate' => '',
         'redirectUri' => null,
         'enableRegistration' => true,
@@ -25,6 +26,7 @@ return [
 ## Configuration Options
 - `enableLogin` - Whether to enable social login for the front-end.
 - `enableCpLogin` - Whether to enable social login for the control panel.
+- `enableCpElevatedLogin` - Whether to show social login in Craft’s elevated-session “Confirm your identity” modal. Disabled by default because SSO cannot satisfy password elevation and may discard unsaved CP changes when redirecting to a provider. Enable only if you need the legacy behaviour. #58
 - `cpLoginTemplate` - Provide a custom template to render the social login icons for the control panel. Leave empty to use the default.
 - `redirectUri` - Optionally override the OAuth redirect URI for detached or multi-domain setups. This applies to all providers.
 - `enableRegistration` - Whether new users should be created if they don‘t already exist in Craft.
