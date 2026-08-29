@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.17 - 2026-08-29
 
 ### Added
 - Add `enableCpElevatedLogin` config setting to opt back into SSO buttons in Craft’s elevated-session “Confirm your identity” modal. #58.
