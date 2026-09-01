@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fix SSO buttons being clipped in Craft’s session-expired login modal by resizing the Garnish modal after inject. #58.
+
 ## 2.0.17 - 2026-08-29
 
 ### Added

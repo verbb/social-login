@@ -79,6 +79,8 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
             }
 
             if ($loginModal.find('.social-login-cp-container').length) {
+                // Already injected (e.g. previous rAF); still remeasure in case Craft sized first.
+                self.resizeModal($loginModal);
                 return;
             }
 
@@ -89,10 +91,8 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
             }
 
             $(self.html).insertAfter($wrapper);
-
-            // Resize the modal to fit
-            $loginModal.trigger('updateSizeAndPosition');
-            $(window).trigger('resize');
+            self.resizeModal($loginModal);
+            self.bindModalResize($loginModal);
         };
 
         tryRender();
@@ -107,8 +107,56 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
         }
 
         $sso.remove();
-        $loginModal.trigger('updateSizeAndPosition');
-        $(window).trigger('resize');
+        this.resizeModal($loginModal);
+    },
+
+    /**
+     * Garnish.Modal locks an explicit height during show()/fadeIn. Triggering a jQuery
+     * "updateSizeAndPosition" event on the DOM node is a no-op — call the Modal instance
+     * (same pattern as Craft.LoginForm.onResize) so session-expired SSO isn't clipped.
+     */
+    resizeModal($loginModal) {
+        const modal = $loginModal.data('modal');
+
+        if (!modal || typeof modal.updateSizeAndPosition !== 'function') {
+            if (typeof Garnish !== 'undefined' && Garnish.$win) {
+                Garnish.$win.trigger('resize');
+            } else {
+                $(window).trigger('resize');
+            }
+            return;
+        }
+
+        const update = function() {
+            modal.updateSizeAndPosition();
+        };
+
+        if (typeof Garnish !== 'undefined' && Garnish.requestAnimationFrame) {
+            Garnish.requestAnimationFrame(update);
+        } else {
+            requestAnimationFrame(update);
+        }
+    },
+
+    bindModalResize($loginModal) {
+        if ($loginModal.data('socialLoginResizeBound')) {
+            return;
+        }
+
+        const modal = $loginModal.data('modal');
+
+        if (!modal || typeof modal.on !== 'function') {
+            return;
+        }
+
+        $loginModal.data('socialLoginResizeBound', true);
+
+        const self = this;
+
+        // show() measures before our MutationObserver runs; fadeIn remeasures afterward.
+        modal.on('fadeIn', function() {
+            self.resizeModal($loginModal);
+        });
     },
 
     watchElevatedModal($loginModal) {
