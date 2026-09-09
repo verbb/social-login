@@ -3,20 +3,14 @@
 {% import '_includes/forms' as forms %}
 {% import 'verbb-base/_macros' as macros %}
 
-{% set selectedNavItem = 'general' %}
 {% set fullPageForm = true %}
+{% set selectedTab = 'general' %}
+{% set pageTitle = 'General Settings' | t('social-login') %}
+{% set pageAction = 'social-login/settings/save-settings' %}
+{% set pageUrl = 'social-login/settings' %}
 
-{% block content %}
-
-<h2>{{ 'General Settings' | t('social-login') }}</h2>
-
-{{ actionInput('social-login/settings/save-settings') }}
-{{ redirectInput('social-login/settings') }}
-{{ csrfInput() }}
-
-{% namespace 'settings' %}
+{% block settingsContent %}
     {{ forms.lightswitchField({
-        first: true,
         label: 'Enable Social Login' | t('social-login'),
         instructions: 'Whether to enable social login for the front-end.' | t('social-login'),
         name: 'enableLogin',
@@ -126,6 +120,4 @@
             warning: macros.configWarning('userGroups', 'social-login'),
         }) }}
     </div>
-{% endnamespace %}
-
 {% endblock %}

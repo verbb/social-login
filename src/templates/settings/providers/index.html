@@ -1,16 +1,12 @@
-{% extends 'social-login/_layouts' %}
+{% extends 'social-login/_layouts/settings' %}
 
 {% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
 
-{% set crumbs = [
-    { label: 'Social Login' | t('social-login'), url: url('social-login/settings') },
-    { label: 'Providers' | t('social-login'), url: url('social-login/settings/providers') }
-] %}
+{% set selectedTab = 'providers' %}
+{% set pageTitle = 'Providers' | t('social-login') %}
 
-{% block blockContent %}
-
-<div id="providers-vue-admin-table"></div>
-
+{% block settingsContent %}
+    <div id="providers-vue-admin-table"></div>
 {% endblock %}
 
 {% set tableData = [] %}
