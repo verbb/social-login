@@ -3,7 +3,7 @@
 {% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
 
 {% set selectedTab = 'providers' %}
-{% set pageTitle = 'Providers' | t('social-login') %}
+{% set title = 'Providers' | t('social-login') %}
 
 {% block settingsContent %}
     <div id="providers-vue-admin-table"></div>
@@ -61,7 +61,7 @@
 
     new Craft.VueAdminTable({
         columns: columns,
-        container: '#providers-vue-admin-table',
+        container: '#{{ 'providers-vue-admin-table' | namespaceInputId('settings') }}',
         emptyMessage: Craft.t('social-login', 'No providers exist yet.'),
         tableData: {{ tableData | json_encode | raw }},
     });

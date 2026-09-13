@@ -7,6 +7,9 @@
 - Updated documentation for clearer, more consistent guidance.
 - Clarified optional PHP configuration with focused examples and linkable setting details.
 
+### Fixed
+- Fix the providers admin table after settings normalization.
+
 ## 2.0.19 - 2026-09-13
 
 ### Changed
