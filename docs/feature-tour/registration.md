@@ -7,7 +7,7 @@ This requires Craft Pro, which adds support for multiple users.
 Not all providers support authenticating a user to allow them to register on your site. This is due to provider API limitations or their T&C's for using their APIs. Instead, you can use them to [connect](docs:feature-tour/connecting) an existing Craft account.
 :::
 
-## Front-end Registration
+## Front-End Registration
 You don't need to adjust anything to your front-end templates. When the user returns from the offsite provider, they'll be auto-registered and logged into their new account. A new User element will be created, populated by their user profile from the provider.
 
 ## Control Panel Registration
@@ -37,3 +37,9 @@ For example, you might be mapping the provider ID to a custom field, and you wan
 
 ## User Groups
 You can also select any default User Groups newly registered users should be included to. This is in addition to the Craft **Default User Group** user setting.
+
+## Test a New Account
+
+Use a provider account whose email does not already belong to a Craft user. Follow the login link from a logged-out browser, approve the provider request and return to the site. Check the new user in Craft: its email, mapped fields, group membership and activation status should match your settings.
+
+Sign out and repeat with the same provider account. This should find the existing user rather than create another one. Test account connection separately while signed in, using [Connecting](docs:feature-tour/connecting); it should attach the provider to that user. These checks cover three different outcomes even though all three may visit the provider's authorisation screen.

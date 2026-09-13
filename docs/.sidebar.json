@@ -37,7 +37,8 @@
         "title": "Template Guides",
         "collapsable": false,
         "children": [
-            "template-guides/available-variables",
+            "template-guides/displaying-login-options",
+            "template-guides/managing-account-connections",
             "template-guides/login-form"
         ]
     },

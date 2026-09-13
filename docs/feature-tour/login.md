@@ -5,7 +5,7 @@ Rather than requiring your users to register a Craft user account, you can offer
 Not all providers support authenticating a user to allow them to login on your site. This is due to provider API limitations or their T&C's for using their APIs. Instead, you can use them to [connect](docs:feature-tour/connecting) an existing Craft account.
 :::
 
-## Front-end Login
+## Front-End Login
 Adding a social login to the front-end of your site couldn't be easier!
 
 ::: code

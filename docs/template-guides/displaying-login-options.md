@@ -1,5 +1,8 @@
-# Available Variables
-The following methods are available to call in your Twig templates:
+# Displaying Login Options
+
+Offer providers that are enabled for the relevant login surface. A provider being configured does not automatically make it available for front-end or control-panel login.
+
+## Calls Used in This Task
 
 ### `craft.socialLogin.getProviders()`
 Returns a collection of all [Provider](docs:developers/provider) objects.
@@ -19,20 +22,3 @@ Returns a [Provider](docs:developers/provider) for the provided handle.
 ### `craft.socialLogin.getLoginUrl(handle, options)`
 Returns the login URL for the provider. Pass `rememberMe: 1` in `options` to use Craft’s remembered session duration.
 
-### `craft.socialLogin.getConnectUrl(handle, options)`
-Returns the connect URL for the provider.
-
-### `craft.socialLogin.getDisconnectUrl(handle, options)`
-Returns the disconnect URL for the provider.
-
-### `craft.socialLogin.isConnected(handle)`
-Returns the whether the provider is connected or not.
-
-### `craft.socialLogin.getError()`
-Returns any flash errors.
-
-### `craft.socialLogin.getNotice()`
-Returns any flash notices.
-
-### `craft.socialLogin.getSuccess()`
-Returns any flash successes.

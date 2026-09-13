@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- Align documentation filenames with page titles and update internal links.
+- Updated documentation for clearer, more consistent guidance.
+- Clarified optional PHP configuration with focused examples and linkable setting details.
+
 ## 2.0.19 - 2026-09-13
 
 ### Changed

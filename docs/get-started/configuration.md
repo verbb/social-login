@@ -1,40 +1,109 @@
 # Configuration
-Create a `social-login.php` file under your `/config` directory with the following options available to you. You can also use multi-environment options to change these per environment.
 
-The below shows the defaults already used by Social Login, so you don't need to add these options unless you want to modify the values.
+You can customise Social Login’s settings using a PHP configuration file. This is optional: each setting has a default, so you only need to include the values you want to change.
+
+To override a setting, create `social-login.php` in your Craft project’s `/config` directory and return an array of setting names and values. For example, the following will disable social login in the control panel:
 
 ```php
 <?php
 
 return [
-    '*' => [
-        'enableLogin' => true,
-        'enableCpLogin' => true,
-        'enableCpElevatedLogin' => false,
-        'cpLoginTemplate' => '',
-        'redirectUri' => null,
-        'enableRegistration' => true,
-        'forceActivate' => true,
-        'sendActivationEmail' => true,
-        'userGroups' => [],
-        'populateProfile' => true,
-        'providers' => [],
-    ]
+    'enableCpLogin' => false,
 ];
 ```
 
+All other settings keep their defaults. Add any further settings you want to change to the same array. The options below explain the available settings and their defaults.
+
 ## Configuration Options
-- `enableLogin` - Whether to enable social login for the front-end.
-- `enableCpLogin` - Whether to enable social login for the control panel.
-- `enableCpElevatedLogin` - Whether to show social login in Craft’s elevated-session “Confirm your identity” modal. Disabled by default because SSO cannot satisfy password elevation and may discard unsaved CP changes when redirecting to a provider. Enable only if you need the legacy behaviour. #58
-- `cpLoginTemplate` - Provide a custom template to render the social login icons for the control panel. Leave empty to use the default.
-- `redirectUri` - Optionally override the OAuth redirect URI for detached or multi-domain setups. This applies to all providers.
-- `enableRegistration` - Whether new users should be created if they don‘t already exist in Craft.
-- `forceActivate` - Whether new users should be automatically activated without verifying their email (despite your User settings).
-- `sendActivationEmail` - 'Whether an activation email should be sent to the user.
-- `userGroups` - Choose which user groups to assign new users to.
-- `populateProfile` - Whether new users have their profile populated from providers. This can be fine-tuned with field mapping for each provider.
-- `providers` - A collection of settings for a provider.
+
+::: reference
+### `enableLogin`
+
+**Type:** `bool` · **Default:** `true`
+
+Whether to enable social login for the front-end.
+:::
+
+::: reference
+### `enableCpLogin`
+
+**Type:** `bool` · **Default:** `true`
+
+Whether to enable social login for the control panel.
+:::
+
+::: reference
+### `enableCpElevatedLogin`
+
+**Type:** `bool` · **Default:** `false`
+
+Whether to show social login in Craft’s elevated-session “Confirm your identity” modal. Disabled by default because SSO cannot satisfy password elevation and may discard unsaved CP changes when redirecting to a provider. Enable only if you need the legacy behaviour. #58
+:::
+
+::: reference
+### `cpLoginTemplate`
+
+**Type:** `string` · **Default:** `''`
+
+Provide a custom template to render the social login icons for the control panel. Leave empty to use the default.
+:::
+
+::: reference
+### `redirectUri`
+
+**Type:** `string|null` · **Default:** `null`
+
+Optionally override the OAuth redirect URI for detached or multi-domain setups. This applies to all providers.
+:::
+
+::: reference
+### `enableRegistration`
+
+**Type:** `bool` · **Default:** `true`
+
+Whether new users should be created if they don‘t already exist in Craft.
+:::
+
+::: reference
+### `forceActivate`
+
+**Type:** `bool` · **Default:** `true`
+
+Whether new users should be automatically activated without verifying their email (despite your User settings).
+:::
+
+::: reference
+### `sendActivationEmail`
+
+**Type:** `bool` · **Default:** `true`
+
+'Whether an activation email should be sent to the user.
+:::
+
+::: reference
+### `userGroups`
+
+**Type:** `array` · **Default:** `[]`
+
+Choose which user groups to assign new users to.
+:::
+
+::: reference
+### `populateProfile`
+
+**Type:** `bool` · **Default:** `true`
+
+Whether new users have their profile populated from providers. This can be fine-tuned with field mapping for each provider.
+:::
+
+::: reference
+### `providers`
+
+**Type:** `array` · **Default:** `[]`
+
+A collection of settings for a provider.
+:::
+
 
 ### User Groups
 A collection of User Group UIDs should be provided.

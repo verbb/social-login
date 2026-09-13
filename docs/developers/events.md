@@ -3,7 +3,7 @@ Social Login provides a collection of events for extending its functionality. Mo
 
 ## User Events
 
-### The `beforeLogin` event
+### The `beforeLogin` Event
 The event that is triggered before a user is logged in.
 
 ```php
@@ -19,7 +19,7 @@ Event::on(Users::class, Users::EVENT_BEFORE_LOGIN, function(UserEvent $event) {
 });
 ```
 
-### The `afterLogin` event
+### The `afterLogin` Event
 The event that is triggered after a user is logged in.
 
 ```php
@@ -35,7 +35,7 @@ Event::on(Users::class, Users::EVENT_AFTER_LOGIN, function(UserEvent $event) {
 });
 ```
 
-### The `beforeRegister` event
+### The `beforeRegister` Event
 The event that is triggered before a user is registered.
 
 ```php
@@ -51,7 +51,7 @@ Event::on(Users::class, Users::EVENT_BEFORE_REGISTER, function(UserEvent $event)
 });
 ```
 
-### The `afterRegister` event
+### The `afterRegister` Event
 The event that is triggered after a user is registered.
 
 ```php
@@ -70,7 +70,7 @@ Event::on(Users::class, Users::EVENT_AFTER_REGISTER, function(UserEvent $event) 
 
 ## Connection Events
 
-### The `beforeSaveConnection` event
+### The `beforeSaveConnection` Event
 The event that is triggered before a connection is saved.
 
 ```php
@@ -85,7 +85,7 @@ Event::on(Connections::class, Connections::EVENT_BEFORE_SAVE_CONNECTION, functio
 });
 ```
 
-### The `afterSaveConnection` event
+### The `afterSaveConnection` Event
 The event that is triggered after a connection is saved.
 
 ```php
@@ -100,7 +100,7 @@ Event::on(Connections::class, Connections::EVENT_AFTER_SAVE_CONNECTION, function
 });
 ```
 
-### The `beforeDeleteConnection` event
+### The `beforeDeleteConnection` Event
 The event that is triggered before a connection is deleted.
 
 ```php
@@ -114,7 +114,7 @@ Event::on(Connections::class, Connections::EVENT_BEFORE_DELETE_CONNECTION, funct
 });
 ```
 
-### The `afterDeleteConnection` event
+### The `afterDeleteConnection` Event
 The event that is triggered after a connection is deleted.
 
 ```php
