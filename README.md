@@ -1,13 +1,16 @@
 <p align="center"><img src="https://assets.verbb.io/plugins/social-login/social-login-icon.svg" width="100" height="100" alt="Social Login icon"></p>
 <h1 align="center">Social Login for Craft CMS</h1>
 
-Social Login adds SSO (Single Sign-On) capabilities to your Craft site to let your users login or register via their own social media accounts like Facebook, Google, Microsoft, Apple and loads more. It's also a handy plugin to use when you want to "connect" user accounts to these providers, along with helpers for calling APIs.
+Social Login is a Craft CMS plugin that adds SSO (Single Sign-On) capabilities to your site to let your users login or register via their own social media accounts like Facebook, Google, Microsoft, Apple and loads more. It's also a handy plugin to use when you want to "connect" user accounts to these providers, along with helpers for calling APIs.
 
 ## Features
 - Support for 60+ social media providers.
 - Let your users login with social media accounts.
 - Supports registering new users if they don't already exist.
 - Mapping content from your social media accounts to your Craft user profiles.
+- Match an existing Craft user by email or another mapped user attribute.
+- Assign newly registered users to nominated Craft user groups.
+- Control Craft account activation and whether an activation email is sent.
 - Works for front-end or control panel logins.
 - Connect existing users to social media accounts. Think adding a "Connect" button to their account.
 - Full control over templating with how login buttons look.
@@ -16,6 +19,7 @@ Social Login adds SSO (Single Sign-On) capabilities to your Craft site to let yo
 
 ## Supported Providers
 - [Amazon](https://amazon.com)
+- [Amazon Cognito](https://aws.amazon.com/cognito/)
 - [Apple](https://apple.com)
 - [Auth0](https://auth0.com)
 - [Azure](https://azure.microsoft.com)
@@ -34,13 +38,15 @@ Social Login adds SSO (Single Sign-On) capabilities to your Craft site to let yo
 - [Facebook](https://facebook.com)
 - [Fitbit](https://fitbit.com)
 - [Foursquare](https://foursquare.com)
+- [FreeAgent](https://www.freeagent.com/)
 - [GitHub](https://github.com)
 - [GitLab](https://gitlab.com)
 - [Google](https://google.com)
 - [Gumroad](https://gumroad.com)
-- [Harvest](https://getharest.com)
+- [Harvest](https://www.getharvest.com/)
 - [Heroku](https://heroku.com)
 - [HubSpot](https://hubspot.com)
+- [IdentityServer4](https://identityserver4.readthedocs.io/)
 - [Imgur](https://imgur.com)
 - [Instagram](https://instagram.com)
 - [Jira](https://jira.com)
@@ -51,11 +57,14 @@ Social Login adds SSO (Single Sign-On) capabilities to your Craft site to let yo
 - [Mastodon](https://mastodon.social)
 - [Meetup](https://meetup.com)
 - [Microsoft](https://microsoft.com)
+- [Microsoft Entra](https://www.microsoft.com/en-au/security/business/identity-access/microsoft-entra-id)
 - [Myob](https://myob.com)
+- [Neon CRM](https://www.neonone.com/products/neon-crm/)
 - [PayPal](https://paypal.com)
 - [Pinterest](https://pinterest.com)
 - [Pipedrive](https://pipedrive.com)
 - [Reddit](https://reddit.com)
+- [Salesforce](https://salesforce.com)
 - [Shopify](https://shopify.com)
 - [Slack](https://slack.com)
 - [Snapchat](https://snapchat.com)
@@ -65,6 +74,7 @@ Social Login adds SSO (Single Sign-On) capabilities to your Craft site to let yo
 - [StackExchange](https://stackexchange.com)
 - [Strava](https://strava.com)
 - [Stripe](https://stripe.com)
+- [Telegram](https://telegram.org)
 - [TikTok](https://tiktok.com)
 - [Trello](https://trello.com)
 - [Tumblr](https://tumblr.com)
@@ -75,7 +85,7 @@ Social Login adds SSO (Single Sign-On) capabilities to your Craft site to let yo
 - [Vimeo](https://vimeo.com)
 - [Vkontakte](https://vk.com)
 - [WeChat](https://wechat.com)
-- [Yahoo](https://yahoo.com)
+- [Yahoo](https://www.yahoo.com/)
 - [Zendesk](https://zendesk.com)
 - [Zoho](https://zoho.com)
 
