@@ -9,6 +9,7 @@ use craft\web\Controller;
 use yii\web\Response;
 
 use verbb\auth\Auth;
+use verbb\auth\helpers\Redirect;
 use verbb\auth\helpers\Session;
 
 use Throwable;
@@ -37,13 +38,14 @@ class AuthController extends Controller
     public function actionLogin(): Response
     {
         $providerHandle = $this->request->getRequiredParam('provider');
+        $returnUrl = Redirect::safeReferrer($this->request->getReferrer());
 
         try {
             if (!($provider = SocialLogin::$plugin->getProviders()->getProviderByHandle($providerHandle))) {
                 Session::setError('social-login', Craft::t('social-login', "Unable to find provider “{provider}”.", ['provider' => $providerHandle]));
 
                 // We might be triggering this via a URL, not a POST request, so always redirect
-                return $this->redirect($this->request->getReferrer());
+                return $this->redirect($returnUrl);
             }
 
             // Redirect to the provider platform to login and authorize
@@ -65,7 +67,7 @@ class AuthController extends Controller
             Session::setError('social-login', Craft::t('social-login', "Unable to authorize login for “{provider}”.", ['provider' => $providerHandle]));
 
             // Redirect back as a failure
-            return $this->redirect($this->request->getReferrer());
+            return $this->redirect($returnUrl);
         }
     }
 
@@ -144,32 +146,33 @@ class AuthController extends Controller
     {
         $providerHandle = $this->request->getRequiredParam('provider');
         $currentUser = Craft::$app->getUser()->getIdentity();
+        $returnUrl = Redirect::safeReferrer($this->request->getReferrer());
 
         if (!$currentUser) {
             Session::setError('social-login', Craft::t('social-login', 'User not logged in.'));
 
             // We might be triggering this via a URL, not a POST request, so always redirect
-            return $this->redirect($this->request->getReferrer());
+            return $this->redirect($returnUrl);
         }
 
         if (!($provider = SocialLogin::$plugin->getProviders()->getProviderByHandle($providerHandle))) {
             Session::setError('social-login', Craft::t('social-login', "Unable to find provider “{provider}”.", ['provider' => $providerHandle]));
 
             // We might be triggering this via a URL, not a POST request, so always redirect
-            return $this->redirect($this->request->getReferrer());
+            return $this->redirect($returnUrl);
         }
 
         if (!SocialLogin::$plugin->getConnections()->deleteConnectionByUserAndProvider($currentUser->id, $providerHandle)) {
             Session::setError('social-login', Craft::t('social-login', 'Unable to disconnect.'));
 
             // We might be triggering this via a URL, not a POST request, so always redirect
-            return $this->redirect($this->request->getReferrer());
+            return $this->redirect($returnUrl);
         }
 
         Session::setNotice('social-login', Craft::t('social-login', '{provider} disconnected.', ['provider' => $provider->getName()]));
 
         // We might be triggering this via a URL, not a POST request, so always redirect
-        return $this->redirect($this->request->getReferrer());
+        return $this->redirect($returnUrl);
     }
 
 }

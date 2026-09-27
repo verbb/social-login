@@ -7,6 +7,7 @@
 
 ### Fixed
 - Fixed OAuth callback transaction validation.
+- Fixed OAuth login and disconnect accepting unsigned external return URLs.
 
 ## 2.0.20 - 2026-09-14
 
