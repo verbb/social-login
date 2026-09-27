@@ -34,13 +34,31 @@ class Users extends Component
     // Public Methods
     // =========================================================================
 
-    public function loginOrRegisterUser(Provider $provider, Token $token): bool
+    public function loginOrRegisterUser(Provider $provider, Token $token, ?int $initiatingUserId = null): bool
     {
         // Get the remote user profile
         $userProfile = $provider->getUserProfile($token);
 
         // With the user authenticated, login or register
-        $user = Craft::$app->getUser()->getIdentity();
+        $currentUser = Craft::$app->getUser()->getIdentity();
+
+        if ($currentUser && $currentUser->id !== $initiatingUserId) {
+            SocialLogin::error('OAuth login was started by a different Craft user.');
+
+            return false;
+        }
+
+        if (!$currentUser && $initiatingUserId) {
+            $user = Craft::$app->getUsers()->getUserById($initiatingUserId);
+        } else {
+            $user = $currentUser;
+        }
+
+        if ($initiatingUserId && !$user) {
+            SocialLogin::error('Unable to find the Craft user who started the OAuth login.');
+
+            return false;
+        }
 
         // Fetch plugin settings
         $settings = SocialLogin::$plugin->getSettings();

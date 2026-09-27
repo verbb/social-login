@@ -46,19 +46,14 @@ class AuthController extends Controller
                 return $this->redirect($this->request->getReferrer());
             }
 
-            // Keep track of which provider instance is for, so we can fetch it in the callback
-            Session::set('providerHandle', $providerHandle);
-
-            // Allow users to store data to be saved for later
-            Session::set('data', $this->request->getParam('data'));
-
-            // Keep track of CP requests and if resuming a session
-            Session::set('isCpRequest', $this->request->getIsCpRequest());
-            Session::set('loginName', $this->request->getParam('loginName'));
-            Session::set('rememberMe', $this->request->getParam('rememberMe'));
-
             // Redirect to the provider platform to login and authorize
-            return Auth::getInstance()->getOAuth()->connect('social-login', $provider);
+            return Auth::getInstance()->getOAuth()->connect('social-login', $provider, $providerHandle, [
+                'providerHandle' => $providerHandle,
+                'data' => $this->request->getParam('data'),
+                'isCpRequest' => $this->request->getIsCpRequest(),
+                'loginName' => $this->request->getParam('loginName'),
+                'rememberMe' => $this->request->getParam('rememberMe'),
+            ]);
         } catch (Throwable $e) {
             SocialLogin::error('Unable to authorize login for “{provider}”: “{message}” {file}:{line}', [
                 'provider' => $providerHandle,
@@ -76,8 +71,13 @@ class AuthController extends Controller
 
     public function actionCallback(): Response
     {
-        // Restore the session data that we saved before authorization redirection from the cache back to session
-        Session::restoreSession($this->request->getParam('state'));
+        $oauth = Auth::getInstance()->getOAuth();
+
+        if ($response = $oauth->prepareCallback('social-login')) {
+            return $response;
+        }
+
+        $transaction = $oauth->claimCallback('social-login');
 
         // Get both the origin (failure) and redirect (success) URLs
         $origin = Session::get('origin');
@@ -98,7 +98,7 @@ class AuthController extends Controller
 
         try {
             // Fetch the access token from the provider and create a Token for us to use
-            $token = Auth::getInstance()->getOAuth()->callback('social-login', $provider);
+            $token = $oauth->callback('social-login', $provider, $providerHandle);
 
             if (!$token) {
                 Session::setError('social-login', Craft::t('social-login', 'Unable to fetch token.'));
@@ -107,7 +107,7 @@ class AuthController extends Controller
             }
 
             // Handle the login or registration of the user
-            if (!SocialLogin::$plugin->getUsers()->loginOrRegisterUser($provider, $token)) {
+            if (!SocialLogin::$plugin->getUsers()->loginOrRegisterUser($provider, $token, $transaction['initiatingUserId'])) {
                 Session::setError('social-login', Craft::t('social-login', 'An error occurred when logging in.'));
 
                 return $this->redirect($origin);
