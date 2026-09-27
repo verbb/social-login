@@ -2,14 +2,12 @@
 namespace verbb\sociallogin\controllers;
 
 use verbb\sociallogin\SocialLogin;
-use verbb\sociallogin\models\Settings;
-
-use Craft;
-use craft\web\Controller;
 
 use yii\web\Response;
 
-class SettingsController extends Controller
+use verbb\base\controllers\SettingsController as BaseSettingsController;
+
+class SettingsController extends BaseSettingsController
 {
     // Public Methods
     // =========================================================================
@@ -23,42 +21,16 @@ class SettingsController extends Controller
         ]);
     }
 
-    public function actionSaveSettings(): ?Response
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function prepareSubmittedSettings(array $settings): array
     {
-        $this->requirePostRequest();
+        // Preserve provider configuration when the general settings form is saved.
+        $settings['providers'] = SocialLogin::$plugin->getSettings()->getProviderSettings();
 
-        /* @var Settings $settings */
-        $settings = SocialLogin::$plugin->getSettings();
-        $settings->setAttributes($this->request->getParam('settings'), false);
-
-        // Ensure we don't override provider settings
-        $settings->providers = SocialLogin::$plugin->getSettings()->getProviderSettings();
-
-        if (!$settings->validate()) {
-            Craft::$app->getSession()->setError(Craft::t('social-login', 'Couldn’t save settings.'));
-
-            Craft::$app->getUrlManager()->setRouteParams([
-                'settings' => $settings,
-            ]);
-
-            return null;
-        }
-
-        $pluginSettingsSaved = Craft::$app->getPlugins()->savePluginSettings(SocialLogin::$plugin, $settings->toArray());
-
-        if (!$pluginSettingsSaved) {
-            Craft::$app->getSession()->setError(Craft::t('social-login', 'Couldn’t save settings.'));
-
-            Craft::$app->getUrlManager()->setRouteParams([
-                'settings' => $settings,
-            ]);
-
-            return null;
-        }
-
-        Craft::$app->getSession()->setNotice(Craft::t('social-login', 'Settings saved.'));
-
-        return $this->redirectToPostedUrl();
+        return $settings;
     }
 
 }
