@@ -67,6 +67,8 @@ Whether the provider is enabled for control panel login.
 **Type:** `string`
 
 The handle of the field (from the provider API) to use when matching an existing Craft user.
+
+Automatic first-time matching accepts `email` when the provider confirms that address, or `id` for the provider's stable account identifier. After the connection is created, Social Login uses the stored provider identifier rather than repeating profile-field matching.
 :::
 
 ::: reference
@@ -75,6 +77,8 @@ The handle of the field (from the provider API) to use when matching an existing
 **Type:** `string`
 
 The handle of the field (in Craft) to use when matching an existing Craft user.
+
+Provider ID matching is case-sensitive and exact. Verified email matching follows Craft's normal email comparison. Either match must resolve to one Craft user. If the provider cannot confirm an email, have the user sign in locally and connect the provider instead.
 :::
 
 ::: reference

@@ -628,6 +628,7 @@ Follow the below steps to connect to the Salesforce API.
     - Untick **Require Secret for Refresh Token Flow**.
 1. Click the **Save** button.
 1. Copy the **Consumer Key** from Salesforce and paste in the **Client ID** field in Social Login.
+
 1. Copy the **Consumer Secret** from Salesforce and paste in the **Client Secret** field in Social Login.
 1. Click on the **Manage** button.
 1. Click on the **Edit Policies** button.
@@ -638,6 +639,8 @@ Follow the below steps to connect to the Salesforce API.
 1. In the **Session Policies** section:
     - Untick **High assurance session required**.
 1. Click the **Save** button.
+
+If you enable automatic administrator registration, set **Expected Organization ID** to the Salesforce organization that is allowed to create Craft administrators.
 
 
 ## Shopify

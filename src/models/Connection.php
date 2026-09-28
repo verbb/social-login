@@ -20,6 +20,7 @@ class Connection extends Model
     public ?int $userId = null;
     public ?string $providerHandle = null;
     public ?string $identifier = null;
+    public ?string $identityKey = null;
 
     private ?User $_user = null;
 
@@ -30,6 +31,13 @@ class Connection extends Model
     public function __toString(): string
     {
         return (string)$this->identifier;
+    }
+
+    public static function identityKey(string $providerHandle, string $identifier): string
+    {
+        $value = strlen($providerHandle) . ':' . $providerHandle . strlen($identifier) . ':' . $identifier;
+
+        return hash('sha256', $value);
     }
 
     public function getLoginProvider(): ?ProviderInterface
@@ -44,10 +52,10 @@ class Connection extends Model
     public function getUser(): ?User
     {
         if ($this->_user === null && $this->userId) {
-            return $this->_user = Craft::$app->getUsers()->getUserById($this->userId);
+            $this->_user = Craft::$app->getUsers()->getUserById($this->userId);
         }
 
-        return null;
+        return $this->_user;
     }
 
     public function getToken(): ?Token

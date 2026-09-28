@@ -3,9 +3,11 @@ namespace verbb\sociallogin\providers;
 
 use verbb\sociallogin\base\OAuthProvider;
 
+use Craft;
 use craft\helpers\App;
 
 use verbb\auth\providers\Azure as AzureProvider;
+use verbb\auth\models\UserProfile;
 
 class Azure extends OAuthProvider
 {
@@ -68,6 +70,31 @@ class Azure extends OAuthProvider
             'upn',
             'tenant',
         ];
+    }
+
+    public function canRegisterAdmin(UserProfile $userProfile): bool
+    {
+        $tenant = strtolower(trim((string)$this->getTenant()));
+
+        return parent::canRegisterAdmin($userProfile) && $tenant !== '' && !in_array($tenant, ['common', 'organizations', 'consumers'], true);
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['tenant'], function($attribute) {
+            $tenant = strtolower(trim((string)$this->getTenant()));
+
+            if ($this->allowAdminRegistration && ($tenant === '' || in_array($tenant, ['common', 'organizations', 'consumers'], true))) {
+                $this->addError($attribute, Craft::t('social-login', 'A specific tenant is required for administrator registration.'));
+            }
+        }];
+
+        return $rules;
     }
 
 }

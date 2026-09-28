@@ -7,6 +7,7 @@ use Craft;
 use craft\helpers\App;
 
 use verbb\auth\providers\MicrosoftEntra as MicrosoftEntraProvider;
+use verbb\auth\models\UserProfile;
 
 class MicrosoftEntra extends OAuthProvider
 {
@@ -79,6 +80,31 @@ class MicrosoftEntra extends OAuthProvider
             'mobilePhone',
             'businessPhone',
         ];
+    }
+
+    public function canRegisterAdmin(UserProfile $userProfile): bool
+    {
+        $tenant = strtolower(trim((string)$this->getTenant()));
+
+        return parent::canRegisterAdmin($userProfile) && $tenant !== '' && !in_array($tenant, ['common', 'organizations', 'consumers'], true);
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['tenant'], function($attribute) {
+            $tenant = strtolower(trim((string)$this->getTenant()));
+
+            if ($this->allowAdminRegistration && ($tenant === '' || in_array($tenant, ['common', 'organizations', 'consumers'], true))) {
+                $this->addError($attribute, Craft::t('social-login', 'A specific tenant is required for administrator registration.'));
+            }
+        }];
+
+        return $rules;
     }
 
 }

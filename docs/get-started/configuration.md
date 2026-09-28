@@ -69,7 +69,7 @@ Whether new users should be created if they don‘t already exist in Craft.
 
 **Type:** `bool` · **Default:** `true`
 
-Whether new users should be automatically activated without verifying their email (despite your User settings).
+Whether new users should be automatically activated when the provider confirms ownership of their email. Accounts with an unverified or unknown email remain inactive and follow Craft's activation flow.
 :::
 
 ::: reference
@@ -171,3 +171,7 @@ return [
     ],
 ];
 ```
+
+First-time matching accepts `email` only when the provider confirms ownership of that address. Use `id` for providers where you deliberately map the provider's stable account identifier to a Craft user field. Returning users are identified by the stored provider connection.
+
+When enabling automatic administrator registration for Azure or Microsoft Entra, configure a specific tenant rather than `common`, `organizations`, or `consumers`. Salesforce requires its `expectedOrganizationId` provider setting so an account from another organization cannot create a Craft administrator.

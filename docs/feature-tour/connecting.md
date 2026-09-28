@@ -1,6 +1,8 @@
 # Connecting
 Connecting links a provider account to someone who is already signed in to Craft. It differs from login, which signs someone into an existing account, and registration, which creates a Craft account.
 
+The same provider account can be connected to only one Craft user. Connecting uses the signed-in Craft account as the authority, so it remains available for providers that do not supply a verified email or do not support login.
+
 For example, an existing Craft user might like to visit their account page on the front-end of the site, and connect their GitHub account. They could click a button to authenticate and link their GitHub account with their Craft user account on your site.
 
 Once connected, you could make requests to GitHub's API for all manner of things. One example being showing the number of followers or repositories a user might have.

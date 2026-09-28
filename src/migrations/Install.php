@@ -17,6 +17,7 @@ class Install extends Migration
         Auth::getInstance()->migrator->up();
 
         $this->createTables();
+        $this->createIndexes();
         $this->addForeignKeys();
 
         return true;
@@ -41,6 +42,7 @@ class Install extends Migration
             'userId' => $this->integer()->notNull(),
             'providerHandle' => $this->string(64)->notNull(),
             'identifier' => $this->string()->notNull(),
+            'identityKey' => $this->char(64)->notNull(),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid(),
@@ -50,6 +52,11 @@ class Install extends Migration
     public function addForeignKeys(): void
     {
         $this->addForeignKey(null, '{{%social_login_connections}}', 'userId', '{{%users}}', 'id', 'CASCADE', null);
+    }
+
+    public function createIndexes(): void
+    {
+        $this->createIndex('social_login_identity_key_unq', '{{%social_login_connections}}', ['identityKey'], true);
     }
 
     public function removeTables(): void

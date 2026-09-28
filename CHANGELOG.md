@@ -3,9 +3,13 @@
 ## Unreleased
 
 ### Changed
+- Identify returning users by their provider connection, and limit first-time account matching to a verified email or provider ID.
+- Enforce one Craft user per provider account. Existing cross-user connection conflicts must be resolved before the plugin migration can finish.
+- Require a specific Azure or Microsoft Entra tenant, or an expected Salesforce organization, for automatic administrator registration.
 - Route plugin settings through the plugin’s authorized settings controller.
 
 ### Fixed
+- Fixed a high-severity account-linking vulnerability.
 - Fixed OAuth callback transaction validation.
 - Fixed OAuth login and disconnect accepting unsigned external return URLs.
 

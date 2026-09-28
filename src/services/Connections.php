@@ -17,6 +17,9 @@ use yii\base\Component;
 use verbb\auth\Auth;
 use verbb\auth\models\Token;
 
+use RuntimeException;
+use Throwable;
+
 class Connections extends Component
 {
     // Constants
@@ -67,18 +70,32 @@ class Connections extends Component
         return ArrayHelper::firstValue($this->getAllConnectionsForUserAndProvider($userId, $providerHandle));
     }
 
+    public function getAllConnectionsByProviderIdentifier(string $providerHandle, string $identifier): array
+    {
+        $rows = $this->_createConnectionQuery()
+            ->where(['identityKey' => Connection::identityKey($providerHandle, $identifier)])
+            ->all();
+
+        return array_map(fn(array $row) => new Connection($row), $rows);
+    }
+
     public function upsertConnection(Connection $connection, Token $token): bool
     {
         if (!$connection->id) {
-            $matchedConnection = ConnectionRecord::findOne([
-                'userId' => $connection->userId,
-                'providerHandle' => $connection->providerHandle,
-                'identifier' => $connection->identifier,
-            ]);
+            $matchedConnections = $this->getAllConnectionsByProviderIdentifier($connection->providerHandle, $connection->identifier);
 
-            if ($matchedConnection) {
-                $connection->id = $matchedConnection->id;
+            foreach ($matchedConnections as $matchedConnection) {
+                if ($matchedConnection->userId !== $connection->userId) {
+                    SocialLogin::error('Provider identity “{provider}:{identifier}” is already connected to another user.', [
+                        'provider' => $connection->providerHandle,
+                        'identifier' => $connection->identifier,
+                    ]);
+
+                    return false;
+                }
             }
+
+            $connection->id = $matchedConnections[0]->id ?? null;
         }
 
         return $this->saveConnection($connection, $token);
@@ -101,30 +118,48 @@ class Connections extends Component
             return false;
         }
 
-        $connectionRecord = $this->_getConnectionRecordById($connection->id);
-        $connectionRecord->userId = $connection->userId;
-        $connectionRecord->providerHandle = $connection->providerHandle;
-        $connectionRecord->identifier = $connection->identifier;
+        try {
+            $saved = Craft::$app->getDb()->transaction(function() use ($connection, $token, $isNewConnection) {
+                $connectionRecord = $this->_getConnectionRecordById($connection->id);
+                $connectionRecord->userId = $connection->userId;
+                $connectionRecord->providerHandle = $connection->providerHandle;
+                $connectionRecord->identifier = $connection->identifier;
+                $connectionRecord->identityKey = Connection::identityKey($connection->providerHandle, $connection->identifier);
 
-        $connectionRecord->save(false);
+                if (!$connectionRecord->save(false)) {
+                    throw new RuntimeException('Connection record could not be saved.');
+                }
 
-        if (!$connection->id) {
-            $connection->id = $connectionRecord->id;
+                if (!$connection->id) {
+                    $connection->id = $connectionRecord->id;
+                }
+
+                $token->reference = $connection->id;
+
+                if (!Auth::getInstance()->getTokens()->upsertToken($token)) {
+                    throw new RuntimeException('OAuth token could not be saved.');
+                }
+
+                if ($this->hasEventHandlers(self::EVENT_AFTER_SAVE_CONNECTION)) {
+                    $this->trigger(self::EVENT_AFTER_SAVE_CONNECTION, new ConnectionEvent([
+                        'connection' => $connection,
+                        'isNew' => $isNewConnection,
+                    ]));
+                }
+
+                return true;
+            });
+        } catch (Throwable $e) {
+            SocialLogin::error('Unable to save login connection: {message}', ['message' => $e->getMessage()]);
+
+            return false;
         }
 
-        // Fire an 'afterSaveConnection' event
-        if ($this->hasEventHandlers(self::EVENT_AFTER_SAVE_CONNECTION)) {
-            $this->trigger(self::EVENT_AFTER_SAVE_CONNECTION, new ConnectionEvent([
-                'connection' => $connection,
-                'isNew' => $isNewConnection,
-            ]));
+        if ($saved) {
+            $this->_connections = null;
         }
 
-        // We should also create or update the OAuth token. Use the connection as a reference.
-        $token->reference = $connection->id;
-        Auth::getInstance()->getTokens()->upsertToken($token);
-
-        return true;
+        return $saved;
     }
 
     public function deleteConnectionById(int $connectionId): bool
@@ -204,6 +239,7 @@ class Connections extends Component
                 'userId',
                 'providerHandle',
                 'identifier',
+                'identityKey',
             ])
             ->from(['{{%social_login_connections}}']);
     }

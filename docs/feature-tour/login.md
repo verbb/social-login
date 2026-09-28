@@ -26,7 +26,7 @@ Adding a social login to the front-end of your site couldn't be easier!
 
 Here, this will output a link (or a form) that when clicked, will redirect away from your website to the provider's website to login there. Their login details are never shared or known to your website.
 
-Once authenticated with the provider, they'll be returned back to your website. If there's a Craft user account that matches the email with the remote provider account, then they'll automatically be logged in.
+Once authenticated with the provider, they'll be returned to your website. Returning users are identified by the provider account connection created during their first successful login or an explicit connection. For a provider account without an existing connection, Social Login can match an existing Craft user by verified email or by the provider's stable account ID, according to the provider settings.
 
 ### Remember Me
 By default, social login uses Craft’s `userSessionDuration` (1 hour unless you’ve changed it). To use the longer “Stay signed in” duration (`rememberedUserSessionDuration`), pass a `rememberMe` param.

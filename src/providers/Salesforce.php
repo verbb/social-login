@@ -6,6 +6,7 @@ use verbb\sociallogin\base\OAuthProvider;
 use craft\helpers\App;
 
 use verbb\auth\models\Token;
+use verbb\auth\models\UserProfile;
 use verbb\auth\providers\Salesforce as SalesforceProvider;
 
 class Salesforce extends OAuthProvider
@@ -29,6 +30,7 @@ class Salesforce extends OAuthProvider
 
     public static string $handle = 'salesforce';
     public ?string $apiDomain = null;
+    public ?string $expectedOrganizationId = null;
     public bool|string $useSandbox = false;
 
 
@@ -38,6 +40,29 @@ class Salesforce extends OAuthProvider
     public function getUseSandbox(): string
     {
         return App::parseBooleanEnv($this->useSandbox);
+    }
+
+    public function getExpectedOrganizationId(): ?string
+    {
+        return App::parseEnv($this->expectedOrganizationId);
+    }
+
+    public function settingsAttributes(): array
+    {
+        return array_merge(parent::settingsAttributes(), ['expectedOrganizationId']);
+    }
+
+    public function canRegisterAdmin(UserProfile $userProfile): bool
+    {
+        $expectedOrganizationId = $this->getExpectedOrganizationId();
+        $organizationId = $userProfile->organizationId;
+
+        return parent::canRegisterAdmin($userProfile) && $expectedOrganizationId && is_string($organizationId) && hash_equals($expectedOrganizationId, $organizationId);
+    }
+
+    public function getUserProfileFields(): array
+    {
+        return ['organizationId'];
     }
 
     public function getApiDomain(): string
@@ -74,6 +99,18 @@ class Salesforce extends OAuthProvider
         ];
         
         return $options;
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['expectedOrganizationId'], 'required', 'when' => fn() => $this->allowAdminRegistration];
+
+        return $rules;
     }
 
 }

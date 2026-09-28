@@ -3,6 +3,16 @@
 
 {% include 'social-login/providers/_oauth' %}
 
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
+    label: 'Expected Organization ID' | t('social-login'),
+    instructions: 'The only Salesforce organization allowed to create Craft administrators.' | t('social-login'),
+    name: 'expectedOrganizationId',
+    suggestEnvVars: true,
+    value: provider.expectedOrganizationId ?? '',
+    warning: macros.configWarning("providers.#{provider.handle}.expectedOrganizationId", 'social-login'),
+    errors: provider.getErrors('expectedOrganizationId'),
+}) }}
+
 {{ macros.proxyField(fieldVariables, 'booleanMenuField', {
     label: 'Use Sandbox' | t('social-login'),
     instructions: 'Whether to use the {provider} sandbox.' | t('social-login'),

@@ -24,7 +24,7 @@ class Service extends Component
         $options['provider'] = $handle;
 
         if ($provider = SocialLogin::$plugin->getProviders()->getProviderByHandle($handle)) {
-            if ($provider->enabled && $provider::supportsLogin()) {
+            if ($provider->canLogin(Craft::$app->getRequest()->getIsCpRequest())) {
                 return UrlHelper::actionUrl('social-login/auth/login', $options);
             }
         }

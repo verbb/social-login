@@ -100,7 +100,7 @@
                                             <select name="matchUserSource">
                                                 <option value="">{{ 'Don’t Include' | t('social-login') }}</option>
 
-                                                {% for profileField in provider.getUserProfileOptions() %}
+                                                {% for profileField in provider.getUserMatchSourceOptions() %}
                                                     {% set selected = matchUserSource == profileField.value ? 'selected' %}
 
                                                     <option {{ selected }} value="{{ profileField.value }}">{{ profileField.label | t('social-login') }}</option>

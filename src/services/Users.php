@@ -12,8 +12,10 @@ use Craft;
 use craft\base\Component;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Db;
 use craft\helpers\Json;
 
+use RuntimeException;
 use Throwable;
 
 use verbb\auth\helpers\Session;
@@ -34,66 +36,91 @@ class Users extends Component
     // Public Methods
     // =========================================================================
 
-    public function loginOrRegisterUser(Provider $provider, Token $token, ?int $initiatingUserId = null): bool
+    public function loginOrRegisterUser(Provider $provider, Token $token, ?int $initiatingUserId = null, bool $isConnect = false): bool
     {
-        // Get the remote user profile
         $userProfile = $provider->getUserProfile($token);
+        $identifier = $this->_profileIdentifier($userProfile->id);
 
-        // With the user authenticated, login or register
+        if ($identifier === null) {
+            SocialLogin::error('Provider “{provider}” did not return a stable account identifier.', ['provider' => $provider->handle]);
+
+            return false;
+        }
+
         $currentUser = Craft::$app->getUser()->getIdentity();
 
-        if ($currentUser && $currentUser->id !== $initiatingUserId) {
+        if ($currentUser && $initiatingUserId && $currentUser->id !== $initiatingUserId) {
             SocialLogin::error('OAuth login was started by a different Craft user.');
 
             return false;
         }
 
-        if (!$currentUser && $initiatingUserId) {
-            $user = Craft::$app->getUsers()->getUserById($initiatingUserId);
-        } else {
-            $user = $currentUser;
-        }
+        $isNewUser = false;
 
-        if ($initiatingUserId && !$user) {
-            SocialLogin::error('Unable to find the Craft user who started the OAuth login.');
-
-            return false;
-        }
-
-        // Fetch plugin settings
-        $settings = SocialLogin::$plugin->getSettings();
-
-        if (!$user) {
-            $user = $this->_getOrCreateUser($provider, $userProfile);
-
-            if (!$user) {
-                SocialLogin::error('Unable to register new user.');
+        if ($isConnect) {
+            if (!$currentUser || !$initiatingUserId || $currentUser->id !== $initiatingUserId) {
+                SocialLogin::error('A provider connection must be completed by the Craft user who started it.');
 
                 return false;
             }
-        } else if ($settings->populateProfile && $settings->syncProfile) {
-            // Ensure we sync the User's profile on each login/register request. This ensures profile data is synced
-            //  when using an edit profile URL from the SSO provider, for example.
 
-            $user = $this->_syncUserProfile($provider, $user, $userProfile);
-            Craft::$app->getElements()->saveElement($user);
+            $user = $currentUser;
+        } else {
+            $connections = SocialLogin::$plugin->getConnections()->getAllConnectionsByProviderIdentifier($provider->handle, $identifier);
+
+            if (count($connections) > 1) {
+                SocialLogin::error('Provider identity “{provider}:{identifier}” has conflicting Craft user connections.', [
+                    'provider' => $provider->handle,
+                    'identifier' => $identifier,
+                ]);
+
+                return false;
+            }
+
+            if ($connections) {
+                $user = $connections[0]->getUser();
+            } else {
+                if ($currentUser || $initiatingUserId) {
+                    SocialLogin::error('Use the connect action to link a provider to a signed-in Craft user.');
+
+                    return false;
+                }
+
+                $result = $this->_getOrCreateUser($provider, $userProfile);
+
+                if (!$result) {
+                    return false;
+                }
+
+                [$user, $isNewUser] = $result;
+            }
         }
 
-        // Check if the user is in a state that cannot login
-        if ($user && ($user->suspended || !$user->active || $user->locked)) {
-            SocialLogin::error('User “{email}” is not allowed to login. isSuspended: {suspended}, isActive: {active}, isLocked: {locked}', [
-                'email' => $user->email,
-                'suspended' => $user->suspended,
-                'active' => $user->active,
-                'locked' => $user->locked,
-            ]);
+        if (!$user) {
+            SocialLogin::error('Unable to find the Craft user for this provider connection.');
 
             return false;
         }
 
-        // Are we resuming an already-logged in session (through the modal login)? Ensure that things match, 
-        // otherwise we risk auto-logging into another account that doesn't match the email.
-        if ($loginName = Session::get('loginName')) {
+        if (!$isNewUser && !$this->_canLogin($user)) {
+            $this->_logBlockedUser($user);
+
+            return false;
+        }
+
+        $settings = SocialLogin::$plugin->getSettings();
+
+        if (!$isNewUser && $settings->populateProfile && $settings->syncProfile) {
+            $this->_syncUserProfile($provider, $user, $userProfile);
+
+            if (!Craft::$app->getElements()->saveElement($user)) {
+                SocialLogin::error('Unable to synchronize the Craft user profile.');
+
+                return false;
+            }
+        }
+
+        if (!$isConnect && ($loginName = Session::get('loginName'))) {
             $resumingUser = Craft::$app->getUsers()->getUserByUsernameOrEmail($loginName);
 
             if (!$resumingUser || $resumingUser->id !== $user->id) {
@@ -106,11 +133,11 @@ class Users extends Component
             }
         }
 
-        // Create or update a connection for this user
-        $connection = new Connection();
-        $connection->userId = $user->id;
-        $connection->providerHandle = $provider->handle;
-        $connection->identifier = $userProfile->id;
+        $connection = new Connection([
+            'userId' => $user->id,
+            'providerHandle' => $provider->handle,
+            'identifier' => $identifier,
+        ]);
 
         if (!SocialLogin::$plugin->getConnections()->upsertConnection($connection, $token)) {
             SocialLogin::error('Unable to save login connection.');
@@ -118,7 +145,17 @@ class Users extends Component
             return false;
         }
 
-        // Trigger a `beforeLogin` event
+        if ($isConnect) {
+            return true;
+        }
+
+        if (!$this->_canLogin($user)) {
+            Session::setError('social-login', Craft::t('social-login', 'Your account must be activated before you can sign in.'));
+            $this->_logBlockedUser($user);
+
+            return false;
+        }
+
         $event = new UserEvent([
             'user' => $user,
             'userProfile' => $userProfile,
@@ -134,15 +171,11 @@ class Users extends Component
         }
 
         $user = $event->user;
-
         $generalConfig = Craft::$app->getConfig()->getGeneral();
         $rememberMe = (bool)Session::get('rememberMe');
-
-        if ($rememberMe && $generalConfig->rememberedUserSessionDuration !== 0) {
-            $duration = $generalConfig->rememberedUserSessionDuration;
-        } else {
-            $duration = $generalConfig->userSessionDuration;
-        }
+        $duration = $rememberMe && $generalConfig->rememberedUserSessionDuration !== 0
+            ? $generalConfig->rememberedUserSessionDuration
+            : $generalConfig->userSessionDuration;
 
         if (!Craft::$app->getUser()->login($user, $duration)) {
             Session::setError('social-login', Craft::t('social-login', 'Unable to login.'));
@@ -150,7 +183,6 @@ class Users extends Component
             return false;
         }
 
-        // Trigger an `afterLogin` event
         $this->trigger(self::EVENT_AFTER_LOGIN, new UserEvent([
             'user' => $user,
             'userProfile' => $userProfile,
@@ -164,34 +196,25 @@ class Users extends Component
     // Private Methods
     // =========================================================================
 
-    private function _getOrCreateUser(Provider $provider, UserProfile $userProfile): User|bool
+    private function _getOrCreateUser(Provider $provider, UserProfile $userProfile): ?array
     {
-        $settings = SocialLogin::$plugin->getSettings();
-
-        // Find an existing Craft user with the same email
         $user = $this->_matchExistingUser($provider, $userProfile);
 
         if ($user) {
-            // Check if the User profile should be remapped
-            if ($settings->populateProfile && $settings->syncProfile) {
-                $user = $this->_syncUserProfile($provider, $user, $userProfile);
-                Craft::$app->getElements()->saveElement($user);
-            }
-
-            return $user;
+            return [$user, false];
         }
 
-        // Check if we're allowing user registration at all
+        $settings = SocialLogin::$plugin->getSettings();
+
         if (!$settings->enableRegistration) {
-            return false;
+            SocialLogin::error('User registration is disabled and no existing provider connection was found.');
+
+            return null;
         }
 
         Craft::$app->requireEdition(Craft::Pro);
 
-        // This point, we need to create a new user
         $user = $this->_createUser($provider, $userProfile);
-
-        // Trigger a `beforeRegister` event
         $event = new UserEvent([
             'user' => $user,
             'userProfile' => $userProfile,
@@ -203,75 +226,67 @@ class Users extends Component
         if (!$event->isValid) {
             SocialLogin::error('User registration cancelled by event.');
 
-            return false;
+            return null;
         }
 
         $user = $event->user;
 
-        // Some providers (Instagram) don't support emails, which is the bare-minimum requirement.
         if (!$user->email) {
             SocialLogin::error('Provider “{provider}” does not support emails, unable to create user.', ['provider' => $provider->handle]);
             SocialLogin::error(Json::encode($userProfile->response));
 
-            return false;
+            return null;
         }
 
         if (!Craft::$app->getElements()->saveElement($user)) {
             $error = Craft::t('social-login', 'Unable to register user: {json}.', ['json' => Json::encode($user->getErrors())]);
-
             Session::setError('social-login', $error);
             SocialLogin::error($error);
 
-            return false;
+            return null;
         }
 
-        // Force-activation, regardless of site settings, so we can login immediately
-        if ($settings->forceActivate) {
+        if ($settings->forceActivate && $userProfile->getEmailVerified() === true) {
             Craft::$app->getUsers()->activateUser($user);
         }
 
-        // Assign the User Groups according to settings
-        foreach ($settings->userGroups as $userGroupUid) {
-            $userGroupIds = [];
+        $userGroupIds = [];
 
+        foreach ($settings->userGroups as $userGroupUid) {
             if ($userGroup = Craft::$app->getUserGroups()->getGroupByUid($userGroupUid)) {
                 $userGroupIds[] = $userGroup->id;
             }
-
-            Craft::$app->getUsers()->assignUserToGroups($user->id, $userGroupIds);
         }
 
-        if ($settings->sendActivationEmail) {
+        Craft::$app->getUsers()->assignUserToGroups($user->id, $userGroupIds);
+
+        if ($settings->sendActivationEmail && !$this->_canLogin($user)) {
             Craft::$app->getUsers()->sendActivationEmail($user);
         }
 
-        // Trigger an `afterRegister` event
         $this->trigger(self::EVENT_AFTER_REGISTER, new UserEvent([
             'user' => $user,
             'userProfile' => $userProfile,
             'provider' => $provider,
         ]));
 
-        return $user;
+        return [$user, true];
     }
 
     private function _createUser(Provider $provider, UserProfile $userProfile): User
     {
         $settings = SocialLogin::$plugin->getSettings();
-
-        $user = new User();
-        $user->username = $userProfile->email;
-        $user->email = $userProfile->email;
+        $email = $this->_profileString($userProfile->email);
+        $user = new User([
+            'username' => $email,
+            'email' => $email,
+        ]);
 
         if ($settings->populateProfile) {
-            $user = $this->_syncUserProfile($provider, $user, $userProfile);
+            $this->_syncUserProfile($provider, $user, $userProfile);
         }
 
-        if (
-            Session::get('isCpRequest') &&
-            $provider::supportsAdminRegistration() &&
-            $provider->allowAdminRegistration
-        ) {
+        if (Session::get('isCpRequest') && $provider->canRegisterAdmin($userProfile)) {
             $user->admin = true;
         }
 
@@ -286,13 +301,12 @@ class Users extends Component
             $value = null;
 
             try {
-                // Get the raw value from the provider. UserProfile smart enough to return `null`.
+                if ($attribute === 'email' && $userProfile->getEmailVerified() !== true) {
+                    continue;
+                }
+
                 $value = $userProfile->$profile;
-
-                // Get the destination field/attribute UserField model to parse mapping
                 $userField = ArrayHelper::firstWhere($userFields, 'handle', $attribute) ?? UserField::TYPE_STRING;
-
-                // Get the parsed value
                 $value = $this->_getFieldMappingValue($user, $userField, $value);
 
                 if (!$value) {
@@ -325,21 +339,95 @@ class Users extends Component
 
     private function _matchExistingUser(Provider $provider, UserProfile $userProfile): ?User
     {
-        $matchUserSource = $provider->matchUserSource;
-        $matchUserDestination = $provider->matchUserDestination;
+        $source = $provider->matchUserSource;
 
-        // Get the value from the profile
-        $value = $userProfile->$matchUserSource;
+        if ($source === 'email' && $userProfile->getEmailVerified() !== true) {
+            SocialLogin::info('Skipping initial email match for “{provider}” because the provider did not verify the email address.', ['provider' => $provider->handle]);
 
-        if (!$value) {
             return null;
         }
 
-        // Find a matching user
-        $matchUserDestination = str_replace('field:', '', $matchUserDestination);
+        if (!in_array($source, ['email', 'id'], true)) {
+            throw new RuntimeException("Provider {$provider->handle} cannot automatically match Craft users by $source.");
+        }
 
-        return User::find()->$matchUserDestination($value)->one();
-    }    
+        $value = $source === 'id'
+            ? $this->_profileIdentifier($userProfile->id)
+            : $this->_profileString($userProfile->email);
+
+        if ($value === null) {
+            return null;
+        }
+
+        $destination = $provider->matchUserDestination;
+        $allowedDestinations = array_map(fn(UserField $field) => $field->handle, $provider->getCraftUserFields());
+
+        if (!in_array($destination, $allowedDestinations, true)) {
+            throw new RuntimeException("Provider {$provider->handle} has an invalid Craft user match destination.");
+        }
+
+        $destinationHandle = str_replace('field:', '', $destination);
+        $query = User::find()
+            ->status(null)
+            ->$destinationHandle(Db::escapeParam($value));
+
+        if ($source === 'id') {
+            $users = array_values(array_filter($query->all(), function(User $user) use ($destination, $destinationHandle, $value) {
+                $candidate = str_starts_with($destination, 'field:')
+                    ? $user->getFieldValue($destinationHandle)
+                    : $user->$destinationHandle;
+
+                $isScalarIdentifier = is_string($candidate) || is_int($candidate) || (is_float($candidate) && is_finite($candidate));
+
+                return $isScalarIdentifier && (string)$candidate === $value;
+            }));
+        } else {
+            $users = $query->limit(2)->all();
+        }
+
+        if (count($users) > 1) {
+            throw new RuntimeException("Provider {$provider->handle} matched more than one Craft user.");
+        }
+
+        return $users[0] ?? null;
+    }
+
+    private function _canLogin(User $user): bool
+    {
+        return $user->getStatus() === User::STATUS_ACTIVE && !$user->locked && !$user->passwordResetRequired;
+    }
+
+    private function _logBlockedUser(User $user): void
+    {
+        SocialLogin::error('User “{email}” is not allowed to login. status: {status}, isLocked: {locked}, passwordResetRequired: {passwordResetRequired}', [
+            'email' => $user->email,
+            'status' => $user->getStatus(),
+            'locked' => $user->locked,
+            'passwordResetRequired' => $user->passwordResetRequired,
+        ]);
+    }
+
+    private function _profileString(mixed $value): ?string
+    {
+        if (!is_string($value) && !is_int($value)) {
+            return null;
+        }
+
+        $value = trim((string)$value);
+
+        return $value !== '' ? $value : null;
+    }
+
+    private function _profileIdentifier(mixed $value): ?string
+    {
+        if (!is_string($value) && !is_int($value)) {
+            return null;
+        }
+
+        $value = (string)$value;
+
+        return trim($value) !== '' ? $value : null;
+    }
 
     private function _getFieldMappingValue(User $user, UserField $userField, mixed $providerValue): ?string
     {
@@ -348,7 +436,6 @@ class Users extends Component
                 Craft::$app->getUsers()->saveUserPhoto($photoUrl, $user, basename($photoUrl));
             }
 
-            // Don't map an actual value to the photo field
             return null;
         }
 

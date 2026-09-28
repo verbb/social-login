@@ -13,6 +13,7 @@ use craft\helpers\StringHelper;
 use Exception;
 
 use verbb\auth\helpers\Provider as ProviderHelper;
+use verbb\auth\models\UserProfile;
 
 abstract class Provider extends SavableComponent implements ProviderInterface
 {
@@ -110,6 +111,24 @@ abstract class Provider extends SavableComponent implements ProviderInterface
         return false;
     }
 
+    public function canLogin(bool $isCpRequest): bool
+    {
+        $settings = SocialLogin::$plugin->getSettings();
+
+        if (!$this->enabled || !static::supportsLogin()) {
+            return false;
+        }
+
+        return $isCpRequest
+            ? $settings->enableCpLogin && $this->cpLoginEnabled
+            : $settings->enableLogin && $this->loginEnabled;
+    }
+
+    public function canRegisterAdmin(UserProfile $userProfile): bool
+    {
+        return static::supportsAdminRegistration() && $this->allowAdminRegistration;
+    }
+
     public function getSettingsHtml(): ?string
     {
         $handle = StringHelper::toKebabCase(static::$handle);
@@ -173,6 +192,14 @@ abstract class Provider extends SavableComponent implements ProviderInterface
         ];
 
         return $options;
+    }
+
+    public function getUserMatchSourceOptions(): array
+    {
+        return [
+            ['label' => 'ID', 'value' => 'id'],
+            ['label' => 'Email', 'value' => 'email'],
+        ];
     }
 
     public function getUserProfileFields(): array
@@ -257,6 +284,8 @@ abstract class Provider extends SavableComponent implements ProviderInterface
                 return $model->enabled && $enableRegistration;
             },
         ];
+
+        $rules[] = [['matchUserSource'], 'in', 'range' => ['email', 'id']];
 
         $rules[] = [
             ['fieldMapping'], 'validateFieldMapping', 'when' => function($model) use ($populateProfile) {
