@@ -122,6 +122,8 @@ By default, Social Login will continue to use its legacy callback URI. If you ne
 ```
 
 ## Provider Settings
+Provider settings can contain authentication credentials, so only Craft administrators can access them. Saving changes also requires Craft’s `allowAdminChanges` setting to be enabled.
+
 You can set provider settings by adding the `handle` of a provider, and passing in any setting specific to that provider. Typically, this will be OAuth settings.
 
 ```php

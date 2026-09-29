@@ -15,6 +15,20 @@ class ProvidersController extends Controller
     // Public Methods
     // =========================================================================
 
+    public function beforeAction($action): bool
+    {
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        $this->requireCpRequest();
+
+        // Locked environments may inspect provider settings, but only writable environments may change them.
+        $this->requireAdmin(!in_array($action->id, ['index', 'edit'], true));
+
+        return true;
+    }
+
     public function actionIndex(): Response
     {
         $providers = SocialLogin::$plugin->getProviders()->getAllProviders();
