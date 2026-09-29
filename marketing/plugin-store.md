@@ -4,13 +4,84 @@ Offer selected OAuth providers on front-end login and registration screens, or o
 
 ## Features
 
-- **Provider sign-in:** Authenticate with supported social and identity services.
-- **User registration:** Create a Craft account when an authenticated identity is new.
-- **User matching:** Match an existing Craft user by email or another mapped attribute.
-- **Group assignment:** Add newly registered users to nominated Craft user groups.
-- **Activation controls:** Decide how Craft activation and verification apply to provider registrations.
-- **Account connection:** Attach another provider to an existing signed-in user.
-- **Field mapping:** Bring selected provider profile values into Craft user fields.
-- **Front end or CP:** Offer provider login on the public site or Craft login screen.
-- **Authenticated clients:** Use a connected provider API from project modules and templates.
-- **Craft user profiles:** Map provider details to Craft user fields during registration or connection, then use the authorised provider client from project code when a feature needs additional API data. Templates remain in control of how each login option is presented.
+- Authenticate with supported social and identity services.
+- Create a Craft account when an authenticated identity is new.
+- Match an existing Craft user by email or another mapped attribute.
+- Add newly registered users to nominated Craft user groups.
+- Decide how Craft activation and verification apply to provider registrations.
+- Attach another provider to an existing signed-in user.
+- Bring selected provider profile values into Craft user fields.
+- Offer provider login on the public site or Craft login screen.
+- Use a connected provider API from project modules and templates.
+
+## Supported Providers
+- [Amazon](https://amazon.com)
+- [Amazon Cognito](https://aws.amazon.com/cognito/)
+- [Apple](https://apple.com)
+- [Auth0](https://auth0.com)
+- [Azure](https://azure.microsoft.com)
+- [Basecamp](https://basecamp.com)
+- [Bitbucket](https://bitbucket.com)
+- [Box](https://box.com)
+- [Buddy](https://buddy.works)
+- [Deezer](https://deezer.com)
+- [DeviantArt](https://deviantart.com)
+- [Discord](https://discord.com)
+- [Dribbble](https://dribbble.com)
+- [Dropbox](https://dropbox.com)
+- [Envato](https://envato.com)
+- [Etsy](https://etsy.com)
+- [Eventbrite](https://eventbrite.com)
+- [Facebook](https://facebook.com)
+- [Fitbit](https://fitbit.com)
+- [Foursquare](https://foursquare.com)
+- [FreeAgent](https://www.freeagent.com/)
+- [GitHub](https://github.com)
+- [GitLab](https://gitlab.com)
+- [Google](https://google.com)
+- [Gumroad](https://gumroad.com)
+- [Harvest](https://www.getharvest.com/)
+- [Heroku](https://heroku.com)
+- [HubSpot](https://hubspot.com)
+- [IdentityServer4](https://identityserver4.readthedocs.io/)
+- [Imgur](https://imgur.com)
+- [Instagram](https://instagram.com)
+- [Jira](https://jira.com)
+- [Line](https://line.me)
+- [LinkedIn](https://linkedin.com)
+- [Linode](https://linode.com)
+- [Mailchimp](https://mailchimp.com)
+- [Mastodon](https://mastodon.social)
+- [Meetup](https://meetup.com)
+- [Microsoft](https://microsoft.com)
+- [Microsoft Entra](https://www.microsoft.com/en-au/security/business/identity-access/microsoft-entra-id)
+- [Myob](https://myob.com)
+- [Neon CRM](https://www.neonone.com/products/neon-crm/)
+- [PayPal](https://paypal.com)
+- [Pinterest](https://pinterest.com)
+- [Pipedrive](https://pipedrive.com)
+- [Reddit](https://reddit.com)
+- [Salesforce](https://salesforce.com)
+- [Shopify](https://shopify.com)
+- [Slack](https://slack.com)
+- [Snapchat](https://snapchat.com)
+- [SoundCloud](https://soundcloud.com)
+- [Spotify](https://spotify.com)
+- [Square](https://squareup.com)
+- [StackExchange](https://stackexchange.com)
+- [Strava](https://strava.com)
+- [Stripe](https://stripe.com)
+- [Telegram](https://telegram.org)
+- [TikTok](https://tiktok.com)
+- [Trello](https://trello.com)
+- [Tumblr](https://tumblr.com)
+- [Twitch](https://twitch.tv)
+- [Twitter](https://twitter.com)
+- [Unsplash](https://unsplash.com)
+- [Vend](https://vend.com)
+- [Vimeo](https://vimeo.com)
+- [Vkontakte](https://vk.com)
+- [WeChat](https://wechat.com)
+- [Yahoo](https://www.yahoo.com/)
+- [Zendesk](https://zendesk.com)
+- [Zoho](https://zoho.com)

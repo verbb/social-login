@@ -1,21 +1,21 @@
 <p align="center"><img src="https://assets.verbb.io/plugins/social-login/social-login-icon.svg" width="100" height="100" alt="Social Login icon"></p>
 <h1 align="center">Social Login for Craft CMS</h1>
 
-Social Login is a Craft CMS plugin that adds SSO (Single Sign-On) capabilities to your site to let your users login or register via their own social media accounts like Facebook, Google, Microsoft, Apple and loads more. It's also a handy plugin to use when you want to "connect" user accounts to these providers, along with helpers for calling APIs.
+Social Login is a Craft CMS plugin that lets people use an established provider account to sign in, register, or connect to a Craft user. Keep account mapping and profile data in Craft while offering a faster authentication path on the site or control panel.
+
+Offer selected OAuth providers on front-end login and registration screens, or on the Craft control-panel login. New identities can create Craft users, while existing users can connect a provider to the account they already use.
 
 ## Features
-- Support for 60+ social media providers.
-- Let your users login with social media accounts.
-- Supports registering new users if they don't already exist.
-- Mapping content from your social media accounts to your Craft user profiles.
-- Match an existing Craft user by email or another mapped user attribute.
-- Assign newly registered users to nominated Craft user groups.
-- Control Craft account activation and whether an activation email is sent.
-- Works for front-end or control panel logins.
-- Connect existing users to social media accounts. Think adding a "Connect" button to their account.
-- Full control over templating with how login buttons look.
-- Easily use provider APIs in your templates or modules, once authenticated with users. Fetch user media and more!
-- Extendable for you to register your own providers, or extend an existing one.
+
+- Authenticate with supported social and identity services.
+- Create a Craft account when an authenticated identity is new.
+- Match an existing Craft user by email or another mapped attribute.
+- Add newly registered users to nominated Craft user groups.
+- Decide how Craft activation and verification apply to provider registrations.
+- Attach another provider to an existing signed-in user.
+- Bring selected provider profile values into Craft user fields.
+- Offer provider login on the public site or Craft login screen.
+- Use a connected provider API from project modules and templates.
 
 ## Supported Providers
 - [Amazon](https://amazon.com)
