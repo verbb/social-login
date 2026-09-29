@@ -17,6 +17,11 @@ class m260928_000000_unique_provider_identity extends Migration
     {
         $table = '{{%social_login_connections}}';
 
+        // Plugin migration history can outlive its tables, so only migrate the connection schema when it exists.
+        if (!$this->db->tableExists($table)) {
+            return true;
+        }
+
         if (!$this->db->columnExists($table, 'identityKey')) {
             $this->addColumn($table, 'identityKey', $this->char(64)->after('identifier'));
         }
@@ -74,6 +79,11 @@ class m260928_000000_unique_provider_identity extends Migration
     public function safeDown(): bool
     {
         $table = '{{%social_login_connections}}';
+
+        if (!$this->db->tableExists($table)) {
+            return true;
+        }
+
         $indexes = $this->db->getSchema()->findIndexes($table);
 
         if (isset($indexes['social_login_identity_key_unq'])) {

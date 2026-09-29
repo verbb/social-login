@@ -12,6 +12,7 @@
 ### Fixed
 - Fixed a high-severity account-linking vulnerability.
 - Fixed a high-severity authorization vulnerability.
+- Fixed the provider identity migration failing when the plugin connection table does not exist.
 - Fixed OAuth callback transaction validation.
 - Fixed OAuth login and disconnect accepting unsigned external return URLs.
 
