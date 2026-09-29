@@ -1,6 +1,6 @@
 {
     "name": "verbb/social-login",
-    "description": "Add SSO (Single Sign-On) user login, registration and connecting to social media platforms.",
+    "description": "A Craft CMS plugin for sign-in, registration and account connections through identity providers.",
     "type": "craft-plugin",
     "version": "2.0.20",
     "keywords": [
