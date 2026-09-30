@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.21 - 2026-09-30
 
 ### Changed
 - Identify returning users by their provider connection, and limit first-time account matching to a verified email or provider ID.
