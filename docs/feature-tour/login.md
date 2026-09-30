@@ -82,6 +82,8 @@ You can change this behaviour by specifying a redirect. Be sure to use the `hash
 ## Control Panel Login
 You can allow your users to login to the control panel of Craft if you like! Buttons will be added below the main control panel login form as an alternative for users to login. Of course, these users will require user permissions to be able to access the control panel as well.
 
+![Social Login buttons on the Craft control panel login screen](../../screenshots/social-login-cp-login.png)
+
 They'll also be added to the "session ended" modal login form that pops up after a certain number of minutes of inactivity.
 
 If **Stay signed in** is checked on the control panel login form, social login will use the same persistent session duration as a normal Craft login.

@@ -30,6 +30,8 @@ The bare-minimum mapping required is to map the user **email**. This is because 
 
 Managing your user mapping is done via the provider settings.
 
+![Social Login user field mapping settings](../../screenshots/social-login-field-mapping.png)
+
 ## User Matching
 Social Login uses the provider's permanent account ID after the first successful login or explicit connection, so a later email change at the provider does not move the connection to another Craft user.
 

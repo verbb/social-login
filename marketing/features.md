@@ -7,7 +7,7 @@ Add single sign-on to let people log in, register or connect a Craft user throug
 
 Choose from more than 60 social networks and identity services, then enable only the ones that belong on your site. The provider index keeps handles, availability and configuration status together, whether you need one familiar sign-in option or a mix for different audiences.
 
-![Social Login’s provider index showing configured and available identity services.](../screenshots/output/feature-tour/social-login-providers.png)
+![Social Login’s provider index showing configured and available identity services.](../screenshots/social-login-providers.png)
 
 <!-- feature-section-end -->
 
@@ -16,7 +16,7 @@ Choose from more than 60 social networks and identity services, then enable only
 
 Give people the option to use a supported provider on the front end or when logging in to Craft itself. A provider can be used for login only, create a new Craft account when needed, or connect to an account the person already uses.
 
-![A Craft control-panel login screen offering several Social Login providers.](../screenshots/output/feature-tour/social-login-cp-login.png)
+![A Craft control-panel login screen offering several Social Login providers.](../screenshots/social-login-cp-login.png)
 
 <!-- feature-section-end -->
 
@@ -25,7 +25,7 @@ Give people the option to use a supported provider on the front end or when logg
 
 Keep the callback URI and application credentials for each identity service in its own provider settings. Login availability can be controlled separately for the front end and Craft control panel, without making every configured provider appear everywhere.
 
-![Facebook application credentials and callback details in Social Login’s provider settings.](../screenshots/output/feature-tour/social-login-provider-settings.png)
+![Facebook application credentials and callback details in Social Login’s provider settings.](../screenshots/social-login-provider-settings.png)
 
 <!-- feature-section-end -->
 
@@ -36,7 +36,7 @@ When a provider identity does not match an existing Craft user, Social Login can
 
 Craft’s activation and verification behaviour remains available, which is particularly important before allowing provider-based registration into the control panel.
 
-![Facebook profile fields mapped to Craft user attributes for registration and profile updates.](../screenshots/output/feature-tour/social-login-field-mapping.png)
+![Facebook profile fields mapped to Craft user attributes for registration and profile updates.](../screenshots/social-login-field-mapping.png)
 
 <!-- feature-section-end -->
 
