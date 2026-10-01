@@ -12,6 +12,7 @@ use craft\base\Component;
 use craft\base\MemoizableArray;
 use craft\errors\MissingComponentException;
 use craft\events\RegisterComponentTypesEvent;
+use craft\helpers\ArrayHelper;
 use craft\helpers\Component as ComponentHelper;
 use craft\helpers\ProjectConfig as ProjectConfigHelper;
 
@@ -182,19 +183,64 @@ class Providers extends Component
         return ProjectConfigHelper::packAssociativeArrays($settings);
     }
 
-    public function saveProvider(Provider $provider): bool
+    public function saveProvider(Provider $provider, ?array $submittedSettings = null): bool
     {
+        $settingsModel = SocialLogin::$plugin->getSettings();
+        $allowedSettings = array_flip($provider->settingsAttributes());
+
+        if ($submittedSettings !== null) {
+            $submittedSettings = array_intersect_key($submittedSettings, $allowedSettings);
+            $submittedSettings = $settingsModel->getProviderSettingsForPersistence([
+                $provider->handle => $submittedSettings,
+            ])[$provider->handle] ?? [];
+
+            $configProviderSettings = $settingsModel->getConfigProviderSettings()[$provider->handle] ?? [];
+
+            if (!is_array($configProviderSettings)) {
+                $configProviderSettings = [];
+            }
+
+            $runtimeSettings = $submittedSettings;
+
+            foreach ($runtimeSettings as $name => $value) {
+                $override = $configProviderSettings[$name] ?? null;
+
+                if (is_array($value) && ($value === [] || !array_is_list($value)) && is_array($override) && !array_is_list($override)) {
+                    $runtimeSettings[$name] = ArrayHelper::merge($value, $override);
+                }
+            }
+
+            $provider->setAttributes($runtimeSettings, false);
+            $settingNames = array_keys($submittedSettings);
+        } else {
+            $settingNames = $provider->settingsAttributes();
+        }
+
         if (!$provider->validate()) {
             return false;
         }
 
-        // Get to provider configs (merged from config and settings)
-        $providerSettings = SocialLogin::$plugin->getSettings()->getProviderSettings();
-        $providerSettings[$provider->handle] = $this->createProviderConfig($provider);
+        $providerSettings = array_intersect_key($provider->getSettings(), array_flip($settingNames));
+        $providerSettings = $settingsModel->getProviderSettingsForPersistence([
+            $provider->handle => $providerSettings,
+        ])[$provider->handle] ?? [];
 
-        // Fetch the rest of plugin settings and replace with correctly-merged provider settings
-        $settings = SocialLogin::$plugin->getSettings()->toArray();
-        $settings['providers'] = $providerSettings;
+        $pluginInfo = Craft::$app->getPlugins()->getStoredPluginInfo('social-login');
+        $settings = $pluginInfo['settings'] ?? [];
+
+        if (!is_array($settings)) {
+            $settings = [];
+        }
+
+        $providers = $settingsModel->getProviderSettingsForPersistence();
+        $storedProviderSettings = $providers[$provider->handle] ?? [];
+
+        if (!is_array($storedProviderSettings)) {
+            $storedProviderSettings = [];
+        }
+
+        $providers[$provider->handle] = array_replace($storedProviderSettings, $providerSettings);
+        $settings['providers'] = $providers;
 
         $plugin = Craft::$app->getPlugins()->getPlugin('social-login');
 

@@ -9,6 +9,7 @@
 - Fixed a medium-severity authentication vulnerability.
 - Fixed a low-severity path traversal vulnerability.
 - Fixed a low-severity request integrity vulnerability.
+- Fixed a low-severity sensitive information exposure vulnerability.
 
 ## 2.0.21 - 2026-09-30
 

@@ -28,7 +28,7 @@ class SettingsController extends BaseSettingsController
     protected function prepareSubmittedSettings(array $settings): array
     {
         // Preserve provider configuration when the general settings form is saved.
-        $settings['providers'] = SocialLogin::$plugin->getSettings()->getProviderSettings();
+        $settings['providers'] = SocialLogin::$plugin->getSettings()->getProviderSettingsForPersistence();
 
         return $settings;
     }

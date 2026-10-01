@@ -7,6 +7,7 @@ use Craft;
 use craft\helpers\Json;
 use craft\web\Controller;
 
+use yii\web\BadRequestHttpException;
 use yii\web\HttpException;
 use yii\web\Response;
 
@@ -56,7 +57,11 @@ class ProvidersController extends Controller
         $this->requirePostRequest();
 
         $handle = $this->request->getParam('handle');
-        $settings = $this->request->getParam('settings');
+        $settings = $this->request->getParam('settings', []);
+
+        if (!is_array($settings)) {
+            throw new BadRequestHttpException('Invalid provider settings.');
+        }
 
         $provider = SocialLogin::$plugin->getProviders()->getProviderByHandle($handle);
 
@@ -64,9 +69,7 @@ class ProvidersController extends Controller
             throw new HttpException(404);
         }
 
-        $provider->setAttributes($settings, false);
-
-        if (!SocialLogin::$plugin->getProviders()->saveProvider($provider)) {
+        if (!SocialLogin::$plugin->getProviders()->saveProvider($provider, $settings)) {
             Craft::$app->getSession()->setError(Craft::t('social-login', 'Couldn’t save provider.'));
 
             Craft::$app->getUrlManager()->setRouteParams([
