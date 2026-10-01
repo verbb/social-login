@@ -15,7 +15,7 @@ class Stripe extends OAuthProvider
         return StripeProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

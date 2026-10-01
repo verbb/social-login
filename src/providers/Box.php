@@ -15,7 +15,7 @@ class Box extends OAuthProvider
         return BoxProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

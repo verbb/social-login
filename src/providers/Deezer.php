@@ -15,7 +15,7 @@ class Deezer extends OAuthProvider
         return DeezerProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

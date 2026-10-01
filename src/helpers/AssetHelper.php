@@ -37,11 +37,11 @@ class AssetHelper
             if ($mimeType) {
                 if ($mimeType === 'image/gif') {
                     $extension = 'gif';
-                } else if ($mimeType === 'image/jpeg') {
+                } elseif ($mimeType === 'image/jpeg') {
                     $extension = 'jpg';
-                } else if ($mimeType === 'image/png') {
+                } elseif ($mimeType === 'image/png') {
                     $extension = 'png';
-                } else if ($mimeType === 'image/svg+xml') {
+                } elseif ($mimeType === 'image/svg+xml') {
                     $extension = 'svg';
                 }
             }

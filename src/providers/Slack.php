@@ -15,7 +15,7 @@ class Slack extends OAuthProvider
         return SlackProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

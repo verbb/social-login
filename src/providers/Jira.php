@@ -15,7 +15,7 @@ class Jira extends OAuthProvider
         return JiraProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

@@ -65,7 +65,7 @@ class MicrosoftEntra extends OAuthProvider
         $options['scope'] = [
             'User.Read',
         ];
-        
+
         return $options;
     }
 

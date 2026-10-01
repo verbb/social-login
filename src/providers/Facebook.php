@@ -15,7 +15,7 @@ class Facebook extends OAuthProvider
         return FacebookProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

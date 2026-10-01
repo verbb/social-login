@@ -24,7 +24,7 @@ class Salesforce extends OAuthProvider
         return true;
     }
 
-    
+
     // Properties
     // =========================================================================
 
@@ -97,7 +97,7 @@ class Salesforce extends OAuthProvider
             'refresh_token',
             'offline_access',
         ];
-        
+
         return $options;
     }
 

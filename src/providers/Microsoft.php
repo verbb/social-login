@@ -22,7 +22,7 @@ class Microsoft extends OAuthProvider
         return MicrosoftProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

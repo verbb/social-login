@@ -15,7 +15,7 @@ class Etsy extends OAuthProvider
         return EtsyProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

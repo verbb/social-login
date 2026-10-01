@@ -15,7 +15,7 @@ class Foursquare extends OAuthProvider
         return FoursquareProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 
@@ -33,5 +33,5 @@ class Foursquare extends OAuthProvider
             'bio',
         ];
     }
-    
+
 }

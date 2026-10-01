@@ -17,7 +17,7 @@ class PayPal extends OAuthProvider
         return PayPalProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

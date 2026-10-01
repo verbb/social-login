@@ -15,7 +15,7 @@ class Line extends OAuthProvider
         return LineProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

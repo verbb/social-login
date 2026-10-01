@@ -15,7 +15,7 @@ class HubSpot extends OAuthProvider
         return HubSpotProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 
@@ -40,7 +40,7 @@ class HubSpot extends OAuthProvider
             'oauth',
             'crm.objects.owners.read',
         ];
-        
+
         return $options;
     }
 

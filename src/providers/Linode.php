@@ -15,7 +15,7 @@ class Linode extends OAuthProvider
         return LinodeProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

@@ -15,7 +15,7 @@ class Eventbrite extends OAuthProvider
         return EventbriteProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

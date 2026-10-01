@@ -15,7 +15,7 @@ class Envato extends OAuthProvider
         return EnvatoProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

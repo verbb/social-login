@@ -17,7 +17,7 @@ abstract class OAuthProvider extends Provider implements OAuthProviderInterface
     // =========================================================================
 
     use OAuthProviderTrait;
-    
+
 
     // Public Methods
     // =========================================================================
@@ -80,7 +80,7 @@ abstract class OAuthProvider extends Provider implements OAuthProviderInterface
             }
         }
 
-        return null; 
+        return null;
     }
 
 

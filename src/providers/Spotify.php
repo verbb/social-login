@@ -15,7 +15,7 @@ class Spotify extends OAuthProvider
         return SpotifyProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

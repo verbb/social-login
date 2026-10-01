@@ -15,7 +15,7 @@ class Gumroad extends OAuthProvider
         return GumroadProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

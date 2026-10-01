@@ -18,7 +18,7 @@ class Apple extends OAuthProvider
     {
         return AppleProvider::class;
     }
-    
+
     // Properties
     // =========================================================================
 
@@ -117,7 +117,7 @@ class Apple extends OAuthProvider
         foreach ($rules as $key => &$rule) {
             if (isset($rule[0]) && is_array($rule[0]) && in_array('clientSecret', $rule[0])) {
                 $index = array_search('clientSecret', $rule[0]);
-    
+
                 // If "clientSecret" key exists, remove it
                 if ($index !== false) {
                     unset($rule[0][$index]);

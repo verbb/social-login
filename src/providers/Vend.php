@@ -17,7 +17,7 @@ class Vend extends OAuthProvider
         return VendProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

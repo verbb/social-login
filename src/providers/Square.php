@@ -15,7 +15,7 @@ class Square extends OAuthProvider
         return SquareProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

@@ -15,7 +15,7 @@ class Twitch extends OAuthProvider
         return TwitchProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

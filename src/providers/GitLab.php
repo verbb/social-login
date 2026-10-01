@@ -15,7 +15,7 @@ class GitLab extends OAuthProvider
         return GitLabProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

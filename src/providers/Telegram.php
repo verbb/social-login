@@ -15,7 +15,7 @@ class Telegram extends OAuthProvider
         return TelegramProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

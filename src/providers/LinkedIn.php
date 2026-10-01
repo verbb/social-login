@@ -15,7 +15,7 @@ class LinkedIn extends OAuthProvider
         return LinkedInProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

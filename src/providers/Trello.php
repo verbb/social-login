@@ -15,7 +15,7 @@ class Trello extends OAuthProvider
         return TrelloProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

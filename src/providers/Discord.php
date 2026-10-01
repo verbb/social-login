@@ -15,7 +15,7 @@ class Discord extends OAuthProvider
         return DiscordProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

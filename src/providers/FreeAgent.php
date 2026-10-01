@@ -17,7 +17,7 @@ class FreeAgent extends OAuthProvider
         return FreeAgentProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

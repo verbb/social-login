@@ -15,7 +15,7 @@ class Harvest extends OAuthProvider
         return HarvestProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

@@ -15,7 +15,7 @@ class Reddit extends OAuthProvider
         return RedditProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

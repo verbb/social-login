@@ -17,7 +17,7 @@ class Shopify extends OAuthProvider
         return ShopifyProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

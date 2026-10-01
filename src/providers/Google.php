@@ -17,7 +17,7 @@ class Google extends OAuthProvider
         return GoogleProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 
@@ -50,7 +50,7 @@ class Google extends OAuthProvider
         $options = parent::getAuthorizationUrlOptions();
         $options['access_type'] = 'offline';
         $options['prompt'] = 'consent';
-        
+
         return $options;
     }
 

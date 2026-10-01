@@ -75,5 +75,5 @@ class SocialLoginVariable
     {
         return SocialLogin::$plugin;
     }
-    
+
 }

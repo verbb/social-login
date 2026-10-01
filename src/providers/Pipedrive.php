@@ -15,7 +15,7 @@ class Pipedrive extends OAuthProvider
         return PipedriveProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

@@ -15,7 +15,7 @@ class GitHub extends OAuthProvider
         return GitHubProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

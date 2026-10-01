@@ -15,7 +15,7 @@ class Heroku extends OAuthProvider
         return HerokuProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

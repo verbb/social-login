@@ -15,7 +15,7 @@ class Twitter extends OAuthProvider
         return TwitterProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

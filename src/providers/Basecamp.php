@@ -15,7 +15,7 @@ class Basecamp extends OAuthProvider
         return BasecampProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 
