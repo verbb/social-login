@@ -16,7 +16,11 @@ class AssetHelper
 
     public static function fetchRemoteImage(User $user, string $url, string $filename): ?string
     {
-        $tempPath = self::createTempPath($user) . '/' . $filename;
+        if (!self::_isValidTemporaryFilename($filename)) {
+            return null;
+        }
+
+        $tempPath = self::_createTempPath($user) . '/' . $filename;
         $client = Craft::createGuzzleClient();
         $extension = null;
 
@@ -51,9 +55,13 @@ class AssetHelper
             }
 
             // Now we have an extension, rename the downloaded, extension-less file
-            rename($tempPath, $tempPath . '.' . $extension);
+            $imagePath = $tempPath . '.' . $extension;
 
-            return $tempPath . '.' . $extension;
+            if (!rename($tempPath, $imagePath)) {
+                return null;
+            }
+
+            return $imagePath;
         } catch (Throwable $e) {
             SocialLogin::error('Error fetching remote image “{email}” - “{url}” for “{provider}”: “{message}” {file}:{line}', [
                 'email' => $user->email,
@@ -62,14 +70,31 @@ class AssetHelper
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+        } finally {
+            // Successful downloads have already been renamed, while rejected or interrupted downloads retain this path.
+            if (is_file($tempPath)) {
+                FileHelper::unlink($tempPath);
+            }
         }
 
         return null;
     }
 
-    private static function createTempPath(User $user): string
+    private static function _isValidTemporaryFilename(string $filename): bool
     {
-        $tempPath = Craft::$app->getPath()->getTempPath() . '/social-login/' . $user->email . '/';
+        return $filename !== '' &&
+            $filename !== '.' &&
+            $filename !== '..' &&
+            !str_contains($filename, "\0") &&
+            !str_contains($filename, '/') &&
+            !str_contains($filename, '\\');
+    }
+
+    private static function _createTempPath(User $user): string
+    {
+        $identity = hash('sha256', (string)$user->email);
+        $request = Craft::$app->getSecurity()->generateRandomString(32);
+        $tempPath = Craft::$app->getPath()->getTempPath() . '/social-login/' . $identity . '/' . $request;
 
         if (!is_dir($tempPath)) {
             FileHelper::createDirectory($tempPath);
