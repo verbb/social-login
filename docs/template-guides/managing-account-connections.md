@@ -8,7 +8,7 @@ Account connection controls belong in the signed-in user’s account area. Check
 Returns the connect URL for the provider.
 
 ### `craft.socialLogin.getDisconnectUrl(handle, options)`
-Returns the disconnect URL for the provider.
+Returns the action URL for a POST disconnect form. Include Craft’s CSRF input in the form; do not use this URL as a link.
 
 ### `craft.socialLogin.isConnected(handle)`
 Returns the whether the provider is connected or not.

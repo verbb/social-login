@@ -20,7 +20,7 @@
                     <span class="ss-provider-label bold">{{ provider.name }}</span>
                 </div>
 
-                <a class="formsubmit btn small" href="{{ craft.socialLogin.getDisconnectUrl(provider.handle) }}">{{ 'Disconnect' | t('social-login') }}</a>
+                <button type="button" class="formsubmit btn small" data-form="false" data-action="social-login/auth/disconnect" data-param="provider" data-value="{{ provider.handle }}">{{ 'Disconnect' | t('social-login') }}</button>
             </div>
         {% endfor %}
     </div>

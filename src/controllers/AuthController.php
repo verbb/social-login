@@ -105,6 +105,8 @@ class AuthController extends Controller
 
     public function actionDisconnect(): ?Response
     {
+        $this->requirePostRequest();
+
         $providerHandle = $this->request->getRequiredParam('provider');
         $currentUser = Craft::$app->getUser()->getIdentity();
         $returnUrl = Redirect::safeReferrer($this->request->getReferrer());

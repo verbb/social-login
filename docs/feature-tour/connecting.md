@@ -19,29 +19,14 @@ Not all providers support login or registration through their API's, so this is 
 ## Templating
 Place these controls on an account page that requires a signed-in Craft user. Configure and enable the provider first. This example uses Facebook; substitute the handle of your configured provider.
 
-::: code
-```twig URL
+```twig
 {% if craft.socialLogin.isConnected('facebook') %}
-    <a href="{{ craft.socialLogin.getDisconnectUrl('facebook') }}">Disconnect Facebook</a>
+    <form method="POST" action="{{ craft.socialLogin.getDisconnectUrl('facebook') }}">
+        {{ csrfInput() }}
+
+        <button type="submit">Disconnect Facebook</button>
+    </form>
 {% else %}
     <a href="{{ craft.socialLogin.getConnectUrl('facebook') }}">Connect Facebook</a>
 {% endif %}
 ```
-
-```twig Form
-<form method="POST">
-    {{ csrfInput() }}
-    {{ hiddenInput('provider', 'facebook') }}
-
-    {% if craft.socialLogin.isConnected('facebook') %}
-        {{ actionInput('social-login/auth/disconnect') }}
-
-        <button type="submit">Disconnect Facebook</button>
-    {% else %}
-        {{ actionInput('social-login/auth/connect') }}
-
-        <button type="submit">Connect Facebook</button>
-    {% endif %}
-</form>
-```
-:::
