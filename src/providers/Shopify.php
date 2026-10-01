@@ -12,6 +12,11 @@ class Shopify extends OAuthProvider
     // Static Methods
     // =========================================================================
 
+    public static function supportsLogin(): bool
+    {
+        return false;
+    }
+
     public static function getOAuthProviderClass(): string
     {
         return ShopifyProvider::class;

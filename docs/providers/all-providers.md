@@ -87,6 +87,7 @@ The following however **do not** support being used as login or registration pro
 - Meetup
 - Myob
 - Pinterest
+- Shopify
 - Snapchat
 - SoundCloud
 - StackExchange
@@ -645,6 +646,8 @@ If you enable automatic administrator registration, set **Expected Organization 
 
 ## Shopify
 Follow the below steps to connect to the Shopify API.
+
+Shopify is available for connecting to an existing signed-in Craft user. It cannot be used for login or registration.
 
 ### Connect to the Shopify API
 1. Go to <a href="https://www.shopify.com/partners" target="_blank">Shopify</a> and login to your account.

@@ -38,6 +38,12 @@ class Users extends Component
 
     public function loginOrRegisterUser(Provider $provider, Token $token, ?int $initiatingUserId = null, bool $isConnect = false): bool
     {
+        if (!$isConnect && !$provider::supportsLogin()) {
+            SocialLogin::error('Provider “{provider}” cannot be used to log in.', ['provider' => $provider->handle]);
+
+            return false;
+        }
+
         $userProfile = $provider->getUserProfile($token);
         $identifier = $this->_profileIdentifier($userProfile->id);
 

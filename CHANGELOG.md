@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- Shopify is now connection-only and can no longer be used for login or registration. Sites relying on Shopify login must provide another login method.
+
+### Fixed
+- Fixed a medium-severity authentication vulnerability.
+
 ## 2.0.21 - 2026-09-30
 
 ### Changed
