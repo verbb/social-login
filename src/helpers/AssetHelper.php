@@ -175,10 +175,9 @@ class AssetHelper
 
             return $imagePath;
         } catch (Throwable $e) {
-            SocialLogin::error('Error fetching remote image “{email}” - “{url}” for “{provider}”: “{message}” {file}:{line}', [
-                'email' => $user->email,
-                'url' => $url,
-                'message' => $e->getMessage(),
+            SocialLogin::error('Error fetching remote image from “{origin}”: {exception} {file}:{line}', [
+                'origin' => self::_getLoggableOrigin($url),
+                'exception' => $e::class,
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
@@ -190,6 +189,31 @@ class AssetHelper
         }
 
         return null;
+    }
+
+    /** Reduce provider URLs to non-sensitive endpoint metadata for diagnostics. */
+    private static function _getLoggableOrigin(string $url): string
+    {
+        try {
+            $uri = new Uri($url);
+        } catch (Throwable) {
+            return '[invalid URL]';
+        }
+
+        $scheme = strtolower($uri->getScheme());
+        $host = rtrim(strtolower(trim($uri->getHost(), '[]')), '.');
+
+        if (!in_array($scheme, ['http', 'https'], true) || $host === '') {
+            return '[invalid URL]';
+        }
+
+        if (str_contains($host, ':')) {
+            $host = "[$host]";
+        }
+
+        $port = $uri->getPort();
+
+        return $scheme . '://' . $host . ($port !== null ? ":$port" : '');
     }
 
     private static function _isValidTemporaryFilename(string $filename): bool

@@ -5,6 +5,7 @@
 ### Fixed
 - Fixed a medium-severity resource exhaustion vulnerability.
 - Fixed a low-severity information exposure vulnerability.
+- Fixed a low-severity sensitive data exposure vulnerability.
 
 ## 2.0.22 - 2026-10-02
 

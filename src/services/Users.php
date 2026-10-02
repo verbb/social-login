@@ -239,7 +239,6 @@ class Users extends Component
 
         if (!$user->email) {
             SocialLogin::error('Provider “{provider}” does not support emails, unable to create user.', ['provider' => $provider->handle]);
-            SocialLogin::error(Json::encode($userProfile->response));
 
             return null;
         }
@@ -328,12 +327,11 @@ class Users extends Component
                     $user->$attribute = $value;
                 }
             } catch (Throwable $e) {
-                SocialLogin::error('Error mapping field “{field}:{profile}” - “{value}” for “{provider}”: “{message}” {file}:{line}', [
-                    'value' => Json::encode($value),
+                SocialLogin::error('Error mapping field “{field}:{profile}” for “{provider}”: {exception} {file}:{line}', [
                     'field' => $attribute,
                     'profile' => $profile,
                     'provider' => $provider->handle,
-                    'message' => $e->getMessage(),
+                    'exception' => $e::class,
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
                 ]);
