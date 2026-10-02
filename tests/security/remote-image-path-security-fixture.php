@@ -7,6 +7,7 @@ use craft\helpers\FileHelper;
 
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\RequestOptions;
 
 $vendorPath = getenv('VERBB_SOCIAL_LOGIN_TEST_VENDOR') ?: dirname(__DIR__, 2) . '/vendor';
 
@@ -37,12 +38,13 @@ final class RemoteImagePathFixturePaths
 
 final class RemoteImagePathFixtureConfig
 {
+    public array $guzzleOptions = [];
     public MockHandler $handler;
 
     public function getConfigFromFile(string $filename): array
     {
         if ($filename === 'guzzle') {
-            return ['handler' => $this->handler];
+            return ['handler' => $this->handler, ...$this->guzzleOptions];
         }
 
         if ($filename === 'social-login') {
@@ -184,6 +186,102 @@ try {
     remoteImagePathFixtureAssert(basename($result) === 'user-photo.png', 'Valid images must preserve their expected filename.');
     remoteImagePathFixtureAssert(str_starts_with(FileHelper::normalizePath($result), $socialLoginRoot . '/'), 'Valid images must remain under the Social Login root.');
     remoteImagePathFixtureAssert(!is_file(substr($result, 0, -4)), 'Successful downloads must not retain an extensionless file.');
+    $defaultOptions = $config->handler->getLastOptions();
+    remoteImagePathFixtureAssert(($defaultOptions[RequestOptions::CONNECT_TIMEOUT] ?? 0) > 0 && $defaultOptions[RequestOptions::CONNECT_TIMEOUT] <= 5, 'Remote images must use the plugin connection timeout ceiling.');
+    remoteImagePathFixtureAssert(($defaultOptions[RequestOptions::TIMEOUT] ?? 0) > 0 && $defaultOptions[RequestOptions::TIMEOUT] <= 15, 'Remote images must use the plugin transfer timeout ceiling.');
+
+    $configuredHeadersSeen = 0;
+    $configuredProgress = static function(): void {
+    };
+    $configuredWrite = static function(): int {
+        return 0;
+    };
+    $config->guzzleOptions = [
+        RequestOptions::CONNECT_TIMEOUT => 4,
+        RequestOptions::CURL => [
+            CURLOPT_CONNECTTIMEOUT_MS => 3000,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 20,
+            CURLOPT_NOSIGNAL => false,
+            CURLOPT_POSTREDIR => CURL_REDIR_POST_ALL,
+            CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
+            CURLOPT_TCP_KEEPALIVE => 1,
+            CURLOPT_TIMEOUT_MS => 7000,
+            CURLOPT_WRITEFUNCTION => $configuredWrite,
+        ],
+        RequestOptions::ON_HEADERS => static function() use (&$configuredHeadersSeen): void {
+            $configuredHeadersSeen++;
+        },
+        RequestOptions::PROGRESS => $configuredProgress,
+        RequestOptions::TIMEOUT => 8,
+    ];
+    $config->handler = new MockHandler([
+        new Response(200, ['Content-Type' => 'image/png'], base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=')),
+    ]);
+
+    $boundedResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'https://example.test/photo', 'bounded-photo');
+    $capturedOptions = $config->handler->getLastOptions();
+
+    remoteImagePathFixtureAssert(is_string($boundedResult) && is_file($boundedResult), 'Valid images must remain compatible with configured request options.');
+    remoteImagePathFixtureAssert(($capturedOptions[RequestOptions::CONNECT_TIMEOUT] ?? null) === 3.0, 'A stricter raw connection timeout must be converted to the canonical request option.');
+    remoteImagePathFixtureAssert(($capturedOptions[RequestOptions::TIMEOUT] ?? null) === 7.0, 'A stricter raw transfer timeout must be converted to the canonical request option.');
+    remoteImagePathFixtureAssert($configuredHeadersSeen === 1, 'Configured response-header callbacks must remain intact.');
+    remoteImagePathFixtureAssert(($capturedOptions[RequestOptions::PROGRESS] ?? null) === $configuredProgress, 'Configured progress callbacks must remain intact.');
+    remoteImagePathFixtureAssert(($capturedOptions[RequestOptions::CURL][CURLOPT_TCP_KEEPALIVE] ?? null) === 1, 'Unrelated configured cURL options must remain intact.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_CONNECTTIMEOUT_MS, $capturedOptions[RequestOptions::CURL]), 'Raw connection timeout options must not override the canonical ceiling.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_FOLLOWLOCATION, $capturedOptions[RequestOptions::CURL]), 'Raw redirect handling must not bypass validated manual redirects.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_MAXREDIRS, $capturedOptions[RequestOptions::CURL]), 'Raw redirect limits must not override the plugin redirect policy.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_NOSIGNAL, $capturedOptions[RequestOptions::CURL]), 'Raw signal handling must not conflict with canonical timeout options.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_POSTREDIR, $capturedOptions[RequestOptions::CURL]), 'Raw redirect method controls must not bypass validated manual redirects.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_REDIR_PROTOCOLS, $capturedOptions[RequestOptions::CURL]), 'Raw redirect protocol controls must not bypass validated manual redirects.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_TIMEOUT_MS, $capturedOptions[RequestOptions::CURL]), 'Raw transfer timeout options must not override the canonical ceiling.');
+    remoteImagePathFixtureAssert(!array_key_exists(CURLOPT_WRITEFUNCTION, $capturedOptions[RequestOptions::CURL]), 'Raw write callbacks must not bypass the bounded sink.');
+    $config->guzzleOptions = [];
+
+    $config->handler = new MockHandler([
+        new Response(200, ['Content-Length' => (string)((10 * 1024 * 1024) + 1), 'Content-Type' => 'image/png'], 'small body'),
+    ]);
+
+    $filesBeforeOversizedHeader = count(FileHelper::findFiles($socialLoginRoot));
+    $oversizedHeaderResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'https://example.test/photo', 'oversized-header-photo');
+
+    remoteImagePathFixtureAssert($oversizedHeaderResult === null, 'Oversized declared response bodies must be rejected before download.');
+    remoteImagePathFixtureAssert(count(FileHelper::findFiles($socialLoginRoot)) === $filesBeforeOversizedHeader, 'Rejected declared response bodies must not leave extensionless files.');
+
+    $maximumImage = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=');
+    $maximumImage .= str_repeat("\0", (10 * 1024 * 1024) - strlen($maximumImage));
+    $config->handler = new MockHandler([
+        new Response(200, ['Content-Type' => 'image/png'], $maximumImage),
+    ]);
+
+    $maximumResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'https://example.test/photo', 'maximum-photo');
+
+    remoteImagePathFixtureAssert(is_string($maximumResult) && is_file($maximumResult), 'Images exactly at the download limit must remain valid.');
+    remoteImagePathFixtureAssert(filesize($maximumResult) === 10 * 1024 * 1024, 'The complete image at the download limit must be retained.');
+
+    $oversizedImage = $maximumImage . "\0";
+    $config->handler = new MockHandler([
+        new Response(200, ['Content-Type' => 'image/png'], $oversizedImage),
+    ]);
+
+    $filesBeforeOversizedBody = count(FileHelper::findFiles($socialLoginRoot));
+    $oversizedResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'https://example.test/photo', 'oversized-photo');
+
+    remoteImagePathFixtureAssert($oversizedResult === null, 'Images over the cumulative download limit must be rejected.');
+    remoteImagePathFixtureAssert(count(FileHelper::findFiles($socialLoginRoot)) === $filesBeforeOversizedBody, 'Rejected oversized downloads must not leave extensionless files.');
+
+    $sixMegabytes = 6 * 1024 * 1024;
+    $fiveMegabytes = 5 * 1024 * 1024;
+    $config->handler = new MockHandler([
+        new Response(302, ['Location' => '/large-redirect'], str_repeat('a', $sixMegabytes)),
+        new Response(200, ['Content-Type' => 'image/png'], str_repeat('b', $fiveMegabytes)),
+    ]);
+
+    $filesBeforeCumulativeBody = count(FileHelper::findFiles($socialLoginRoot));
+    $cumulativeResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'https://example.test/photo', 'cumulative-photo');
+
+    remoteImagePathFixtureAssert($cumulativeResult === null, 'Redirect bodies and final responses must share one cumulative download limit.');
+    remoteImagePathFixtureAssert(count(FileHelper::findFiles($socialLoginRoot)) === $filesBeforeCumulativeBody, 'Rejected cumulative downloads must not leave extensionless files.');
 
     $config->handler = new MockHandler([
         new Response(302, ['Location' => '/redirected-photo']),

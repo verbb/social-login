@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed a medium-severity resource exhaustion vulnerability.
+
 ## 2.0.22 - 2026-10-02
 
 ### Changed

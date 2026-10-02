@@ -7,18 +7,26 @@ use Craft;
 use craft\elements\User;
 use craft\helpers\FileHelper;
 
+use RuntimeException;
+use Throwable;
+
+use GuzzleHttp\Psr7\FnStream;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
+use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\RequestOptions;
-
-use Throwable;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class AssetHelper
 {
     // Constants
     // =========================================================================
 
+    private const MAX_CONNECT_TIME = 5.0;
+    private const MAX_DOWNLOAD_BYTES = 10 * 1024 * 1024;
     private const MAX_REDIRECTS = 5;
+    private const MAX_TRANSFER_TIME = 15.0;
 
 
     // Static Methods
@@ -34,22 +42,86 @@ class AssetHelper
         $trustedHosts = self::_trustedRemoteImageHosts();
         $verifyConnectedIp = !$client->getConfig('proxy');
         $tempPath = self::_createTempPath($user) . '/' . $filename;
+        $curlOptions = $client->getConfig(RequestOptions::CURL);
+        $curlOptions = is_array($curlOptions) ? $curlOptions : [];
+        $connectTimeout = self::_boundedTimeout(
+            self::MAX_CONNECT_TIME,
+            $client->getConfig(RequestOptions::CONNECT_TIMEOUT),
+            self::_removeCurlTimeout($curlOptions, 'CURLOPT_CONNECTTIMEOUT'),
+            self::_removeCurlTimeout($curlOptions, 'CURLOPT_CONNECTTIMEOUT_MS', 1000),
+        );
+        $transferTimeout = self::_boundedTimeout(
+            self::MAX_TRANSFER_TIME,
+            $client->getConfig(RequestOptions::TIMEOUT),
+            self::_removeCurlTimeout($curlOptions, 'CURLOPT_TIMEOUT'),
+            self::_removeCurlTimeout($curlOptions, 'CURLOPT_TIMEOUT_MS', 1000),
+        );
+
+        // Raw cURL controls are applied after Guzzle's managed options, so they must not replace these safeguards.
+        foreach ([
+            'CURLOPT_FILE',
+            'CURLOPT_FOLLOWLOCATION',
+            'CURLOPT_MAXREDIRS',
+            'CURLOPT_NOSIGNAL',
+            'CURLOPT_POSTREDIR',
+            'CURLOPT_REDIR_PROTOCOLS',
+            'CURLOPT_REDIR_PROTOCOLS_STR',
+            'CURLOPT_WRITEFUNCTION',
+        ] as $curlOption) {
+            self::_removeCurlOption($curlOptions, $curlOption);
+        }
+
+        $configuredOnHeaders = $client->getConfig(RequestOptions::ON_HEADERS);
+        $canInspectHeaders = !self::_hasCurlOption($curlOptions, 'CURLOPT_HEADERFUNCTION');
         $extension = null;
 
         try {
+            $deadline = microtime(true) + self::MAX_TRANSFER_TIME;
             $redirects = 0;
+            $remainingBytes = self::MAX_DOWNLOAD_BYTES;
 
             while (true) {
                 $baseOptions = array_filter([
-                    RequestOptions::CURL => $client->getConfig(RequestOptions::CURL),
+                    RequestOptions::CURL => $curlOptions,
                     RequestOptions::ON_STATS => $client->getConfig(RequestOptions::ON_STATS),
                 ], fn(mixed $value): bool => $value !== null);
                 $request = RemoteImageUrl::prepareRequest($url, $trustedHosts, $verifyConnectedIp, $baseOptions);
                 $url = $request['url'];
                 $options = $request['options'];
-                $options[RequestOptions::SINK] = $tempPath;
+                $remainingTime = $deadline - microtime(true);
+
+                if ($remainingTime <= 0) {
+                    throw new RuntimeException('The remote image download exceeded its time limit.');
+                }
+
+                $options[RequestOptions::CONNECT_TIMEOUT] = min($connectTimeout, $remainingTime);
                 $options[RequestOptions::HTTP_ERRORS] = false;
-                $response = $client->request('GET', $url, $options);
+                $options[RequestOptions::TIMEOUT] = min($transferTimeout, $remainingTime);
+
+                if ($canInspectHeaders) {
+                    $options[RequestOptions::ON_HEADERS] = static function(ResponseInterface $response) use (&$remainingBytes, $configuredOnHeaders): void {
+                        $contentLength = trim($response->getHeaderLine('Content-Length'));
+
+                        if ($contentLength !== '' && preg_match('/^\d+$/D', $contentLength) && (float)$contentLength > $remainingBytes) {
+                            throw new RuntimeException('The remote image exceeds the download size limit.');
+                        }
+
+                        if ($configuredOnHeaders !== null) {
+                            $configuredOnHeaders($response);
+                        }
+                    };
+                }
+
+                // Bound bytes at the sink so chunked, compressed, or dishonest responses cannot bypass headers.
+                $sink = self::_createBoundedSink($tempPath, $remainingBytes);
+                $options[RequestOptions::SINK] = $sink;
+
+                try {
+                    $response = $client->request('GET', $url, $options);
+                } finally {
+                    $sink->close();
+                }
+
                 $statusCode = $response->getStatusCode();
 
                 if (!in_array($statusCode, [301, 302, 303, 307, 308], true)) {
@@ -128,6 +200,66 @@ class AssetHelper
             !str_contains($filename, "\0") &&
             !str_contains($filename, '/') &&
             !str_contains($filename, '\\');
+    }
+
+    private static function _boundedTimeout(float $ceiling, mixed ...$configuredTimeouts): float
+    {
+        foreach ($configuredTimeouts as $configuredTimeout) {
+            if (is_numeric($configuredTimeout) && (float)$configuredTimeout > 0) {
+                $ceiling = min($ceiling, (float)$configuredTimeout);
+            }
+        }
+
+        return $ceiling;
+    }
+
+    private static function _createBoundedSink(string $tempPath, int &$remainingBytes): StreamInterface
+    {
+        $stream = Utils::streamFor(Utils::tryFopen($tempPath, 'w+'));
+
+        return FnStream::decorate($stream, [
+            'write' => static function(string $data) use ($stream, &$remainingBytes): int {
+                $length = strlen($data);
+
+                if ($length > $remainingBytes) {
+                    throw new RuntimeException('The remote image exceeds the download size limit.');
+                }
+
+                $written = $stream->write($data);
+                $remainingBytes -= $written;
+
+                return $written;
+            },
+        ]);
+    }
+
+    private static function _hasCurlOption(array $curlOptions, string $constant): bool
+    {
+        return defined($constant) && array_key_exists(constant($constant), $curlOptions);
+    }
+
+    private static function _removeCurlTimeout(array &$curlOptions, string $constant, int $divisor = 1): ?float
+    {
+        $value = self::_removeCurlOption($curlOptions, $constant);
+
+        if (!is_numeric($value) || (float)$value <= 0) {
+            return null;
+        }
+
+        return (float)$value / $divisor;
+    }
+
+    private static function _removeCurlOption(array &$curlOptions, string $constant): mixed
+    {
+        if (!defined($constant)) {
+            return null;
+        }
+
+        $option = constant($constant);
+        $value = $curlOptions[$option] ?? null;
+        unset($curlOptions[$option]);
+
+        return $value;
     }
 
     private static function _createTempPath(User $user): string
