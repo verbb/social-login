@@ -87,12 +87,14 @@ class AuthController extends Controller
 
             return $this->redirect($redirect);
         } catch (Throwable $e) {
-            Session::setError('social-login', Craft::t('social-login', 'Unable to process callback for “{provider}”: “{message}”', [
-                'provider' => $providerHandle,
-                'message' => $e->getMessage(),
+            $reference = Craft::$app->getSecurity()->generateRandomString(16);
+
+            Session::setError('social-login', Craft::t('social-login', 'Unable to process the social login request. Reference: {reference}.', [
+                'reference' => $reference,
             ]));
 
-            SocialLogin::error('Unable to process callback for “{provider}”: “{message}” {file}:{line}', [
+            SocialLogin::error('[{reference}] Unable to process callback for “{provider}”: “{message}” {file}:{line}', [
+                'reference' => $reference,
                 'provider' => $providerHandle,
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),

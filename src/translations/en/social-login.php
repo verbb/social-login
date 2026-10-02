@@ -72,7 +72,7 @@ return [
   'Unable to find provider.' => 'Unable to find provider.',
   'Unable to find provider “{provider}”.' => 'Unable to find provider “{provider}”.',
   'Unable to login.' => 'Unable to login.',
-  'Unable to process callback for “{provider}”: “{message}”' => 'Unable to process callback for “{provider}”: “{message}”',
+  'Unable to process the social login request. Reference: {reference}.' => 'Unable to process the social login request. Reference: {reference}.',
   'Unable to register user: {json}.' => 'Unable to register user: {json}.',
   'User Field' => 'User Field',
   'User Field Mapping' => 'User Field Mapping',
