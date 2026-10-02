@@ -2,7 +2,7 @@
 namespace verbb\sociallogin\services;
 
 use verbb\sociallogin\SocialLogin;
-use verbb\sociallogin\assetbundles\SocialLoginAsset;
+use verbb\sociallogin\web\assets\cp\SocialLoginAsset;
 
 use Craft;
 use craft\base\Component;

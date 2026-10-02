@@ -205,7 +205,7 @@ Craft.SocialLogin.CpLoginForm = Garnish.Base.extend({
             let $btn = $(e.currentTarget);
             let $form = $('form#x');
 
-            // Ensure that we ping the session endpoint again to get a valid CSRF token, 
+            // Ensure that we ping the session endpoint again to get a valid CSRF token,
             // as the previous session has ended, and the current token is invalid.
             const { data } = await Craft.sendActionRequest('GET', 'users/session-info');
 

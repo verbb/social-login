@@ -1,10 +1,10 @@
 <?php
-namespace verbb\sociallogin\assetbundles;
+namespace verbb\sociallogin\web\assets\cp;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
 
-use verbb\base\assetbundles\CpAsset as VerbbCpAsset;
+use verbb\base\web\assets\cp\CpAsset as VerbbCpAsset;
 
 class SocialLoginAsset extends AssetBundle
 {
@@ -13,7 +13,7 @@ class SocialLoginAsset extends AssetBundle
 
     public function init(): void
     {
-        $this->sourcePath = "@verbb/sociallogin/resources/dist";
+        $this->sourcePath = '@verbb/sociallogin/web/assets/cp/dist';
 
         $this->depends = [
             VerbbCpAsset::class,
@@ -21,11 +21,11 @@ class SocialLoginAsset extends AssetBundle
         ];
 
         $this->js = [
-            'js/social-login.js',
+            'social-login.js',
         ];
 
         $this->css = [
-            'css/social-login.css',
+            'social-login.css',
         ];
 
         parent::init();
