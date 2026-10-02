@@ -7,10 +7,20 @@ use Craft;
 use craft\elements\User;
 use craft\helpers\FileHelper;
 
+use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriResolver;
+use GuzzleHttp\RequestOptions;
+
 use Throwable;
 
 class AssetHelper
 {
+    // Constants
+    // =========================================================================
+
+    private const MAX_REDIRECTS = 5;
+
+
     // Static Methods
     // =========================================================================
 
@@ -20,15 +30,45 @@ class AssetHelper
             return null;
         }
 
-        $tempPath = self::_createTempPath($user) . '/' . $filename;
         $client = Craft::createGuzzleClient();
+        $trustedHosts = self::_trustedRemoteImageHosts();
+        $verifyConnectedIp = !$client->getConfig('proxy');
+        $tempPath = self::_createTempPath($user) . '/' . $filename;
         $extension = null;
 
         try {
-            // Download the file and save in the temp path
-            $response = $client->request('GET', $url, [
-                'sink' => $tempPath,
-            ]);
+            $redirects = 0;
+
+            while (true) {
+                $baseOptions = array_filter([
+                    RequestOptions::CURL => $client->getConfig(RequestOptions::CURL),
+                    RequestOptions::ON_STATS => $client->getConfig(RequestOptions::ON_STATS),
+                ], fn(mixed $value): bool => $value !== null);
+                $request = RemoteImageUrl::prepareRequest($url, $trustedHosts, $verifyConnectedIp, $baseOptions);
+                $url = $request['url'];
+                $options = $request['options'];
+                $options[RequestOptions::SINK] = $tempPath;
+                $options[RequestOptions::HTTP_ERRORS] = false;
+                $response = $client->request('GET', $url, $options);
+                $statusCode = $response->getStatusCode();
+
+                if (!in_array($statusCode, [301, 302, 303, 307, 308], true)) {
+                    break;
+                }
+
+                if ($redirects >= self::MAX_REDIRECTS || !$response->hasHeader('Location')) {
+                    return null;
+                }
+
+                $location = trim($response->getHeaderLine('Location'));
+
+                if ($location === '') {
+                    return null;
+                }
+
+                $url = (string)UriResolver::resolve(new Uri($url), new Uri($location));
+                $redirects++;
+            }
 
             if ($response->getStatusCode() !== 200) {
                 return null;
@@ -101,5 +141,13 @@ class AssetHelper
         }
 
         return $tempPath;
+    }
+
+    private static function _trustedRemoteImageHosts(): array
+    {
+        $config = Craft::$app->getConfig()->getConfigFromFile('social-login');
+        $trustedHosts = is_array($config) ? ($config['trustedRemoteImageHosts'] ?? []) : [];
+
+        return is_array($trustedHosts) ? $trustedHosts : [];
     }
 }

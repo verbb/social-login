@@ -104,6 +104,14 @@ Whether new users have their profile populated from providers. This can be fine-
 A collection of settings for a provider.
 :::
 
+::: reference
+### `trustedRemoteImageHosts`
+
+**Type:** `array` · **Default:** `[]`
+
+Exact host names for intentionally trusted private profile image servers. Public HTTP and HTTPS image URLs do not need to be listed. Add only host names, without a scheme or path; if a redirect targets another private host, that host needs its own entry.
+:::
+
 
 ### User Groups
 A collection of User Group UIDs should be provided.
@@ -119,6 +127,15 @@ By default, Social Login will continue to use its legacy callback URI. If you ne
 
 ```php
 'redirectUri' => 'https://craft.example.com/actions/social-login/auth/callback',
+```
+
+### Trusted Private Image Hosts
+Private profile image servers are blocked by default. If a mapped provider image is intentionally hosted on a private server, add its exact host name in `social-login.php`:
+
+```php
+'trustedRemoteImageHosts' => [
+    'profile-images.example.test',
+],
 ```
 
 ## Provider Settings

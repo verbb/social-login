@@ -20,6 +20,7 @@ require $vendorPath . '/craftcms/cms/src/Craft.php';
 require dirname(__DIR__, 2) . '/src/base/PluginTrait.php';
 require dirname(__DIR__, 2) . '/src/models/Settings.php';
 require dirname(__DIR__, 2) . '/src/SocialLogin.php';
+require dirname(__DIR__, 2) . '/src/helpers/RemoteImageUrl.php';
 require dirname(__DIR__, 2) . '/src/helpers/AssetHelper.php';
 
 final class RemoteImagePathFixturePaths
@@ -40,7 +41,15 @@ final class RemoteImagePathFixtureConfig
 
     public function getConfigFromFile(string $filename): array
     {
-        return $filename === 'guzzle' ? ['handler' => $this->handler] : [];
+        if ($filename === 'guzzle') {
+            return ['handler' => $this->handler];
+        }
+
+        if ($filename === 'social-login') {
+            return ['trustedRemoteImageHosts' => ['example.test']];
+        }
+
+        return [];
     }
 
     public function getGeneral(): object
@@ -118,6 +127,7 @@ Craft::$app = new RemoteImagePathFixtureApp(
 );
 $createTempPath = new ReflectionMethod(AssetHelper::class, '_createTempPath');
 $socialLoginRoot = FileHelper::normalizePath($tempRoot . '/social-login');
+\verbb\sociallogin\helpers\RemoteImageUrl::setResolver(fn(string $host): array => ['10.0.0.10']);
 
 try {
     $emails = [
@@ -175,8 +185,47 @@ try {
     remoteImagePathFixtureAssert(str_starts_with(FileHelper::normalizePath($result), $socialLoginRoot . '/'), 'Valid images must remain under the Social Login root.');
     remoteImagePathFixtureAssert(!is_file(substr($result, 0, -4)), 'Successful downloads must not retain an extensionless file.');
 
+    $config->handler = new MockHandler([
+        new Response(302, ['Location' => '/redirected-photo']),
+        new Response(200, ['Content-Type' => 'image/png'], base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=')),
+    ]);
+
+    $redirectedResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'http://example.test/photo', 'redirected-photo');
+
+    remoteImagePathFixtureAssert(is_string($redirectedResult) && is_file($redirectedResult), 'Public HTTP images must continue through a permitted relative redirect.');
+
+    $config->handler = new MockHandler([
+        new Response(302, ['Location' => '/photo-1']),
+        new Response(302, ['Location' => '/photo-2']),
+        new Response(302, ['Location' => '/photo-3']),
+        new Response(302, ['Location' => '/photo-4']),
+        new Response(302, ['Location' => '/photo-5']),
+        new Response(200, ['Content-Type' => 'image/png'], base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=')),
+    ]);
+
+    $fiveRedirectResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'https://example.test/photo', 'five-redirect-photo');
+
+    remoteImagePathFixtureAssert(is_string($fiveRedirectResult) && is_file($fiveRedirectResult), 'Five permitted redirects must remain compatible.');
+
+    $config->handler = new MockHandler([
+        new Response(302, ['Location' => '/photo-1']),
+        new Response(302, ['Location' => '/photo-2']),
+        new Response(302, ['Location' => '/photo-3']),
+        new Response(302, ['Location' => '/photo-4']),
+        new Response(302, ['Location' => '/photo-5']),
+        new Response(302, ['Location' => '/photo-6']),
+        new Response(200, ['Content-Type' => 'image/png'], base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=')),
+    ]);
+
+    $tooManyRedirectsResult = AssetHelper::fetchRemoteImage($ordinaryUser, 'https://example.test/photo', 'too-many-redirects-photo');
+
+    remoteImagePathFixtureAssert($tooManyRedirectsResult === null, 'More than five redirects must be rejected.');
+    remoteImagePathFixtureAssert(count($config->handler) === 1, 'The redirect limit must stop before the next destination is requested.');
+
     echo "Remote image path security fixture passed.\n";
 } finally {
+    \verbb\sociallogin\helpers\RemoteImageUrl::setResolver(null);
+
     if (is_dir($fixtureRoot)) {
         FileHelper::removeDirectory($fixtureRoot);
     }
