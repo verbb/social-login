@@ -28,7 +28,7 @@
         "craftcms/cms": "^5.0.0",
         "craftcms/url-validator": "^1.1",
         "verbb/auth": "^2.0.48",
-        "verbb/base": "^3.0.19"
+        "verbb/base": "^3.0.20"
     },
     "autoload": {
         "psr-4": {
