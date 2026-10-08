@@ -345,8 +345,8 @@ class Users extends Component
     {
         $source = $provider->matchUserSource;
 
-        if ($source === 'email' && $userProfile->getEmailVerified() !== true) {
-            SocialLogin::info('Skipping initial email match for “{provider}” because the provider did not verify the email address.', ['provider' => $provider->handle]);
+        if ($source === 'email' && !$provider->canMatchEmail($userProfile)) {
+            SocialLogin::info('Skipping initial email match for “{provider}” because the email matching policy was not satisfied.', ['provider' => $provider->handle]);
 
             return null;
         }
@@ -393,7 +393,13 @@ class Users extends Component
             throw new RuntimeException("Provider {$provider->handle} matched more than one Craft user.");
         }
 
-        return $users[0] ?? null;
+        $user = $users[0] ?? null;
+
+        if ($user && $source === 'email' && !$provider->canMatchEmail($userProfile, $user)) {
+            return null;
+        }
+
+        return $user;
     }
 
     private function _canLogin(User $user): bool

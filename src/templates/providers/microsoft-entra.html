@@ -4,12 +4,31 @@
 {% include 'social-login/providers/_oauth' %}
 
 {{ macros.proxyField(fieldVariables, 'autosuggestField', {
-    label: 'Tenant ' | t('social-login'),
-    instructions: 'Enter your {provider} {label} here.' | t('social-login'),
+    label: 'Tenant' | t('social-login'),
+    instructions: 'Enter a tenant ID or verified domain, such as example.onmicrosoft.com. Shared endpoints such as common cannot be used for trusted email matching.' | t('social-login'),
     name: 'tenant',
     required: false,
     suggestEnvVars: true,
     value: provider.tenant ?? '',
     warning: macros.configWarning("providers.#{provider.handle}.tenant", 'social-login'),
     errors: provider.getErrors('tenant'),
+}) }}
+
+{{ macros.proxyField(fieldVariables, 'lightswitchField', {
+    label: 'Trust Tenant for Email Matching' | t('social-login'),
+    instructions: 'Allow initial matching to non-administrator Craft accounts using this tenant’s managed sign-in addresses. Only enable this if you trust its administrators to control access to those accounts. Guests are excluded.' | t('social-login'),
+    name: 'trustTenantEmail',
+    on: provider.trustTenantEmail,
+    warning: macros.configWarning("providers.#{provider.handle}.trustTenantEmail", 'social-login'),
+    errors: provider.getErrors('trustTenantEmail'),
+}) }}
+
+{{ macros.proxyField(fieldVariables, 'autosuggestField', {
+    label: 'Trusted Email Domains' | t('social-login'),
+    instructions: 'Enter exact domains separated by commas, such as example.com. Each must be verified by this tenant. The email must also match the member’s sign-in name. Wildcards and subdomains are not included automatically.' | t('social-login'),
+    name: 'trustedEmailDomains',
+    suggestEnvVars: true,
+    value: provider.trustedEmailDomains,
+    warning: macros.configWarning("providers.#{provider.handle}.trustedEmailDomains", 'social-login'),
+    errors: provider.getErrors('trustedEmailDomains'),
 }) }}

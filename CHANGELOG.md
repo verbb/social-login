@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Add opt-in Microsoft Entra tenant email matching for managed members in explicitly allowed, tenant-verified domains.
+
 ## 2.0.24 - 2026-10-07
 
 ### Changed

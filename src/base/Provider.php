@@ -129,6 +129,14 @@ abstract class Provider extends SavableComponent implements ProviderInterface
         return static::supportsAdminRegistration() && $this->allowAdminRegistration;
     }
 
+    /**
+     * Check both the email's authority and, once found, the proposed account before linking it.
+     */
+    public function canMatchEmail(UserProfile $userProfile, ?User $user = null): bool
+    {
+        return $userProfile->getEmailVerified() === true;
+    }
+
     public function getSettingsHtml(): ?string
     {
         $handle = StringHelper::toKebabCase(static::$handle);

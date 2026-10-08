@@ -1,6 +1,15 @@
 <?php
 
 return [
+  'Tenant' => 'Tenant',
+  'Trust Tenant for Email Matching' => 'Trust Tenant for Email Matching',
+  'Trusted Email Domains' => 'Trusted Email Domains',
+  'Enter a tenant ID or verified domain, such as example.onmicrosoft.com. Shared endpoints such as common cannot be used for trusted email matching.' => 'Enter a tenant ID or verified domain, such as example.onmicrosoft.com. Shared endpoints such as common cannot be used for trusted email matching.',
+  'Allow initial matching to non-administrator Craft accounts using this tenant’s managed sign-in addresses. Only enable this if you trust its administrators to control access to those accounts. Guests are excluded.' => 'Allow initial matching to non-administrator Craft accounts using this tenant’s managed sign-in addresses. Only enable this if you trust its administrators to control access to those accounts. Guests are excluded.',
+  'Enter exact domains separated by commas, such as example.com. Each must be verified by this tenant. The email must also match the member’s sign-in name. Wildcards and subdomains are not included automatically.' => 'Enter exact domains separated by commas, such as example.com. Each must be verified by this tenant. The email must also match the member’s sign-in name. Wildcards and subdomains are not included automatically.',
+  'Enter at least one exact email domain. Wildcards and URLs are not allowed.' => 'Enter at least one exact email domain. Wildcards and URLs are not allowed.',
+  'Trusted tenant matching requires Email for both user matching fields.' => 'Trusted tenant matching requires Email for both user matching fields.',
+  'Trusted email matching requires a specific organisation tenant ID or verified domain.' => 'Trusted email matching requires a specific organisation tenant ID or verified domain.',
   'Account' => 'Account',
   'Allow Admin Registration' => 'Allow Admin Registration',
   'Advanced' => 'Advanced',
