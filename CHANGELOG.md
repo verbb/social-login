@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.25 - 2026-10-08
 
 ### Added
 - Add provider connection controls to your own Craft account screen. ([#52](https://github.com/verbb/social-login/issues/52))
