@@ -7,6 +7,8 @@ use verbb\sociallogin\variables\SocialLoginVariable;
 
 use Craft;
 use craft\base\Plugin;
+use craft\elements\User;
+use craft\events\DefineHtmlEvent;
 use craft\events\RegisterCpAlertsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\Cp;
@@ -52,7 +54,12 @@ class SocialLogin extends Plugin
                 }
             });
 
-            Craft::$app->getView()->hook('cp.users.edit.details', [$this->getService(), 'renderUserSidebar']);
+            Event::on(User::class, User::EVENT_DEFINE_SIDEBAR_HTML, function(DefineHtmlEvent $event) {
+                // Provider authorization always connects the current user, so only show it on their own account.
+                if (!$event->static && $event->sender->id && $event->sender->id === Craft::$app->getUser()->getId()) {
+                    $event->html .= $this->getService()->renderUserSidebar();
+                }
+            });
         }
 
         if (Craft::$app->getRequest()->getIsSiteRequest()) {

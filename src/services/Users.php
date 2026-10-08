@@ -246,7 +246,26 @@ class Users extends Component
             return null;
         }
 
-        if (!Craft::$app->getElements()->saveElement($user)) {
+        // A refused email match does not mean the account is new. Check all statuses, but never
+        // treat the existence of an email address as permission to sign into that account.
+        if (!$user->id && User::find()->status(null)->email(Db::escapeParam($user->email))->exists()) {
+            Session::setError('social-login', Craft::t('social-login', 'Unable to sign in with this provider. Sign in using another method, then connect this provider from your account.'));
+
+            return null;
+        }
+
+        // Inactive users skip Craft's uniqueness rules in the default scenario. Validate the
+        // registration identity, then preserve the caller's scenario for profile-field validation.
+        $scenario = $user->getScenario();
+        $user->setScenario(User::SCENARIO_REGISTRATION);
+
+        try {
+            $validRegistration = $user->validate(['username', 'email']);
+        } finally {
+            $user->setScenario($scenario);
+        }
+
+        if (!$validRegistration || !Craft::$app->getElements()->saveElement($user)) {
             $error = Craft::t('social-login', 'Unable to register user: {json}.', ['json' => Json::encode($user->getErrors())]);
             Session::setError('social-login', $error);
             SocialLogin::error($error);

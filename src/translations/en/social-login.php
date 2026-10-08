@@ -1,6 +1,9 @@
 <?php
 
 return [
+  'Connect {provider}' => 'Connect {provider}',
+  'Disconnect {provider}' => 'Disconnect {provider}',
+  'Unable to sign in with this provider. Sign in using another method, then connect this provider from your account.' => 'Unable to sign in with this provider. Sign in using another method, then connect this provider from your account.',
   'Tenant' => 'Tenant',
   'Trust Tenant for Email Matching' => 'Trust Tenant for Email Matching',
   'Trusted Email Domains' => 'Trusted Email Domains',

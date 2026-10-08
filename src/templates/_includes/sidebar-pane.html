@@ -1,12 +1,6 @@
 {% do view.registerAssetBundle('verbb\\sociallogin\\web\\assets\\cp\\SocialLoginAsset') %}
 
-{% set providers = [] %}
-
-{% for provider in craft.socialLogin.getEnabledProviders() %}
-    {% if craft.socialLogin.isConnected(provider.handle) %}
-        {% set providers = providers | merge([provider]) %}
-    {% endif %}
-{% endfor %}
+{% set providers = craft.socialLogin.getEnabledProviders() %}
 
 {% if providers %}
     <div class="ss-user-pane pane">
@@ -20,7 +14,11 @@
                     <span class="ss-provider-label bold">{{ provider.name }}</span>
                 </div>
 
-                <button type="button" class="formsubmit btn small" data-form="false" data-action="social-login/auth/disconnect" data-param="provider" data-value="{{ provider.handle }}">{{ 'Disconnect' | t('social-login') }}</button>
+                {% if craft.socialLogin.isConnected(provider.handle) %}
+                    <button type="button" class="formsubmit btn small" data-form="false" data-action="social-login/auth/disconnect" data-param="provider" data-value="{{ provider.handle }}" aria-label="{{ 'Disconnect {provider}' | t('social-login', { provider: provider.name }) }}">{{ 'Disconnect' | t('social-login') }}</button>
+                {% else %}
+                    <a class="btn small" href="{{ craft.socialLogin.getConnectUrl(provider.handle) }}" aria-label="{{ 'Connect {provider}' | t('social-login', { provider: provider.name }) }}">{{ 'Connect' | t('social-login') }}</a>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

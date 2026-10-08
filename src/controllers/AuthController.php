@@ -61,13 +61,13 @@ class AuthController extends Controller
         $isCpRequest = ($transaction['context']['isCpRequest'] ?? null) === true;
 
         if (!$providerHandle || !($provider = SocialLogin::$plugin->getProviders()->getProviderByHandle($providerHandle))) {
-            Session::setError('social-login', Craft::t('social-login', 'Unable to find provider.'));
+            Session::setError('social-login', Craft::t('social-login', 'Unable to find provider.'), $isCpRequest);
 
             return $this->redirect($origin);
         }
 
         if (!$this->_isAuthorizationAllowed($provider, $isConnect, $isCpRequest, $transaction['initiatingUserId'] ?? null)) {
-            Session::setError('social-login', Craft::t('social-login', 'This login method is no longer available.'));
+            Session::setError('social-login', Craft::t('social-login', 'This login method is no longer available.'), $isCpRequest);
 
             return $this->redirect($origin);
         }
@@ -76,14 +76,14 @@ class AuthController extends Controller
             $token = $oauth->callback('social-login', $provider, $providerHandle);
 
             if (!SocialLogin::$plugin->getUsers()->loginOrRegisterUser($provider, $token, $transaction['initiatingUserId'] ?? null, $isConnect)) {
-                if (!Session::getError('social-login')) {
-                    Session::setError('social-login', Craft::t('social-login', 'An error occurred when logging in.'));
-                }
+                // Callbacks can be site requests even when authorization began in the control panel.
+                $error = Session::getError('social-login') ?: Craft::t('social-login', 'An error occurred when logging in.');
+                Session::setError('social-login', $error, $isCpRequest);
 
                 return $this->redirect($origin);
             }
 
-            Session::setNotice('social-login', Craft::t('social-login', "{provider} connected.", ['provider' => $provider->getName()]));
+            Session::setNotice('social-login', Craft::t('social-login', "{provider} connected.", ['provider' => $provider->getName()]), $isCpRequest);
 
             return $this->redirect($redirect);
         } catch (Throwable $e) {
@@ -91,7 +91,7 @@ class AuthController extends Controller
 
             Session::setError('social-login', Craft::t('social-login', 'Unable to process the social login request. Reference: {reference}.', [
                 'reference' => $reference,
-            ]));
+            ]), $isCpRequest);
 
             SocialLogin::error('[{reference}] Unable to process callback for “{provider}”: “{message}” {file}:{line}', [
                 'reference' => $reference,

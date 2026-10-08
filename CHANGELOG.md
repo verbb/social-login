@@ -3,10 +3,13 @@
 ## Unreleased
 
 ### Added
+- Add provider connection controls to your own Craft account screen. ([#52](https://github.com/verbb/social-login/issues/52))
 - Add opt-in Microsoft Entra tenant email matching for managed members in explicitly allowed, tenant-verified domains.
 - Add a control-panel notice and account ownership review for provider accounts connected to multiple Craft users. ([#60](https://github.com/verbb/social-login/issues/60))
 
 ### Fixed
+- Fix inactive duplicate users being created when an existing account cannot be matched to a provider email. ([#52](https://github.com/verbb/social-login/issues/52))
+- Fix provider callback feedback not appearing when returning to the control panel. ([#52](https://github.com/verbb/social-login/issues/52))
 - Fix legacy provider connection conflicts blocking plugin updates. Migrations preserve ambiguous connections for administrator review, including on previously upgraded sites, while unaffected accounts continue to sign in. ([#60](https://github.com/verbb/social-login/issues/60))
 
 ## 2.0.24 - 2026-10-07
