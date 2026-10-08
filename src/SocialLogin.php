@@ -7,7 +7,10 @@ use verbb\sociallogin\variables\SocialLoginVariable;
 
 use Craft;
 use craft\base\Plugin;
+use craft\events\RegisterCpAlertsEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\helpers\Cp;
+use craft\helpers\Html;
 use craft\helpers\UrlHelper;
 use craft\web\UrlManager;
 use craft\web\twig\variables\CraftVariable;
@@ -20,7 +23,7 @@ class SocialLogin extends Plugin
     // =========================================================================
 
     public bool $hasCpSettings = true;
-    public string $schemaVersion = '1.0.2';
+    public string $schemaVersion = '1.0.3';
 
 
     // Traits
@@ -42,6 +45,12 @@ class SocialLogin extends Plugin
 
         if (Craft::$app->getRequest()->getIsCpRequest()) {
             $this->_registerCpRoutes();
+
+            Event::on(Cp::class, Cp::EVENT_REGISTER_ALERTS, function(RegisterCpAlertsEvent $event) {
+                if (Craft::$app->getUser()->getIsAdmin() && $this->getConnections()->getOwnershipConflicts()) {
+                    $event->alerts[] = Html::a(Craft::t('social-login', 'Some Social Login accounts are connected to multiple Craft users. Review account connections.'), UrlHelper::cpUrl('social-login/connections'));
+                }
+            });
 
             Craft::$app->getView()->hook('cp.users.edit.details', [$this->getService(), 'renderUserSidebar']);
         }
@@ -80,6 +89,7 @@ class SocialLogin extends Plugin
         Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function(RegisterUrlRulesEvent $event) {
             $event->rules['social-login'] = 'social-login/settings';
             $event->rules['social-login/settings'] = 'social-login/settings';
+            $event->rules['social-login/connections'] = 'social-login/connections';
             $event->rules['social-login/settings/general'] = 'social-login/settings';
             $event->rules['social-login/settings/providers'] = 'social-login/providers';
             $event->rules['social-login/settings/providers/edit/<handle:{handle}>'] = 'social-login/providers/edit';

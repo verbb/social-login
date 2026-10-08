@@ -4,6 +4,10 @@
 
 ### Added
 - Add opt-in Microsoft Entra tenant email matching for managed members in explicitly allowed, tenant-verified domains.
+- Add a control-panel notice and account ownership review for provider accounts connected to multiple Craft users. ([#60](https://github.com/verbb/social-login/issues/60))
+
+### Fixed
+- Fix legacy provider connection conflicts blocking plugin updates. Migrations preserve ambiguous connections for administrator review, including on previously upgraded sites, while unaffected accounts continue to sign in. ([#60](https://github.com/verbb/social-login/issues/60))
 
 ## 2.0.24 - 2026-10-07
 

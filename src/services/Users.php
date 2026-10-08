@@ -62,6 +62,14 @@ class Users extends Component
         }
 
         $isNewUser = false;
+        $connections = SocialLogin::$plugin->getConnections()->getAllConnectionsByProviderIdentifier($provider->handle, $identifier);
+
+        // Check ambiguity before matching, registering, syncing profiles or writing credentials.
+        if (count(array_unique(array_map(fn(Connection $connection) => $connection->userId, $connections))) > 1) {
+            Session::setError('social-login', Craft::t('social-login', 'This provider account is connected to more than one Craft user. Contact a site administrator to review its connections.'));
+
+            return false;
+        }
 
         if ($isConnect) {
             if (!$currentUser || !$initiatingUserId || $currentUser->id !== $initiatingUserId) {
@@ -70,19 +78,14 @@ class Users extends Component
                 return false;
             }
 
-            $user = $currentUser;
-        } else {
-            $connections = SocialLogin::$plugin->getConnections()->getAllConnectionsByProviderIdentifier($provider->handle, $identifier);
-
-            if (count($connections) > 1) {
-                SocialLogin::error('Provider identity “{provider}:{identifier}” has conflicting Craft user connections.', [
-                    'provider' => $provider->handle,
-                    'identifier' => $identifier,
-                ]);
+            if ($connections && $connections[0]->userId !== $currentUser->id) {
+                Session::setError('social-login', Craft::t('social-login', 'This provider account is already connected to another Craft user.'));
 
                 return false;
             }
 
+            $user = $currentUser;
+        } else {
             if ($connections) {
                 $user = $connections[0]->getUser();
             } else {

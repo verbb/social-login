@@ -42,7 +42,7 @@ class Install extends Migration
             'userId' => $this->integer()->notNull(),
             'providerHandle' => $this->string(64)->notNull(),
             'identifier' => $this->string()->notNull(),
-            'identityKey' => $this->char(64)->notNull(),
+            'identityKey' => $this->char(64),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid(),

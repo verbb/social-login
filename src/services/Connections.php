@@ -3,6 +3,7 @@ namespace verbb\sociallogin\services;
 
 use verbb\sociallogin\SocialLogin;
 use verbb\sociallogin\events\ConnectionEvent;
+use verbb\sociallogin\helpers\ConnectionIdentities;
 use verbb\sociallogin\models\Connection;
 use verbb\sociallogin\records\Connection as ConnectionRecord;
 
@@ -13,12 +14,13 @@ use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
 
 use yii\base\Component;
-
-use verbb\auth\Auth;
-use verbb\auth\models\Token;
+use yii\db\Transaction;
 
 use RuntimeException;
 use Throwable;
+
+use verbb\auth\Auth;
+use verbb\auth\models\Token;
 
 class Connections extends Component
 {
@@ -72,11 +74,20 @@ class Connections extends Component
 
     public function getAllConnectionsByProviderIdentifier(string $providerHandle, string $identifier): array
     {
-        $rows = $this->_createConnectionQuery()
-            ->where(['identityKey' => Connection::identityKey($providerHandle, $identifier)])
-            ->all();
+        $rows = ConnectionIdentities::find(Craft::$app->getDb(), $providerHandle, $identifier);
 
         return array_map(fn(array $row) => new Connection($row), $rows);
+    }
+
+    public function getOwnershipConflicts(): array
+    {
+        return array_filter(ConnectionIdentities::getGroups(Craft::$app->getDb(), true), [ConnectionIdentities::class, 'isConflict']);
+    }
+
+    public function resolveOwnershipConflict(string $key, int $userId, string $fingerprint): void
+    {
+        ConnectionIdentities::resolve(Craft::$app->getDb(), $key, $userId, $fingerprint);
+        $this->_connections = null;
     }
 
     public function upsertConnection(Connection $connection, Token $token): bool
@@ -120,6 +131,13 @@ class Connections extends Component
 
         try {
             $saved = Craft::$app->getDb()->transaction(function() use ($connection, $token, $isNewConnection) {
+                // Check preserved legacy links as well as claimed keys, including calls that bypass upsertConnection().
+                foreach ($this->getAllConnectionsByProviderIdentifier($connection->providerHandle, $connection->identifier) as $existing) {
+                    if ($existing->userId !== $connection->userId) {
+                        throw new RuntimeException('This provider account is connected to another Craft user.');
+                    }
+                }
+
                 $connectionRecord = $this->_getConnectionRecordById($connection->id);
                 $connectionRecord->userId = $connection->userId;
                 $connectionRecord->providerHandle = $connection->providerHandle;
@@ -148,7 +166,7 @@ class Connections extends Component
                 }
 
                 return true;
-            });
+            }, Transaction::SERIALIZABLE);
         } catch (Throwable $e) {
             SocialLogin::error('Unable to save login connection: {message}', ['message' => $e->getMessage()]);
 

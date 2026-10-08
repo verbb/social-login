@@ -1,0 +1,39 @@
+{% extends '_layouts/cp' %}
+{% requireAdmin false %}
+
+{% set title = 'Review Account Connections' | t('social-login') %}
+{% set crumbs = craft.app.config.general.allowAdminChanges ? [{ label: 'Social Login' | t('social-login'), url: url('social-login') }] : [] %}
+
+{% block content %}
+    {% if conflicts %}
+        <p>{{ 'Some provider accounts are connected to more than one Craft user. Choose which user should sign in with each account. Other users and their content will be kept; only their connection to this provider account will be removed.' | t('social-login') }}</p>
+        {% for conflict in conflicts %}
+            <section class="pane">
+                <h2>{{ conflict.providerName }}</h2>
+                <p>{{ 'Provider account ID' | t('social-login') }}: <code>{{ conflict.identifier }}</code></p>
+                <form method="post">
+                    {{ csrfInput() }}
+                    {{ actionInput('social-login/connections/resolve') }}
+                    {{ hiddenInput('identity', conflict.key) }}
+                    {{ hiddenInput('fingerprint', conflict.fingerprint) }}
+                    <fieldset>
+                        <legend>{{ 'Which Craft user owns this provider account?' | t('social-login') }}</legend>
+                        {% for userId, user in conflict.users %}
+                            <div class="field">
+                                <label>
+                                    <input type="radio" name="userId" value="{{ userId }}" required>
+                                    {{ user.friendlyName }} — {{ user.email }}
+                                </label>
+                                {% if user.cpEditUrl %}<a href="{{ user.cpEditUrl }}">{{ 'View user' | t('social-login') }}</a>{% endif %}
+                            </div>
+                        {% endfor %}
+                    </fieldset>
+                    <p>{{ 'The selected user will keep this connection. The other listed users will need another sign-in method.' | t('social-login') }}</p>
+                    <button type="submit" class="btn submit">{{ 'Save account owner' | t('social-login') }}</button>
+                </form>
+            </section>
+        {% endfor %}
+    {% else %}
+        <p>{{ 'No account connections need review.' | t('social-login') }}</p>
+    {% endif %}
+{% endblock %}
