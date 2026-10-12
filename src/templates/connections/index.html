@@ -6,7 +6,7 @@
 
 {% block content %}
     {% if conflicts %}
-        <p>{{ 'Some provider accounts are connected to more than one Craft user. Choose which user should sign in with each account. Other users and their content will be kept; only their connection to this provider account will be removed.' | t('social-login') }}</p>
+        <p>{{ 'These provider accounts require an ownership review, even if only one Craft user remains connected. Confirm which user should sign in with each account. Other users and their content will be kept; only their connection to this provider account will be removed.' | t('social-login') }}</p>
         {% for conflict in conflicts %}
             <section class="pane">
                 <h2>{{ conflict.providerName }}</h2>

@@ -64,9 +64,10 @@ class Users extends Component
         $isNewUser = false;
         $connections = SocialLogin::$plugin->getConnections()->getAllConnectionsByProviderIdentifier($provider->handle, $identifier);
 
-        // Check ambiguity before matching, registering, syncing profiles or writing credentials.
-        if (count(array_unique(array_map(fn(Connection $connection) => $connection->userId, $connections))) > 1) {
-            Session::setError('social-login', Craft::t('social-login', 'This provider account is connected to more than one Craft user. Contact a site administrator to review its connections.'));
+        // Pending ownership reviews survive participant removal and must precede all account changes.
+        if (array_filter($connections, fn(Connection $connection) => $connection->identityKey === null)
+            || count(array_unique(array_map(fn(Connection $connection) => $connection->userId, $connections))) > 1) {
+            Session::setError('social-login', Craft::t('social-login', 'This provider account requires an ownership review. Contact a site administrator to review its connections.'));
 
             return false;
         }

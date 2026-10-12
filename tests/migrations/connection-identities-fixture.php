@@ -99,7 +99,7 @@ $repair = new m261008_000000_preserve_provider_identity_conflicts(['db' => $db, 
 function conflicts(): array
 {
     global $db;
-    return array_filter(ConnectionIdentities::getGroups($db, true), [ConnectionIdentities::class, 'isConflict']);
+    return array_filter(ConnectionIdentities::getGroups($db), [ConnectionIdentities::class, 'needsReview']);
 }
 
 function resolveIdentity(string $identifier, int $userId, ?string $fingerprint = null): void
@@ -174,7 +174,18 @@ try {
     check('follow-up migration and retries complete', $repair->safeUp() && $repair->safeUp());
     check('follow-up migration is idempotent and preserves ownership decisions', rows($table) === $before && rows($tokens) === $beforeTokens);
 
+    $key = ConnectionModel::identityKey('microsoftEntra', 'object-b');
+    $staleFingerprint = ConnectionIdentities::fingerprint(conflicts()[$key]);
+    $db->createCommand()->delete($table, ['id' => 6])->execute();
+    check('removing a participant leaves a single-owner group pending review', isset(conflicts()[$key]) && count(conflicts()[$key]) === 1);
+    $before = rows($table);
+    $beforeTokens = rows($tokens);
+    check('both migration reruns preserve the unresolved survivor', $legacy->safeUp() && $repair->safeUp() && rows($table) === $before && rows($tokens) === $beforeTokens);
+    reject(fn() => resolveIdentity('object-b', 50, $staleFingerprint), 'pre-disconnect fingerprint cannot approve the survivor');
+    $fingerprint = ConnectionIdentities::fingerprint(conflicts()[$key]);
     resolveIdentity('object-b', 50);
+    check('an explicit decision approves a single remaining owner', !isset(conflicts()[$key]) && ConnectionIdentities::find($db, 'microsoftEntra', 'object-b')[0]['identityKey'] === $key);
+    reject(fn() => resolveIdentity('object-b', 50, $fingerprint), 'a single-owner approval cannot be replayed');
     $db->createCommand()->dropTable($tokens)->execute();
     resolveIdentity('object-c', 70);
     check('resolution supports legacy sites without Auth token tables', conflicts() === []);
@@ -190,8 +201,9 @@ try {
     $db->createCommand()->dropIndex('social_login_identity_key_unq', $table)->execute();
     $db->createCommand()->update($table, ['identityKey' => null])->execute();
     $db->createCommand()->insert($table, ['id' => 12, 'userId' => 120, 'providerHandle' => 'microsoftEntra', 'identifier' => 'object-b'])->execute();
-    check('partial schema and missing index recover automatically', $repair->safeUp() && count(conflicts()) === 1 && isset($db->getSchema()->findIndexes($table)['social_login_identity_key_unq']));
+    check('partial schema restores its index without approving pre-existing NULL groups', $repair->safeUp() && count(conflicts()) === count(ConnectionIdentities::getGroups($db)) && isset($db->getSchema()->findIndexes($table)['social_login_identity_key_unq']));
     check('partial recovery preserves all conflicting candidates', count(ConnectionIdentities::find($db, 'microsoftEntra', 'object-b')) === 2);
+    check('partial recovery leaves every pre-existing NULL key pending review', (new Query())->from($table)->where(['not', ['identityKey' => null]])->count() == 0);
 
     $db->createCommand()->delete($table)->execute();
     check('empty table migrates successfully', $legacy->safeUp() && $repair->safeUp());

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed a medium-severity authentication vulnerability.
+
 ## 2.0.25 - 2026-10-08
 
 ### Added

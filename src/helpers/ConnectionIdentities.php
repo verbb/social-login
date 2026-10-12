@@ -30,6 +30,10 @@ class ConnectionIdentities
             ->from($table)
             ->orderBy(['id' => SORT_ASC]);
 
+        if ($db->columnExists($table, 'identityKey')) {
+            $query->addSelect('identityKey');
+        }
+
         if ($unresolvedOnly) {
             $query->where(['identityKey' => null]);
         }
@@ -65,9 +69,15 @@ class ConnectionIdentities
         return count(array_unique(array_column($connections, 'userId'))) > 1;
     }
 
+    public static function needsReview(array $connections): bool
+    {
+        // Removing a participant does not approve the remaining legacy owner.
+        return self::isConflict($connections) || (bool)array_filter($connections, fn(array $row) => array_key_exists('identityKey', $row) && $row['identityKey'] === null);
+    }
+
     public static function fingerprint(array $connections): string
     {
-        return hash('sha256', Json::encode(array_map(fn(array $row) => [(int)$row['id'], (int)$row['userId']], $connections)));
+        return hash('sha256', Json::encode(array_map(fn(array $row) => [(int)$row['id'], (int)$row['userId'], $row['identityKey'] ?? null], $connections)));
     }
 
     public static function migrate(Migration $migration): bool
@@ -79,19 +89,21 @@ class ConnectionIdentities
             return true;
         }
 
-        if (!$db->columnExists($table, 'identityKey')) {
+        $hadIdentityKey = $db->columnExists($table, 'identityKey');
+
+        if (!$hadIdentityKey) {
             $migration->addColumn($table, 'identityKey', $migration->char(64)->after('identifier'));
         } else {
             $migration->alterColumn($table, 'identityKey', $migration->char(64)->null());
         }
 
-        $db->transaction(function() use ($db, $migration, $table) {
-            // Rebuild from surviving records, including partial/manual repairs. NULL reserves no owner;
-            // the original links remain discoverable and cannot fall through to first-time matching.
+        $db->transaction(function() use ($db, $migration, $table, $hadIdentityKey) {
+            // Only the first backfill may infer ownership. Later runs must preserve pending reviews.
+            $unresolved = $hadIdentityKey ? self::getGroups($db, true) : [];
             $migration->update($table, ['identityKey' => null], '', [], false);
 
             foreach (self::getGroups($db) as $key => $connections) {
-                if (self::isConflict($connections)) {
+                if (isset($unresolved[$key]) || self::isConflict($connections)) {
                     continue;
                 }
 
@@ -119,7 +131,7 @@ class ConnectionIdentities
         $db->transaction(function() use ($db, $key, $userId, $fingerprint) {
             $connections = self::getGroups($db)[$key] ?? [];
 
-            if (!self::isConflict($connections) || !hash_equals(self::fingerprint($connections), $fingerprint)) {
+            if (!self::needsReview($connections) || !hash_equals(self::fingerprint($connections), $fingerprint)) {
                 throw new RuntimeException('These connections have changed. Review the current accounts before choosing an owner.');
             }
 

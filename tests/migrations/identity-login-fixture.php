@@ -137,10 +137,52 @@ try {
     $key = Connection::identityKey('microsoftEntra', $identifier);
     $conflicts = $plugin->getConnections()->getOwnershipConflicts();
     identityCheck('the unresolved identity is available for administrator review', isset($conflicts[$key]));
+    $staleFingerprint = verbb\sociallogin\helpers\ConnectionIdentities::fingerprint($conflicts[$key]);
+    identityCheck('a participant can still disconnect their own unresolved connection', $plugin->getConnections()->deleteConnectionByUserAndProvider($shared->id, 'microsoftEntra'));
+    $survivors = $plugin->getConnections()->getAllConnectionsByProviderIdentifier('microsoftEntra', $identifier);
+    identityCheck('disconnect preserves the other unresolved connection', count($survivors) === 1 && $survivors[0]->userId === $original->id && $survivors[0]->identityKey === null);
+    $before = (new Query())->from('{{%social_login_connections}}')->orderBy('id')->all();
+    $tokensBefore = (new Query())->from('{{%auth_oauth_tokens}}')->orderBy('id')->all();
+    $app->getUser()->setIdentity(null);
+    $app->getUser()->loggedInUserId = null;
+    identityCheck('disconnect cannot authorize login as the remaining disputed owner', !$plugin->getUsers()->loginOrRegisterUser($provider, $token) && $app->getUser()->loggedInUserId === null);
+    identityCheck('the unresolved survivor cannot register another user', User::find()->status(null)->count() === $userCount);
+    $app->getUser()->setIdentity($original);
+    identityCheck('the surviving owner cannot approve quarantine through connect', !$plugin->getUsers()->loginOrRegisterUser($provider, $token, $original->id, true));
+    identityCheck('upsert cannot approve the unresolved survivor', !$plugin->getConnections()->upsertConnection(new Connection([
+        'userId' => $original->id, 'providerHandle' => 'microsoftEntra', 'identifier' => $identifier,
+    ]), $token));
+    foreach ([
+        ['id' => null, 'providerHandle' => 'microsoftEntra', 'identifier' => $identifier],
+        ['id' => $connection->id, 'providerHandle' => 'microsoftEntra', 'identifier' => $identifier],
+        ['id' => $connection->id, 'providerHandle' => 'microsoftEntra', 'identifier' => "renamed-object-$suffix"],
+        ['id' => $connection->id, 'providerHandle' => 'otherProvider', 'identifier' => $identifier],
+    ] as $index => $attributes) {
+        identityCheck("direct save cannot release quarantine (variant $index)", !$plugin->getConnections()->saveConnection(new Connection($attributes + ['userId' => $original->id]), $token, false));
+    }
+    identityCheck('all rejected survivor requests preserve connections and tokens', (new Query())->from('{{%social_login_connections}}')->orderBy('id')->all() === $before && (new Query())->from('{{%auth_oauth_tokens}}')->orderBy('id')->all() === $tokensBefore);
+    $conflicts = $plugin->getConnections()->getOwnershipConflicts();
+    identityCheck('one remaining owner still appears for administrator review', isset($conflicts[$key]) && count($conflicts[$key]) === 1);
+    try {
+        $plugin->getConnections()->resolveOwnershipConflict($key, $original->id, $staleFingerprint);
+        throw new LogicException('A pre-disconnect review fingerprint was accepted.');
+    } catch (RuntimeException) {
+        identityCheck('disconnect invalidates the earlier ownership form', true);
+    }
     $plugin->getConnections()->resolveOwnershipConflict($key, $original->id, verbb\sociallogin\helpers\ConnectionIdentities::fingerprint($conflicts[$key]));
     identityCheck('ownership resolution keeps both Craft users and only the chosen link', User::find()->status(null)->count() === $userCount && count($plugin->getConnections()->getAllConnectionsByProviderIdentifier('microsoftEntra', $identifier)) === 1 && !isset($plugin->getConnections()->getOwnershipConflicts()[$key]));
     $app->getUser()->setIdentity(null);
     identityCheck('resolved identity signs into the chosen owner despite its changed email', $plugin->getUsers()->loginOrRegisterUser($provider, $token) && $app->getUser()->loggedInUserId === $original->id);
+    $otherIdentifier = "new-object-$suffix";
+    $provider->profile = new UserProfile(new MicrosoftEntraResourceOwner([
+        'id' => $otherIdentifier,
+        'mail' => "different-$suffix@example.test",
+        'userPrincipalName' => "different-$suffix@example.test",
+    ]));
+    $app->getUser()->setIdentity($shared);
+    identityCheck('a signed-in user can still link an unclaimed provider account with a different email', $plugin->getUsers()->loginOrRegisterUser($provider, $token, $shared->id, true));
+    $linked = $plugin->getConnections()->getAllConnectionsByProviderIdentifier('microsoftEntra', $otherIdentifier);
+    identityCheck('legitimate linking claims the new identity without creating another user', count($linked) === 1 && $linked[0]->userId === $shared->id && $linked[0]->identityKey === Connection::identityKey('microsoftEntra', $otherIdentifier) && User::find()->status(null)->count() === $userCount);
 } finally {
     $transaction->rollBack();
     $app->setEdition($originalEdition);

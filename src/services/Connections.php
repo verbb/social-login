@@ -81,7 +81,7 @@ class Connections extends Component
 
     public function getOwnershipConflicts(): array
     {
-        return array_filter(ConnectionIdentities::getGroups(Craft::$app->getDb(), true), [ConnectionIdentities::class, 'isConflict']);
+        return array_filter(ConnectionIdentities::getGroups(Craft::$app->getDb()), [ConnectionIdentities::class, 'needsReview']);
     }
 
     public function resolveOwnershipConflict(string $key, int $userId, string $fingerprint): void
@@ -131,14 +131,24 @@ class Connections extends Component
 
         try {
             $saved = Craft::$app->getDb()->transaction(function() use ($connection, $token, $isNewConnection) {
+                $connectionRecord = $this->_getConnectionRecordById($connection->id);
+
+                // Renaming an existing connection must not release its pending ownership review.
+                if (!$connectionRecord->getIsNewRecord() && $connectionRecord->identityKey === null) {
+                    throw new RuntimeException('This provider account requires administrator ownership review.');
+                }
+
                 // Check preserved legacy links as well as claimed keys, including calls that bypass upsertConnection().
                 foreach ($this->getAllConnectionsByProviderIdentifier($connection->providerHandle, $connection->identifier) as $existing) {
+                    if ($existing->identityKey === null) {
+                        throw new RuntimeException('This provider account requires administrator ownership review.');
+                    }
+
                     if ($existing->userId !== $connection->userId) {
                         throw new RuntimeException('This provider account is connected to another Craft user.');
                     }
                 }
 
-                $connectionRecord = $this->_getConnectionRecordById($connection->id);
                 $connectionRecord->userId = $connection->userId;
                 $connectionRecord->providerHandle = $connection->providerHandle;
                 $connectionRecord->identifier = $connection->identifier;

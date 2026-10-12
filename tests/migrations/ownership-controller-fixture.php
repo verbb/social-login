@@ -103,6 +103,24 @@ try {
     $response = $controller->runAction('resolve');
     reviewCheck('valid administrator POST resolves and redirects to the CP review', $response->statusCode === 302 && str_contains($response->getHeaders()->get('location'), 'admin/social-login/connections') && !isset($connections->getOwnershipConflicts()[$key]));
     reviewCheck('ownership selection does not delete either Craft user', User::find()->id([$admin->id, $other->id])->status(null)->count() == 2);
+
+    // Review must include every row when a partial repair left a claimed row beside an unresolved one.
+    $app->getDb()->createCommand()->insert('{{%social_login_connections}}', ['userId' => $other->id, 'providerHandle' => 'microsoftEntra', 'identifier' => $identifier, 'identityKey' => null])->execute();
+    $group = $connections->getOwnershipConflicts()[$key];
+    reviewCheck('review includes both claimed and unresolved rows for the same identity', count($group) === 2 && count(array_filter($group, fn(array $row) => $row['identityKey'] !== null)) === 1);
+    $request->setBodyParams($csrf + ['identity' => $key, 'fingerprint' => ConnectionIdentities::fingerprint($group), 'userId' => $admin->id]);
+    $controller->runAction('resolve');
+    reviewCheck('mixed-state review and resolution use the same fingerprint', !isset($connections->getOwnershipConflicts()[$key]));
+
+    $app->getDb()->createCommand()->update('{{%social_login_connections}}', ['identityKey' => null], ['providerHandle' => 'microsoftEntra', 'identifier' => $identifier])->execute();
+    $group = $connections->getOwnershipConflicts()[$key];
+    reviewCheck('one remaining unresolved owner is available to the administrator', count($group) === 1);
+    $request->setBodyParams($csrf + ['identity' => $key, 'fingerprint' => ConnectionIdentities::fingerprint($group), 'userId' => $admin->id]);
+    $app->getUser()->setIdentity($other);
+    reviewReject('a non-admin cannot approve a single remaining owner', fn() => $controller->runAction('resolve'), yii\web\ForbiddenHttpException::class);
+    $app->getUser()->setIdentity($admin);
+    $controller->runAction('resolve');
+    reviewCheck('an administrator can approve a single remaining owner', !isset($connections->getOwnershipConflicts()[$key]));
 } finally {
     $transaction->rollBack();
     $app->getProjectConfig()->readOnly = false;
