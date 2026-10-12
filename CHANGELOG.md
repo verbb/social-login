@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- Updated Craft API usage to avoid deprecated calls.
+
 ### Fixed
 - Fixed a medium-severity authentication vulnerability.
 

@@ -11,6 +11,7 @@ use verbb\sociallogin\models\UserField;
 use Craft;
 use craft\base\Component;
 use craft\elements\User;
+use craft\enums\CmsEdition;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
 use craft\helpers\Json;
@@ -222,7 +223,7 @@ class Users extends Component
             return null;
         }
 
-        Craft::$app->requireEdition(Craft::Pro);
+        Craft::$app->requireEdition(CmsEdition::Pro);
 
         $user = $this->_createUser($provider, $userProfile);
         $event = new UserEvent([

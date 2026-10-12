@@ -2,7 +2,6 @@
 namespace verbb\sociallogin\migrations;
 
 use craft\db\Migration;
-use craft\helpers\MigrationHelper;
 
 use verbb\auth\Auth;
 
@@ -67,7 +66,7 @@ class Install extends Migration
     public function dropForeignKeys(): void
     {
         if ($this->db->tableExists('{{%social_login_connections}}')) {
-            MigrationHelper::dropAllForeignKeysOnTable('{{%social_login_connections}}', $this);
+            $this->dropForeignKeyIfExists('{{%social_login_connections}}', 'userId');
         }
     }
 
