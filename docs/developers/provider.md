@@ -78,7 +78,7 @@ Automatic first-time matching accepts `email` when the provider confirms that ad
 
 The handle of the field (in Craft) to use when matching an existing Craft user.
 
-Provider ID matching is case-sensitive and exact. Verified email matching follows Craft's normal email comparison. Either match must resolve to one Craft user. If the provider cannot confirm an email, have the user sign in locally and connect the provider instead.
+Provider ID matching is case-sensitive and exact. When matching a provider email to Craft's `email` attribute, the addresses must also have the same spelling, allowing ASCII letter-case differences. Social Login trims surrounding whitespace from the provider email but does not convert internationalised domain names or normalise Unicode representations. Either match must resolve to one Craft user. If automatic matching is unavailable, have the user sign in locally and connect the provider instead.
 :::
 
 ::: reference

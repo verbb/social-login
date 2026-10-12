@@ -115,8 +115,39 @@ try {
     }
 
     $before = linkingCounts();
-    $verified = linkingProfile("verified-$suffix", $owner->email, true);
-    linkingCheck('verified first-time email matching still reaches the existing account', $plugin->getUsers()->loginOrRegisterUser($verified, linkingToken()) && $app->getUser()->loggedInUserId === $owner->id && linkingCounts()[0] === $before[0]);
+    $verified = linkingProfile("verified-$suffix", '  ' . strtoupper($owner->email) . '  ', true);
+    linkingCheck('verified first-time matching permits ASCII case differences and surrounding whitespace', $plugin->getUsers()->loginOrRegisterUser($verified, linkingToken()) && $app->getUser()->loggedInUserId === $owner->id && linkingCounts()[0] === $before[0]);
+
+    // Synthetic profiles exercise the local comparison boundary, not a live provider's email policy.
+    foreach (['müller' => 'muller', 'café' => 'cafe'] as $storedDomain => $assertedDomain) {
+        $email = "comparison-$suffix@$storedDomain.example";
+        $candidate = new User(['username' => $email, 'email' => $email]);
+        linkingCheck("create international email fixture for $storedDomain", $app->getElements()->saveElement($candidate));
+        $app->getUsers()->activateUser($candidate);
+        $assertedEmail = "comparison-$suffix@$assertedDomain.example";
+        $databaseMatch = User::find()->status(null)->email($assertedEmail)->one();
+        linkingCheck("database comparison baseline for $storedDomain", $app->getDb()->getIsMysql() ? $databaseMatch?->id === $candidate->id : $databaseMatch === null);
+        $before = linkingCounts();
+        $app->getUser()->loggedInUserId = null;
+        $settings->enableRegistration = false;
+        $collision = linkingProfile("comparison-$storedDomain-$suffix", $assertedEmail, true);
+        linkingCheck("verified but differently spelled email cannot log in as $storedDomain", !$plugin->getUsers()->loginOrRegisterUser($collision, linkingToken()) && $app->getUser()->loggedInUserId === null && linkingCounts() === $before);
+        $settings->enableRegistration = true;
+        $exact = linkingProfile("exact-$storedDomain-$suffix", $email, true);
+        linkingCheck("identical international email can still match $storedDomain", $plugin->getUsers()->loginOrRegisterUser($exact, linkingToken()) && $app->getUser()->loggedInUserId === $candidate->id && linkingCounts()[0] === $before[0]);
+    }
+
+    $mapped = new User(['username' => "mapped-$suffix@example.test", 'email' => "actual-$suffix@example.test"]);
+    linkingCheck('create user with a separate matching attribute', $app->getElements()->saveElement($mapped));
+    $match = new ReflectionMethod($plugin->getUsers(), '_matchExistingUser');
+    $byUsername = linkingProfile("username-$suffix", $mapped->username, true);
+    $byUsername->matchUserDestination = 'username';
+    linkingCheck('email-to-username matching retains its configured destination', $match->invoke($plugin->getUsers(), $byUsername, $byUsername->profile)?->id === $mapped->id);
+    $byId = linkingProfile($mapped->username, "unrelated-$suffix@example.test");
+    $byId->matchUserSource = 'id';
+    $byId->matchUserDestination = 'username';
+    linkingCheck('provider-ID matching remains independent of email', $match->invoke($plugin->getUsers(), $byId, $byId->profile)?->id === $mapped->id);
+
     $verifiedNew = linkingProfile("verified-new-$suffix", "verified-new-$suffix@example.test", true);
     linkingCheck('new verified users still register, activate and sign in', $plugin->getUsers()->loginOrRegisterUser($verifiedNew, linkingToken()));
 

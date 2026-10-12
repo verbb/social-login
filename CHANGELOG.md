@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- Hardened email-based account matching.
 - Updated Craft API usage to avoid deprecated calls.
 
 ### Fixed

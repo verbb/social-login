@@ -10,7 +10,7 @@ VERBB_SOCIAL_LOGIN_TEST_APP=/path/to/disposable/craft \
 php tests/login/control-panel-fixture.php
 ```
 
-The account-linking fixture exercises the actual user and connection services with synthetic Entra profiles. It verifies explicit connections with different emails, returning identity-based login, rejected initial matches without duplicate records, account status and case-insensitive email collisions, registration-event changes, verified matching, and new-user activation.
+The account-linking fixture exercises the actual user and connection services with synthetic Entra profiles. It verifies explicit connections with different emails, returning identity-based login, rejected initial matches without duplicate records, account status and case-insensitive email collisions, registration-event changes, verified matching, and new-user activation. Email comparison coverage includes ASCII case differences and surrounding provider whitespace, identical internationalised addresses, and differently spelled addresses that MySQL equates. Use MySQL's default accent-insensitive collation for that regression; PostgreSQL should return no candidate for those distinct spellings. These synthetic profiles do not establish which address representations a live provider accepts or returns.
 
 The control-panel fixture exercises Craft’s user sidebar event, own-account controls, disabled providers, locked project configuration, and callback notifications. The OAuth exchange is synthetic; no external provider is contacted. It also verifies that connecting through the callback changes the available control from Connect to Disconnect.
 

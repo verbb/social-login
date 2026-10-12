@@ -419,6 +419,12 @@ class Users extends Component
 
         $user = $users[0] ?? null;
 
+        // Database collations can equate different email spellings.
+        if ($user && $source === 'email' && $destination === 'email'
+            && strcasecmp($user->email, $value) !== 0) {
+            return null;
+        }
+
         if ($user && $source === 'email' && !$provider->canMatchEmail($userProfile, $user)) {
             return null;
         }
