@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.26 - 2026-10-15
 
 ### Changed
 - Hardened email-based account matching.
