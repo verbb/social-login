@@ -3,7 +3,7 @@ namespace verbb\sociallogin\providers;
 
 use verbb\sociallogin\base\OAuthProvider;
 
-use verbb\auth\providers\GitHub as GitHubProvider;
+use verbb\auth\providers\Github as GitHubProvider;
 
 class GitHub extends OAuthProvider
 {
@@ -15,7 +15,7 @@ class GitHub extends OAuthProvider
         return GitHubProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

@@ -5,7 +5,7 @@ use verbb\sociallogin\base\OAuthProvider;
 
 use craft\helpers\App;
 
-use verbb\auth\providers\PayPal as PayPalProvider;
+use verbb\auth\providers\Paypal as PayPalProvider;
 
 class PayPal extends OAuthProvider
 {
@@ -17,7 +17,7 @@ class PayPal extends OAuthProvider
         return PayPalProvider::class;
     }
 
-    
+
     // Properties
     // =========================================================================
 

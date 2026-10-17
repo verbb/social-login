@@ -5,7 +5,7 @@ use verbb\sociallogin\base\OAuthProvider;
 
 use craft\helpers\App;
 
-use verbb\auth\providers\Myob as MyobProvider;
+use verbb\auth\providers\MYOB as MyobProvider;
 
 class Myob extends OAuthProvider
 {
