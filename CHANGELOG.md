@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.26 - 2026-10-17
 
 ### Fixed
 - Fixed authentication provider class references that could fail on case-sensitive filesystems.
