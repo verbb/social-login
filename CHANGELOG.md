@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- Bump `verbb/auth` to 2.0.57 to respect configured Azure prompt options.
+
 ## 2.0.28 - 2026-10-22
 
 ### Changed
