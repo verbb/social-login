@@ -8,6 +8,7 @@
 
 ### Fixed
 - Fixed deleted users being unable to register again through the same provider account. ([#64](https://github.com/verbb/social-login/issues/64))
+- Fixed the Field Mapping tab listing Full Name twice, which discarded the mapping chosen in the first row.
 
 ## 2.0.28 - 2026-10-22
 

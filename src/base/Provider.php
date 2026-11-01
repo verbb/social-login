@@ -240,10 +240,6 @@ abstract class Provider extends SavableComponent implements ProviderInterface
                 'handle' => 'lastName',
             ]),
             new UserField([
-                'name' => 'Full Name',
-                'handle' => 'fullName',
-            ]),
-            new UserField([
                 'name' => 'Photo',
                 'handle' => 'photo',
                 'type' => UserField::TYPE_FILE_UPLOAD,
