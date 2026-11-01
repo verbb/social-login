@@ -126,6 +126,7 @@ class Connections extends Component
 
         if ($runValidation && !$connection->validate()) {
             SocialLogin::info('Connection not saved due to validation error.');
+
             return false;
         }
 
@@ -229,6 +230,8 @@ class Connections extends Component
 
         // Also delete any tokens
         Auth::getInstance()->getTokens()->deleteTokenByOwnerReference('social-login', $connection->id);
+
+        $this->_connections = null;
 
         // Fire an 'afterDeleteConnection' event
         if ($this->hasEventHandlers(self::EVENT_AFTER_DELETE_CONNECTION)) {

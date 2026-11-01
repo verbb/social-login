@@ -6,6 +6,9 @@
 - Force Activation now activates new users when the provider does not report whether their email is verified. Disable the setting if these users should complete Craft's activation flow, especially if new accounts receive control panel access. ([#63](https://github.com/verbb/social-login/issues/63))
 - Bump `verbb/auth` to 2.0.57 to respect configured Azure prompt options.
 
+### Fixed
+- Fixed deleted users being unable to register again through the same provider account. ([#64](https://github.com/verbb/social-login/issues/64))
+
 ## 2.0.28 - 2026-10-22
 
 ### Changed

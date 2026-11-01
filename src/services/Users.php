@@ -73,6 +73,15 @@ class Users extends Component
             return false;
         }
 
+        $trashedConnections = [];
+
+        // Soft-deleted users retain their connections, but must not reserve an otherwise undisputed identity.
+        // Only release them once a new owner is ready, as a failed attempt must not strip a user who may be restored.
+        if ($connections && User::find()->id($connections[0]->userId)->status(null)->trashed(true)->exists()) {
+            $trashedConnections = $connections;
+            $connections = [];
+        }
+
         if ($isConnect) {
             if (!$currentUser || !$initiatingUserId || $currentUser->id !== $initiatingUserId) {
                 SocialLogin::error('A provider connection must be completed by the Craft user who started it.');
@@ -140,6 +149,12 @@ class Users extends Component
                     'actual' => $user->email,
                 ]);
 
+                return false;
+            }
+        }
+
+        foreach ($trashedConnections as $trashedConnection) {
+            if (!SocialLogin::$plugin->getConnections()->deleteConnection($trashedConnection)) {
                 return false;
             }
         }
