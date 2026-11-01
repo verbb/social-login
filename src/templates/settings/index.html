@@ -67,7 +67,7 @@
     <div id="user-registration" class="{{ not settings.enableRegistration ? 'hidden' }}">
         {{ forms.lightswitchField({
             label: 'Force Activation' | t('social-login'),
-            instructions: 'Forces the user to be automatically activated, despite your User settings. This allows users to login straight away, and not be required to verify their email/account.' | t('social-login'),
+            instructions: 'Forces the user to be automatically activated, despite your User settings. This allows users to login straight away, and not be required to verify their email/account. Users whose email the provider reports as unverified must still be activated.' | t('social-login'),
             name: 'forceActivate',
             on: settings.forceActivate,
             errors: settings.getErrors('forceActivate'),

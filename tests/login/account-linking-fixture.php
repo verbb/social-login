@@ -148,8 +148,29 @@ try {
     $byId->matchUserDestination = 'username';
     linkingCheck('provider-ID matching remains independent of email', $match->invoke($plugin->getUsers(), $byId, $byId->profile)?->id === $mapped->id);
 
-    $verifiedNew = linkingProfile("verified-new-$suffix", "verified-new-$suffix@example.test", true);
-    linkingCheck('new verified users still register, activate and sign in', $plugin->getUsers()->loginOrRegisterUser($verifiedNew, linkingToken()));
+    foreach (['verified' => true, 'unknown' => null] as $label => $verified) {
+        $email = "forced-$label-$suffix@example.test";
+        $provider = linkingProfile("forced-$label-$suffix", $email, $verified);
+        $before = linkingCounts();
+        linkingCheck("forced activation allows a new $label user to sign in", $plugin->getUsers()->loginOrRegisterUser($provider, linkingToken()));
+        $created = User::find()->status(null)->email($email)->one();
+        linkingCheck("forced activation persists one active $label user and its identity", $created?->active && $app->getUser()->loggedInUserId === $created->id && linkingCounts() === [$before[0] + 1, $before[1] + 1, $before[2] + 1]);
+        linkingCheck("forced activation does not change the $label email claim", $provider->profile->getEmailVerified() === $verified);
+        $after = linkingCounts();
+        linkingCheck("returning $label user signs in through the saved identity", $plugin->getUsers()->loginOrRegisterUser($provider, linkingToken()) && $app->getUser()->loggedInUserId === $created->id && linkingCounts() === $after);
+    }
+
+    // A provider stating the email is unverified must not be overridden, or its verified owner could later share the account.
+    $email = "forced-unverified-$suffix@example.test";
+    $claimant = linkingProfile("forced-unverified-$suffix", $email, false);
+    $before = linkingCounts();
+    $app->getUser()->loggedInUserId = null;
+    linkingCheck('forced activation leaves a new explicitly unverified user awaiting activation', !$plugin->getUsers()->loginOrRegisterUser($claimant, linkingToken()) && $app->getUser()->loggedInUserId === null);
+    $created = User::find()->status(null)->email($email)->one();
+    linkingCheck('explicitly unverified registration retains its inactive user and connection', $created && !$created->active && linkingCounts() === [$before[0] + 1, $before[1] + 1, $before[2] + 1]);
+    linkingCheck('explains that the explicitly unverified account must be activated', str_contains((string)Session::getError('social-login'), 'activated'));
+    linkingCheck('a verified owner of the address cannot sign in to the inactive account', !$plugin->getUsers()->loginOrRegisterUser(linkingProfile("forced-owner-$suffix", $email, true), linkingToken()) && $app->getUser()->loggedInUserId === null);
+    linkingCheck('retrying does not activate the explicitly unverified user', !$plugin->getUsers()->loginOrRegisterUser($claimant, linkingToken()) && !User::find()->status(null)->id($created->id)->one()->active);
 
     $settings->enableRegistration = false;
     $before = linkingCounts();
@@ -171,13 +192,20 @@ try {
         }
     }
 
-    $before = linkingCounts();
-    $new = linkingProfile("new-$suffix", "new-$suffix@example.test");
-    linkingCheck('genuinely new unverified user still follows activation instead of logging in', !$plugin->getUsers()->loginOrRegisterUser($new, linkingToken()));
-    $created = User::find()->status(null)->email("new-$suffix@example.test")->one();
-    linkingCheck('new unverified registration retains its user and connection for activation', $created && !$created->active && linkingCounts() === [$before[0] + 1, $before[1] + 1, $before[2] + 1]);
-    $app->getUsers()->activateUser($created);
-    linkingCheck('new user can log in through the saved identity after activation', $plugin->getUsers()->loginOrRegisterUser($new, linkingToken()) && $app->getUser()->loggedInUserId === $created->id);
+    $settings->forceActivate = false;
+    foreach (['verified' => true, 'unknown' => null, 'unverified' => false] as $label => $verified) {
+        $before = linkingCounts();
+        $email = "pending-$label-$suffix@example.test";
+        $new = linkingProfile("pending-$label-$suffix", $email, $verified);
+        linkingCheck("disabled forced activation leaves a new $label user awaiting activation", !$plugin->getUsers()->loginOrRegisterUser($new, linkingToken()));
+        $created = User::find()->status(null)->email($email)->one();
+        linkingCheck("new $label registration retains its user and connection for activation", $created && !$created->active && linkingCounts() === [$before[0] + 1, $before[1] + 1, $before[2] + 1]);
+        $settings->forceActivate = true;
+        linkingCheck("forced activation does not activate an existing inactive $label user", !$plugin->getUsers()->loginOrRegisterUser($new, linkingToken()) && !User::find()->status(null)->id($created->id)->one()->active);
+        $settings->forceActivate = false;
+        $app->getUsers()->activateUser($created);
+        linkingCheck("new $label user can sign in after activation", $plugin->getUsers()->loginOrRegisterUser($new, linkingToken()) && $app->getUser()->loggedInUserId === $created->id);
+    }
 } finally {
     $transaction->rollBack();
     $app->setEdition($originalEdition);

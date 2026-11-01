@@ -275,7 +275,9 @@ class Users extends Component
             return null;
         }
 
-        if ($settings->forceActivate && $userProfile->getEmailVerified() === true) {
+        // Forced activation is the site's policy for new accounts when a provider doesn't report email verification,
+        // but it must not override a provider stating that the email is unverified.
+        if ($settings->forceActivate && $userProfile->getEmailVerified() !== false) {
             Craft::$app->getUsers()->activateUser($user);
         }
 

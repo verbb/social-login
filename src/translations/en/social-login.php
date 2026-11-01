@@ -43,7 +43,7 @@ return [
   'Enter your {provider} {label} if using here.' => 'Enter your {provider} {label} if using here.',
   'Field Mapping' => 'Field Mapping',
   'Force Activation' => 'Force Activation',
-  'Forces the user to be automatically activated, despite your User settings. This allows users to login straight away, and not be required to verify their email/account.' => 'Forces the user to be automatically activated, despite your User settings. This allows users to login straight away, and not be required to verify their email/account.',
+  'Forces the user to be automatically activated, despite your User settings. This allows users to login straight away, and not be required to verify their email/account. Users whose email the provider reports as unverified must still be activated.' => 'Forces the user to be automatically activated, despite your User settings. This allows users to login straight away, and not be required to verify their email/account. Users whose email the provider reports as unverified must still be activated.',
   'General Settings' => 'General Settings',
   'Key File ID' => 'Key File ID',
   'Key File Path' => 'Key File Path',

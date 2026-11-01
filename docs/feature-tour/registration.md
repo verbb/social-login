@@ -8,12 +8,16 @@ Not all providers support authenticating a user to allow them to register on you
 :::
 
 ## Front-End Registration
-You don't need to adjust anything to your front-end templates. When the user returns from the offsite provider, a new User element will be created and populated by their user profile. Social Login can activate and sign in the account immediately when the provider confirms ownership of the email. When email verification is unavailable, the account remains inactive and must complete Craft's activation flow.
+You don't need to adjust anything to your front-end templates. When the user returns from the offsite provider, a new User element will be created and populated by their user profile. When [Force Activation](docs:get-started/configuration#forceactivate) is enabled, Social Login activates the new account and allows immediate sign-in, including when the provider does not report whether their email is verified. If the provider reports the email as unverified, the account must complete Craft's activation flow. Existing inactive accounts also require activation before they can sign in.
+
+Disable Force Activation if every new account should complete Craft's activation flow. We recommend this for any provider that lets people sign in with an email address they haven't confirmed and doesn't report that to Social Login.
 
 ## Control Panel Registration
 Registration is allowed for the control panel, but it won't work out of the box, as new users will require the "Access the control panel" user permission. But as you can assign a user group to be assigned to new registrations, you can create one that has control panel access.
 
-Automatic administrator registration is available only for providers that can be restricted to an organization controlled by the site. Azure and Microsoft Entra require a specific tenant rather than `common`, `organizations`, or `consumers`. Salesforce also requires the expected organization ID in its provider settings. Keep Craft's account activation requirements appropriate for the access those accounts receive.
+Automatic administrator registration is available only for providers that can be restricted to an organization controlled by the site. Azure and Microsoft Entra require a specific tenant rather than `common`, `organizations`, or `consumers`. Salesforce also requires the expected organization ID in its provider settings.
+
+If new accounts receive control panel access, through either a user group or automatic administrator registration, it is **highly** recommended you turn off [Force Activation](docs:get-started/configuration#forceactivate) and ensure your Craft User settings verify new registrations. Otherwise, accounts that are activated when they register receive that access as soon as they sign in.
 
 :::danger
 Please read the above carefully if you wish to enable control panel registration, so as not to compromise your install.

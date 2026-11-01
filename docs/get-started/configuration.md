@@ -69,7 +69,7 @@ Whether new users should be created if they don‘t already exist in Craft.
 
 **Type:** `bool` · **Default:** `true`
 
-Whether new users should be automatically activated when the provider confirms ownership of their email. Accounts with an unverified or unknown email remain inactive and follow Craft's activation flow.
+Whether new users should be automatically activated, overriding Craft's account activation requirements. This applies when the provider does not report whether their email is verified. New users whose email the provider reports as unverified still follow Craft's activation flow. Disable this setting to require Craft's activation flow for every new user, including whenever new users receive control panel access. It does not activate existing inactive accounts or change the verification requirements for matching existing users by email.
 :::
 
 ::: reference
