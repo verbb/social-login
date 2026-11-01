@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.29 - 2026-11-01
 
 ### Changed
 - Force Activation now activates new users when the provider does not report whether their email is verified. Disable the setting if these users should complete Craft's activation flow, especially if new accounts receive control panel access. ([#63](https://github.com/verbb/social-login/issues/63))
