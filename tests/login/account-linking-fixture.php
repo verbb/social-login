@@ -112,6 +112,7 @@ try {
         $before = linkingCounts();
         $collision = linkingProfile("collision-$state-$suffix", strtoupper($email));
         linkingCheck("case-insensitive email collision with $state account cannot create records", !$plugin->getUsers()->loginOrRegisterUser($collision, linkingToken()) && linkingCounts() === $before);
+        linkingCheck("refused email match does not reveal that the $state account needs activation", !str_contains((string)Session::getError('social-login'), 'activated'));
     }
 
     $before = linkingCounts();
@@ -201,7 +202,9 @@ try {
         $created = User::find()->status(null)->email($email)->one();
         linkingCheck("new $label registration retains its user and connection for activation", $created && !$created->active && linkingCounts() === [$before[0] + 1, $before[1] + 1, $before[2] + 1]);
         $settings->forceActivate = true;
+        $app->getSession()->removeAllFlashes();
         linkingCheck("forced activation does not activate an existing inactive $label user", !$plugin->getUsers()->loginOrRegisterUser($new, linkingToken()) && !User::find()->status(null)->id($created->id)->one()->active);
+        linkingCheck("returning inactive $label user is told activation is required", str_contains((string)Session::getError('social-login'), 'activated'));
         $settings->forceActivate = false;
         $app->getUsers()->activateUser($created);
         linkingCheck("new $label user can sign in after activation", $plugin->getUsers()->loginOrRegisterUser($new, linkingToken()) && $app->getUser()->loggedInUserId === $created->id);

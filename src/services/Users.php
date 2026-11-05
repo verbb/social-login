@@ -123,6 +123,11 @@ class Users extends Component
         }
 
         if (!$isNewUser && !$this->_canLogin($user)) {
+            // This person authenticated as the account's owner, so can be told how to proceed. Other restrictions stay generic.
+            if (in_array($user->getStatus(), [User::STATUS_PENDING, User::STATUS_INACTIVE], true)) {
+                Session::setError('social-login', Craft::t('social-login', 'Your account must be activated before you can sign in.'));
+            }
+
             $this->_logBlockedUser($user);
 
             return false;

@@ -5,6 +5,7 @@
 ### Fixed
 - Fixed an error when logging in with Reddit.
 - Fixed account connection reviews being impossible to resolve when the only connected user had been deleted.
+- Fixed returning users with an inactive account seeing a generic error instead of being told their account must be activated.
 
 ## 2.0.29 - 2026-11-01
 

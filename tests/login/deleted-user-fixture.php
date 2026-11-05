@@ -16,6 +16,7 @@ $app = require CRAFT_VENDOR_PATH . '/craftcms/cms/bootstrap/web.php';
 use craft\db\Query;
 use craft\elements\User;
 use verbb\auth\clients\microsoftentra\provider\MicrosoftEntraResourceOwner;
+use verbb\auth\helpers\Session;
 use verbb\auth\models\Token;
 use verbb\auth\models\UserProfile;
 use verbb\sociallogin\controllers\ConnectionsController;
@@ -195,7 +196,9 @@ try {
         $connectionsBefore = (new Query())->from('{{%social_login_connections}}')->orderBy('id')->all();
         $tokensBefore = (new Query())->from('{{%auth_oauth_tokens}}')->orderBy('id')->all();
         $app->getUser()->loggedInUserId = null;
+        $app->getSession()->removeAllFlashes();
         deletedUserCheck("$state owner cannot log in or register a replacement", !$plugin->getUsers()->loginOrRegisterUser($provider, deletedUserToken()) && $app->getUser()->loggedInUserId === null && deletedUserCounts() === $before);
+        deletedUserCheck("$state owner is only told about activation when it applies", str_contains((string)Session::getError('social-login'), 'activated') === in_array($state, ['pending', 'inactive'], true));
         deletedUserCheck("$state owner keeps its connection and token", (new Query())->from('{{%social_login_connections}}')->orderBy('id')->all() === $connectionsBefore && (new Query())->from('{{%auth_oauth_tokens}}')->orderBy('id')->all() === $tokensBefore);
     }
 } finally {
