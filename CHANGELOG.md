@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed an error when logging in with Reddit.
+- Fixed account connection reviews being impossible to resolve when the only connected user had been deleted.
 
 ## 2.0.29 - 2026-11-01
 

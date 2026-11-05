@@ -18,6 +18,8 @@ use craft\elements\User;
 use verbb\auth\clients\microsoftentra\provider\MicrosoftEntraResourceOwner;
 use verbb\auth\models\Token;
 use verbb\auth\models\UserProfile;
+use verbb\sociallogin\controllers\ConnectionsController;
+use verbb\sociallogin\models\Connection;
 use verbb\sociallogin\providers\MicrosoftEntra;
 use verbb\sociallogin\SocialLogin;
 
@@ -78,9 +80,12 @@ try {
     $owner = new User(['username' => "owner-$suffix@example.test", 'email' => "owner-$suffix@example.test"]);
     deletedUserCheck('create target for explicit connections', $app->getElements()->saveElement($owner));
     $app->getUsers()->activateUser($owner);
+    $admin = new User(['username' => "admin-$suffix@example.test", 'email' => "admin-$suffix@example.test", 'admin' => true]);
+    deletedUserCheck('create review administrator', $app->getElements()->saveElement($admin));
+    $app->getUsers()->activateUser($admin);
 
     // Craft retains connections when their user is soft-deleted. Exercise recovery on the next callback.
-    foreach (['register', 'disabled', 'cancelled', 'connect', 'review'] as $mode) {
+    foreach (['register', 'disabled', 'cancelled', 'connect', 'review', 'review-restore'] as $mode) {
         $deletedProvider = deletedUserProfile("deleted-$mode-$suffix", "deleted-$mode-$suffix@example.test", true);
         deletedUserCheck("create deletion fixture ($mode)", $plugin->getUsers()->loginOrRegisterUser($deletedProvider, deletedUserToken()));
         $deletedUser = $app->getUsers()->getUserById($app->getUser()->loggedInUserId);
@@ -88,7 +93,7 @@ try {
         $oldToken = $oldConnection->getToken();
         deletedUserCheck("warm connection cache ($mode)", $plugin->getConnections()->getConnectionById($oldConnection->id) !== null);
 
-        if ($mode === 'review') {
+        if (str_starts_with($mode, 'review')) {
             $app->getDb()->createCommand()->update('{{%social_login_connections}}', ['identityKey' => null], ['id' => $oldConnection->id])->execute();
         }
 
@@ -116,10 +121,44 @@ try {
 
         $plugin->getUsers()->off(verbb\sociallogin\services\Users::EVENT_BEFORE_REGISTER, $cancelRegistration);
 
+        if (str_starts_with($mode, 'review')) {
+            deletedUserCheck("deleting an owner does not release a pending ownership review or its token ($mode)", deletedUserCounts() === $before && (new Query())->from('{{%auth_oauth_tokens}}')->where(['id' => $oldToken->id])->exists());
+
+            // A review whose only owner is deleted must still be decidable by an administrator.
+            $request = $app->getRequest();
+            $request->setIsCpRequest(true);
+            $app->getUser()->setIdentity($admin);
+            $controller = new ConnectionsController('connections', $plugin);
+            $key = Connection::identityKey($deletedProvider->handle, $deletedProvider->profile->id);
+            $review = $controller->runAction('index');
+            $conflict = array_values(array_filter($review->variables['conflicts'], fn(array $conflict) => $conflict['key'] === $key))[0] ?? null;
+            deletedUserCheck("review lists its deleted owner ($mode)", isset($conflict['users'][$deletedUser->id]) && $conflict['users'][$deletedUser->id]->trashed);
+            $app->controller = $controller;
+            $html = $app->getView()->renderTemplate($review->template, $review->variables, $review->templateMode);
+            deletedUserCheck("review form labels the deleted owner without a broken profile link ($mode)", str_contains($html, 'name="userId" value="' . $deletedUser->id . '"') && str_contains($html, 'Deleted') && !str_contains($html, 'users/' . $deletedUser->id . '"'));
+
+            $_SERVER['REQUEST_METHOD'] = 'POST';
+            $csrf = [$request->csrfParam => $request->getCsrfToken()];
+            $request->setBodyParams($csrf + ['identity' => $key, 'fingerprint' => $conflict['fingerprint'], 'userId' => $owner->id]);
+            $controller->runAction('resolve');
+            deletedUserCheck("review cannot be given to a user who is not an owner ($mode)", isset($plugin->getConnections()->getOwnershipConflicts()[$key]));
+            $request->setBodyParams($csrf + ['identity' => $key, 'fingerprint' => $conflict['fingerprint'], 'userId' => $deletedUser->id]);
+            $controller->runAction('resolve');
+            deletedUserCheck("administrator can confirm the deleted owner ($mode)", !isset($plugin->getConnections()->getOwnershipConflicts()[$key]) && deletedUserCounts() === $before);
+            $_SERVER['REQUEST_METHOD'] = 'GET';
+            $request->setBodyParams([]);
+            $app->getUser()->setIdentity(null);
+            $request->setIsCpRequest(false);
+        }
+
         if ($mode === 'review') {
-            deletedUserCheck('deleting an owner does not release a pending ownership review or its token', deletedUserCounts() === $before && (new Query())->from('{{%auth_oauth_tokens}}')->where(['id' => $oldToken->id])->exists());
-        } elseif (in_array($mode, ['disabled', 'cancelled'], true)) {
-            deletedUserCheck("failed attempt keeps the deleted user's connection and token ($mode)", deletedUserCounts() === $before && (new Query())->from('{{%social_login_connections}}')->where(['id' => $oldConnection->id])->exists() && (new Query())->from('{{%auth_oauth_tokens}}')->where(['id' => $oldToken->id])->exists());
+            deletedUserCheck('a confirmed deleted owner no longer blocks registration', $plugin->getUsers()->loginOrRegisterUser($deletedProvider, deletedUserToken()) && $app->getUser()->loggedInUserId !== $deletedUser->id);
+        }
+
+        if (in_array($mode, ['disabled', 'cancelled', 'review-restore'], true)) {
+            if ($mode !== 'review-restore') {
+                deletedUserCheck("failed attempt keeps the deleted user's connection and token ($mode)", deletedUserCounts() === $before && (new Query())->from('{{%social_login_connections}}')->where(['id' => $oldConnection->id])->exists() && (new Query())->from('{{%auth_oauth_tokens}}')->where(['id' => $oldToken->id])->exists());
+            }
 
             // Without a verified claim, only the kept connection can identify the restored user.
             unset($deletedProvider->profile->data['emailVerified']);

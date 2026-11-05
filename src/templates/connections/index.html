@@ -22,13 +22,16 @@
                             <div class="field">
                                 <label>
                                     <input type="radio" name="userId" value="{{ userId }}" required>
-                                    {{ user.friendlyName }} — {{ user.email }}
+                                    {{ user.friendlyName }} — {{ user.email }}{% if user.trashed %} ({{ 'Deleted' | t('social-login') }}){% endif %}
                                 </label>
-                                {% if user.cpEditUrl %}<a href="{{ user.cpEditUrl }}">{{ 'View user' | t('social-login') }}</a>{% endif %}
+                                {% if user.cpEditUrl and not user.trashed %}<a href="{{ user.cpEditUrl }}">{{ 'View user' | t('social-login') }}</a>{% endif %}
                             </div>
                         {% endfor %}
                     </fieldset>
                     <p>{{ 'The selected user will keep this connection. The other listed users will need another sign-in method.' | t('social-login') }}</p>
+                    {% if conflict.users | filter(user => user.trashed) %}
+                        <p>{{ 'A selected deleted user only keeps this connection if they are restored first. Otherwise, the next sign-in with this provider account can register a new user, which removes the connection.' | t('social-login') }}</p>
+                    {% endif %}
                     <button type="submit" class="btn submit">{{ 'Save account owner' | t('social-login') }}</button>
                 </form>
             </section>

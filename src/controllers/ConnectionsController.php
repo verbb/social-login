@@ -5,6 +5,7 @@ use verbb\sociallogin\SocialLogin;
 use verbb\sociallogin\helpers\ConnectionIdentities;
 
 use Craft;
+use craft\elements\User;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 
@@ -40,7 +41,8 @@ class ConnectionsController extends Controller
 
             foreach ($connections as $connection) {
                 $userId = (int)$connection['userId'];
-                $users[$userId] = Craft::$app->getUsers()->getUserById($userId);
+                // Include deleted users, or a review with no other owner could never be resolved.
+                $users[$userId] = User::find()->id($userId)->status(null)->trashed(null)->one();
             }
 
             $handle = $connections[0]['providerHandle'];
@@ -60,11 +62,12 @@ class ConnectionsController extends Controller
     public function actionResolve(): Response
     {
         $this->requirePostRequest();
+
         $key = $this->request->getRequiredBodyParam('identity');
         $fingerprint = $this->request->getRequiredBodyParam('fingerprint');
         $userId = filter_var($this->request->getRequiredBodyParam('userId'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-        if (!is_string($key) || !preg_match('/^[a-f0-9]{64}$/D', $key) || !is_string($fingerprint) || !preg_match('/^[a-f0-9]{64}$/D', $fingerprint) || !$userId || !Craft::$app->getUsers()->getUserById($userId)) {
+        if (!is_string($key) || !preg_match('/^[a-f0-9]{64}$/D', $key) || !is_string($fingerprint) || !preg_match('/^[a-f0-9]{64}$/D', $fingerprint) || !$userId || !User::find()->id($userId)->status(null)->trashed(null)->exists()) {
             throw new BadRequestHttpException('Invalid connection ownership selection.');
         }
 
