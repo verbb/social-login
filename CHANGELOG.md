@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed an error when logging in with Reddit.
+
 ## 2.0.29 - 2026-11-01
 
 ### Changed
