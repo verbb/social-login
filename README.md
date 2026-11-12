@@ -17,7 +17,8 @@ Offer selected OAuth providers on front-end login and registration screens, or o
 - Offer provider login on the public site or Craft login screen.
 - Use a connected provider API from project modules and templates.
 
-## Supported Providers
+## Providers
+
 - [Amazon](https://amazon.com)
 - [Amazon Cognito](https://aws.amazon.com/cognito/)
 - [Apple](https://apple.com)
@@ -50,7 +51,7 @@ Offer selected OAuth providers on front-end login and registration screens, or o
 - [Imgur](https://imgur.com)
 - [Instagram](https://instagram.com)
 - [Jira](https://jira.com)
-- [Line](https://line.me)
+- [LINE](https://line.me)
 - [LinkedIn](https://linkedin.com)
 - [Linode](https://linode.com)
 - [Mailchimp](https://mailchimp.com)
@@ -58,7 +59,7 @@ Offer selected OAuth providers on front-end login and registration screens, or o
 - [Meetup](https://meetup.com)
 - [Microsoft](https://microsoft.com)
 - [Microsoft Entra](https://www.microsoft.com/en-au/security/business/identity-access/microsoft-entra-id)
-- [Myob](https://myob.com)
+- [MYOB](https://myob.com)
 - [Neon CRM](https://www.neonone.com/products/neon-crm/)
 - [PayPal](https://paypal.com)
 - [Pinterest](https://pinterest.com)
@@ -71,7 +72,7 @@ Offer selected OAuth providers on front-end login and registration screens, or o
 - [SoundCloud](https://soundcloud.com)
 - [Spotify](https://spotify.com)
 - [Square](https://squareup.com)
-- [StackExchange](https://stackexchange.com)
+- [Stack Exchange](https://stackexchange.com)
 - [Strava](https://strava.com)
 - [Stripe](https://stripe.com)
 - [Telegram](https://telegram.org)
@@ -83,17 +84,19 @@ Offer selected OAuth providers on front-end login and registration screens, or o
 - [Unsplash](https://unsplash.com)
 - [Vend](https://vend.com)
 - [Vimeo](https://vimeo.com)
-- [Vkontakte](https://vk.com)
+- [VKontakte](https://vk.com)
 - [WeChat](https://wechat.com)
 - [Yahoo](https://www.yahoo.com/)
 - [Zendesk](https://zendesk.com)
 - [Zoho](https://zoho.com)
 
 ## Documentation
+
 Visit the [Social Login Plugin page](https://verbb.io/craft-plugins/social-login) for all documentation, guides, pricing and developer resources.
 
 ## Support
-Get in touch with us via the [Social Login Support page](https://verbb.io/craft-plugins/social-login/support) or by [creating a Github issue](https://github.com/verbb/social-login/issues)
+
+Get in touch with us via the [Social Login Support page](https://verbb.io/craft-plugins/social-login/support) or by [creating a GitHub issue](https://github.com/verbb/social-login/issues).
 
 <h2></h2>
 

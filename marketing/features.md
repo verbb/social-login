@@ -23,7 +23,7 @@ Give people the option to use a supported provider on the front end or when logg
 <!-- feature-section media-size="large" -->
 ## Configure each provider
 
-Keep the callback URI and application credentials for each identity service in its own provider settings. Login availability can be controlled separately for the front end and Craft control panel, without making every configured provider appear everywhere.
+Decide where each provider appears. Login availability can be controlled separately for the front end and Craft control panel, without making every configured provider appear everywhere, and each identity service keeps its callback URI and credentials in its own settings.
 
 ![Facebook application credentials and callback details in Social Login’s provider settings.](../screenshots/social-login-provider-settings.png)
 
@@ -32,7 +32,7 @@ Keep the callback URI and application credentials for each identity service in i
 <!-- feature-section media-size="large" -->
 ## Registration on your terms
 
-When a provider identity does not match an existing Craft user, Social Login can create the account, populate supported attributes and custom fields, and place the new user into nominated groups. Matching does not have to rely on email: use another mapped attribute when the provider ID or a project-specific field is the safer identity key.
+When a provider identity does not match an existing Craft user, Social Login can create the account, populate supported attributes and custom fields, and place the new user into nominated groups. Matching does not have to rely on email. Use another mapped attribute when the provider ID or a project-specific field is the safer identity key.
 
 Craft’s activation and verification behaviour remains available, which is particularly important before allowing provider-based registration into the control panel.
 
@@ -41,7 +41,7 @@ Craft’s activation and verification behaviour remains available, which is part
 <!-- feature-section-end -->
 
 <!-- feature-section -->
-## Easy API usage
+## Use provider APIs in your own code
 
 Use the authorised provider client from project code when a feature needs additional API data. Templates remain in control of how each login option is presented, and extension points allow another identity service to join the same workflow.
 <!-- feature-section-end -->
