@@ -14,7 +14,8 @@ Offer selected OAuth providers on front-end login and registration screens, or o
 - Offer provider login on the public site or Craft login screen.
 - Use a connected provider API from project modules and templates.
 
-## Supported Providers
+## Providers
+
 - [Amazon](https://amazon.com)
 - [Amazon Cognito](https://aws.amazon.com/cognito/)
 - [Apple](https://apple.com)
