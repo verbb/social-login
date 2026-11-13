@@ -37,7 +37,7 @@ Whether to enable social login for the control panel.
 
 **Type:** `bool` · **Default:** `false`
 
-Whether to show social login in Craft’s elevated-session “Confirm your identity” modal. Disabled by default because SSO cannot satisfy password elevation and may discard unsaved CP changes when redirecting to a provider. Enable only if you need the legacy behaviour. #58
+Whether to show social login in Craft’s elevated-session “Confirm your identity” modal. Disabled by default because SSO cannot satisfy password elevation and may discard unsaved CP changes when redirecting to a provider. Enable it only if people need to confirm their identity through a provider rather than their password.
 :::
 
 ::: reference
@@ -123,7 +123,7 @@ A collection of User Group UIDs should be provided.
 ```
 
 ### Redirect URI Override
-By default, Social Login will continue to use its legacy callback URI. If you need to use a different callback URI, such as for detached domains or an `/actions/...` callback, set `redirectUri` at the plugin level.
+By default, Social Login builds its callback URI from the `social-login/auth/callback` route. If you need a different callback URI, such as for detached domains or an `/actions/...` callback, set `redirectUri` at the plugin level.
 
 ```php
 'redirectUri' => 'https://craft.example.com/actions/social-login/auth/callback',

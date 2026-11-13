@@ -2,7 +2,7 @@
 Follow the below steps to connect to the Microsoft API.
 
 :::tip
-Choose the **Microsoft Entra** login provider for tenant email matching. **Azure** is also available for existing integrations; the **Microsoft** provider is for legacy use only.
+Choose the **Microsoft Entra** login provider for tenant email matching. The **Azure** and **Microsoft (Legacy)** providers also connect to Microsoft and are kept for sites that already use them.
 :::
 
 ### Connect to the Microsoft/Azure API
@@ -26,7 +26,7 @@ Enable this only for an organisation whose administrators you trust to grant acc
 1. Set **Tenant** to the directory’s tenant ID (GUID, recommended) or a verified domain such as `example.onmicrosoft.com`. `common`, `organizations`, and `consumers` cannot be used for this option.
 1. Enable **Trust Tenant for Email Matching**.
 1. Enter **Trusted Email Domains**, such as `example.com, example.org`. Each domain must also appear in the tenant’s verified domains. Wildcards are not accepted, and subdomains must be listed separately.
-1. Keep both matching fields set to **Email**. When registration is enabled, these appear under **Advanced → Match Existing User**. If you previously changed the matching fields and registration is disabled, use the PHP configuration below to set them. Save the provider.
+1. Keep both matching fields set to **Email**. When registration is enabled, these appear under **Advanced → Match Existing User**. If they're set to something else and registration is disabled, use the PHP configuration below to set them. Save the provider.
 
 For example, a member whose email and sign-in name are both `alex@example.com` can match the existing Craft account with that email when `example.com` is allowed and verified by the configured tenant. Social Login checks the member and organisation through Microsoft Graph using the existing `User.Read` permission, which provides access to the [organisation ID and verified domains](https://learn.microsoft.com/en-us/graph/api/organization-list?view=graph-rest-1.0). An address stored only in the member’s email field, such as an alias different from their sign-in name, does not qualify.
 

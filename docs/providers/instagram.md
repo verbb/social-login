@@ -38,4 +38,4 @@ The [Instagram Basic Display API](https://developers.facebook.com/docs/instagram
 Instagram Basic Display is not an authentication solution. Data returned by the API cannot be used to authenticate your app users or log them into your app. If you need an authentication solution we recommend using Facebook Login instead.
 ```
 
-Instagram can still be used to [connect](docs:feature-tour/connecting) user accounts, but it requires an existing Craft user to link it to.
+Instagram can be used to [connect](docs:feature-tour/connecting) user accounts, but it requires an existing Craft user to link it to.

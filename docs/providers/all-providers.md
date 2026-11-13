@@ -99,7 +99,7 @@ The following however **do not** support being used as login or registration pro
 - WeChat
 
 :::tip
-Is your provider not in the list above? [Contact us](https://verbb.io/contact) to submit your interest, or look at the [Custom Provider](docs:developers/custom-provider) docs to write your own provider support.
+Is your provider not in the list above? [Contact us](https://verbb.io/contact) to submit your interest, or look at the [Custom Providers](docs:developers/custom-providers) page to write your own provider support.
 :::
 
 ## Amazon

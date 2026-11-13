@@ -46,9 +46,15 @@
         "title": "Developers",
         "collapsable": false,
         "children": [
-            "developers/provider",
-            "developers/custom-provider",
-            "developers/events"
+            "developers/events",
+            "developers/custom-providers"
+        ]
+    },
+    {
+        "title": "Reference",
+        "collapsable": false,
+        "children": [
+            "reference/provider"
         ]
     }
 ]
