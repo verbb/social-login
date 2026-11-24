@@ -9,7 +9,24 @@
 {% set pageAction = 'social-login/settings/save-settings' %}
 {% set pageUrl = 'social-login/settings' %}
 
+{# The login switches default to on, but nothing happens until a provider is configured and enabled. #}
+{% set hasReadyProvider = craft.socialLogin.enabledProviders | filter(provider => provider.isConfigured) | length > 0 %}
+
+{% if not hasReadyProvider %}
+    {% do view.registerAssetBundle('verbb\\sociallogin\\web\\assets\\cp\\PluginKitAsset') %}
+{% endif %}
+
 {% block settingsContent %}
+    {% if not hasReadyProvider %}
+        <pk-state-panel heading="{{ 'No providers set up yet' | t('social-login') }}" heading-level="2" size="sm">
+            {{ 'Configure a provider so people can sign in with it.' | t('social-login') }}
+
+            <a slot="actions" class="btn" href="{{ url('social-login/settings/providers') }}">{{ 'Set up a provider' | t('social-login') }}</a>
+        </pk-state-panel>
+
+        <hr>
+    {% endif %}
+
     {{ forms.lightswitchField({
         label: 'Enable Social Login' | t('social-login'),
         instructions: 'Whether to enable social login for the front-end.' | t('social-login'),

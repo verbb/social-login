@@ -62,7 +62,6 @@
     new Craft.VueAdminTable({
         columns: columns,
         container: '#{{ 'providers-vue-admin-table' | namespaceInputId('settings') }}',
-        emptyMessage: Craft.t('social-login', 'No providers exist yet.'),
         tableData: {{ tableData | json_encode | raw }},
     });
 {% endjs %}

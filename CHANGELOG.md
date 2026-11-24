@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Added a notice to General Settings when no provider is configured and enabled, with a link to set one up.
+
+### Changed
+- The Review Account Connections page now shows an empty state when no connections need review.
+
 ## 2.0.30 - 2026-11-05
 
 ### Fixed

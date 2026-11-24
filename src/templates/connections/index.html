@@ -37,6 +37,10 @@
             </section>
         {% endfor %}
     {% else %}
-        <p>{{ 'No account connections need review.' | t('social-login') }}</p>
+        {% do view.registerAssetBundle('verbb\\sociallogin\\web\\assets\\cp\\PluginKitAsset') %}
+
+        <pk-state-panel heading="{{ 'No account connections need review' | t('social-login') }}" heading-level="2">
+            {{ 'Provider accounts connected to more than one Craft user will appear here.' | t('social-login') }}
+        </pk-state-panel>
     {% endif %}
 {% endblock %}
