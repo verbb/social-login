@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.31 - 2026-11-24
 
 ### Added
 - Added a notice to General Settings when no provider is configured and enabled, with a link to set one up.
