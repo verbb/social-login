@@ -121,6 +121,20 @@ try {
     $app->getUser()->setIdentity($admin);
     $controller->runAction('resolve');
     reviewCheck('an administrator can approve a single remaining owner', !isset($connections->getOwnershipConflicts()[$key]));
+
+    // None of the listed users may own the provider account, such as one that registered from an unverified email.
+    $app->getDb()->createCommand()->update('{{%social_login_connections}}', ['identityKey' => null], ['providerHandle' => 'microsoftEntra', 'identifier' => $identifier])->execute();
+    $app->getDb()->createCommand()->insert('{{%social_login_connections}}', ['userId' => $other->id, 'providerHandle' => 'microsoftEntra', 'identifier' => $identifier, 'identityKey' => null])->execute();
+    $group = $connections->getOwnershipConflicts()[$key];
+    $request->setBodyParams($csrf + ['identity' => $key, 'fingerprint' => ConnectionIdentities::fingerprint($group), 'userId' => 0]);
+    $app->getUser()->setIdentity($other);
+    reviewReject('a non-admin cannot remove a provider account connection', fn() => $controller->runAction('resolve'), yii\web\ForbiddenHttpException::class);
+    $app->getUser()->setIdentity($admin);
+    $response = $controller->runAction('resolve');
+    reviewCheck('choosing none removes the provider account from every listed user', $response->statusCode === 302 && !$connections->getAllConnectionsByProviderIdentifier('microsoftEntra', $identifier) && !isset($connections->getOwnershipConflicts()[$key]));
+    reviewCheck('removing the connection keeps both Craft users', User::find()->id([$admin->id, $other->id])->status(null)->count() == 2);
+    $request->setBodyParams($csrf + ['identity' => $key, 'fingerprint' => ConnectionIdentities::fingerprint($group), 'userId' => -1]);
+    reviewReject('ownership POST rejects a negative user ID', fn() => $controller->runAction('resolve'), yii\web\BadRequestHttpException::class);
 } finally {
     $transaction->rollBack();
     $app->getProjectConfig()->readOnly = false;

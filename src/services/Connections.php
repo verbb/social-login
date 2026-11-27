@@ -90,6 +90,30 @@ class Connections extends Component
         $this->_connections = null;
     }
 
+    /**
+     * Holds a provider account that matched a user registered from an unverified email, along with the connection
+     * that registered them. The person who registered never proved they own the email, so an administrator decides.
+     */
+    public function requireUnverifiedRegistrationReview(int $userId, string $providerHandle, string $identifier): void
+    {
+        $db = Craft::$app->getDb();
+
+        $db->transaction(function() use ($db, $userId, $providerHandle, $identifier) {
+            if (!ConnectionIdentities::find($db, $providerHandle, $identifier)) {
+                Db::insert('{{%social_login_connections}}', [
+                    'userId' => $userId,
+                    'providerHandle' => $providerHandle,
+                    'identifier' => $identifier,
+                    'identityKey' => null,
+                ]);
+            }
+
+            Db::update('{{%social_login_connections}}', ['identityKey' => null], ['userId' => $userId, 'unverifiedRegistration' => true]);
+        }, Transaction::SERIALIZABLE);
+
+        $this->_connections = null;
+    }
+
     public function upsertConnection(Connection $connection, Token $token): bool
     {
         if (!$connection->id) {
@@ -154,6 +178,11 @@ class Connections extends Component
                 $connectionRecord->providerHandle = $connection->providerHandle;
                 $connectionRecord->identifier = $connection->identifier;
                 $connectionRecord->identityKey = Connection::identityKey($connection->providerHandle, $connection->identifier);
+
+                // Only the registration records how the user was created. Later sign-ins keep it.
+                if ($connectionRecord->getIsNewRecord()) {
+                    $connectionRecord->unverifiedRegistration = $connection->unverifiedRegistration;
+                }
 
                 if (!$connectionRecord->save(false)) {
                     throw new RuntimeException('Connection record could not be saved.');
@@ -264,7 +293,7 @@ class Connections extends Component
 
     private function _createConnectionQuery(): Query
     {
-        return (new Query())
+        $query = (new Query())
             ->select([
                 'id',
                 'userId',
@@ -273,6 +302,13 @@ class Connections extends Component
                 'identityKey',
             ])
             ->from(['{{%social_login_connections}}']);
+
+        // The column arrives in a migration, which may not have run yet.
+        if (Craft::$app->getDb()->columnExists('{{%social_login_connections}}', 'unverifiedRegistration')) {
+            $query->addSelect('unverifiedRegistration');
+        }
+
+        return $query;
     }
 
     private function _getConnectionRecordById(?int $connectionId = null): ConnectionRecord

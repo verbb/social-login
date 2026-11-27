@@ -42,6 +42,7 @@ class Install extends Migration
             'providerHandle' => $this->string(64)->notNull(),
             'identifier' => $this->string()->notNull(),
             'identityKey' => $this->char(64),
+            'unverifiedRegistration' => $this->boolean()->notNull()->defaultValue(false),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid(),

@@ -10,6 +10,8 @@ Not all providers support authenticating a user to allow them to register on you
 ## Front-End Registration
 You don't need to adjust anything to your front-end templates. When the user returns from the offsite provider, a new User element will be created and populated by their user profile. When [Force Activation](docs:get-started/configuration#forceactivate) is enabled, Social Login activates the new account and allows immediate sign-in, including when the provider does not report whether their email is verified. If the provider reports the email as unverified, the account must complete Craft's activation flow. Existing inactive accounts also require activation before they can sign in.
 
+Social Login remembers when it registered an account from an email the provider didn't verify. If someone later signs in with a provider that matches that account by email, Social Login doesn't sign them in. Their provider account and the one that registered the account wait on the **Review Account Connections** page in the control panel, where an administrator confirms who owns each one or chooses **None of these users** to remove it.
+
 Disable Force Activation if every new account should complete Craft's activation flow. We recommend this for any provider that lets people sign in with an email address they haven't confirmed and doesn't report that to Social Login.
 
 ## Control Panel Registration

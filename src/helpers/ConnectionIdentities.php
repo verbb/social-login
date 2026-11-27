@@ -137,11 +137,12 @@ class ConnectionIdentities
 
             $owned = array_values(array_filter($connections, fn(array $row) => (int)$row['userId'] === $userId));
 
-            if (!$owned) {
+            // A user ID of 0 means none of the connected users owns the provider account.
+            if (!$owned && $userId !== 0) {
                 throw new RuntimeException('Choose one of the Craft users already connected to this provider account.');
             }
 
-            $keep = $owned[0];
+            $keep = $owned[0] ?? ['id' => 0];
 
             foreach ($connections as $connection) {
                 if ((int)$connection['id'] === (int)$keep['id']) {
@@ -160,7 +161,18 @@ class ConnectionIdentities
                 $db->createCommand()->delete('{{%social_login_connections}}', ['id' => $connection['id']])->execute();
             }
 
-            $db->createCommand()->update('{{%social_login_connections}}', ['identityKey' => $key], ['id' => $keep['id']])->execute();
+            if (!$keep['id']) {
+                return;
+            }
+
+            // An administrator confirmed the owner, so how the user registered no longer needs review.
+            $columns = ['identityKey' => $key];
+
+            if ($db->columnExists('{{%social_login_connections}}', 'unverifiedRegistration')) {
+                $columns['unverifiedRegistration'] = false;
+            }
+
+            $db->createCommand()->update('{{%social_login_connections}}', $columns, ['id' => $keep['id']])->execute();
         }, Transaction::SERIALIZABLE);
     }
 

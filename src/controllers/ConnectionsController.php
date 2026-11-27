@@ -65,9 +65,10 @@ class ConnectionsController extends Controller
 
         $key = $this->request->getRequiredBodyParam('identity');
         $fingerprint = $this->request->getRequiredBodyParam('fingerprint');
-        $userId = filter_var($this->request->getRequiredBodyParam('userId'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        // 0 removes the provider account's connection from every listed user.
+        $userId = filter_var($this->request->getRequiredBodyParam('userId'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
 
-        if (!is_string($key) || !preg_match('/^[a-f0-9]{64}$/D', $key) || !is_string($fingerprint) || !preg_match('/^[a-f0-9]{64}$/D', $fingerprint) || !$userId || !User::find()->id($userId)->status(null)->trashed(null)->exists()) {
+        if (!is_string($key) || !preg_match('/^[a-f0-9]{64}$/D', $key) || !is_string($fingerprint) || !preg_match('/^[a-f0-9]{64}$/D', $fingerprint) || $userId === false || ($userId !== 0 && !User::find()->id($userId)->status(null)->trashed(null)->exists())) {
             throw new BadRequestHttpException('Invalid connection ownership selection.');
         }
 
@@ -79,7 +80,9 @@ class ConnectionsController extends Controller
             return $this->redirect(UrlHelper::cpUrl('social-login/connections'));
         }
 
-        Craft::$app->getSession()->setNotice(Craft::t('social-login', 'Provider account owner saved.'));
+        Craft::$app->getSession()->setNotice($userId === 0
+            ? Craft::t('social-login', 'Provider account connection removed.')
+            : Craft::t('social-login', 'Provider account owner saved.'));
 
         return $this->redirect(UrlHelper::cpUrl('social-login/connections'));
     }

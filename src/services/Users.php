@@ -106,7 +106,7 @@ class Users extends Component
                     return false;
                 }
 
-                $result = $this->_getOrCreateUser($provider, $userProfile);
+                $result = $this->_getOrCreateUser($provider, $userProfile, $identifier);
 
                 if (!$result) {
                     return false;
@@ -168,6 +168,7 @@ class Users extends Component
             'userId' => $user->id,
             'providerHandle' => $provider->handle,
             'identifier' => $identifier,
+            'unverifiedRegistration' => $isNewUser && $userProfile->getEmailVerified() !== true,
         ]);
 
         if (!SocialLogin::$plugin->getConnections()->upsertConnection($connection, $token)) {
@@ -227,9 +228,18 @@ class Users extends Component
     // Private Methods
     // =========================================================================
 
-    private function _getOrCreateUser(Provider $provider, UserProfile $userProfile): ?array
+    private function _getOrCreateUser(Provider $provider, UserProfile $userProfile, string $identifier): ?array
     {
         $user = $this->_matchExistingUser($provider, $userProfile);
+
+        // Whoever registered this user never proved they own its email, so a later match by that email could be the
+        // address's real owner. Signing them in would share the account with the registration's provider account.
+        if ($user && $provider->matchUserSource === 'email' && $this->_hasUnverifiedRegistration($user)) {
+            SocialLogin::$plugin->getConnections()->requireUnverifiedRegistrationReview($user->id, $provider->handle, $identifier);
+            Session::setError('social-login', Craft::t('social-login', 'This provider account requires an ownership review. Contact a site administrator to review its connections.'));
+
+            return null;
+        }
 
         if ($user) {
             return [$user, false];
@@ -452,6 +462,17 @@ class Users extends Component
         }
 
         return $user;
+    }
+
+    private function _hasUnverifiedRegistration(User $user): bool
+    {
+        foreach (SocialLogin::$plugin->getConnections()->getAllConnectionsForUser($user->id) as $connection) {
+            if ($connection->unverifiedRegistration) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function _canLogin(User $user): bool

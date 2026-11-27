@@ -61,7 +61,7 @@ return [
   'Password' => 'Password',
   'Populate User Profile' => 'Populate User Profile',
   'Provide a custom template to render the social login icons for the control panel. Leave empty to use the default.' => 'Provide a custom template to render the social login icons for the control panel. Leave empty to use the default.',
-  'Provider accounts connected to more than one Craft user will appear here.' => 'Provider accounts connected to more than one Craft user will appear here.',
+  'Provider accounts connected to more than one Craft user, or waiting for an administrator to confirm their owner, will appear here.' => 'Provider accounts connected to more than one Craft user, or waiting for an administrator to confirm their owner, will appear here.',
   'Providers' => 'Providers',
   'Provider saved.' => 'Provider saved.',
   'Proxy Redirect URI' => 'Proxy Redirect URI',
@@ -110,4 +110,7 @@ return [
   '{provider} connected.' => '{provider} connected.',
   '{provider} disconnected.' => '{provider} disconnected.',
   '{provider} Field' => '{provider} Field',
+  'None of these users' => 'None of these users',
+  'Provider account connection removed.' => 'Provider account connection removed.',
+  'The selected user will keep this connection. The other listed users will need another sign-in method. Choosing none removes the connection, so the next sign-in with this provider account is treated as new.' => 'The selected user will keep this connection. The other listed users will need another sign-in method. Choosing none removes the connection, so the next sign-in with this provider account is treated as new.',
 ];

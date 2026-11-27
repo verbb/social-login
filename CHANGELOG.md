@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Added a **None of these users** choice to the **Review Account Connections** page, which removes a provider account’s connection from every listed user.
+
+### Changed
+- Signing in with a provider that matches an account by email now waits for an administrator on the **Review Account Connections** page when Social Login registered that account from an email its provider didn’t verify. The provider account that registered it waits for review too.
+
+### Fixed
+- Fixed a moderate-severity vulnerability.
+
 ## 2.0.31 - 2026-11-24
 
 ### Added

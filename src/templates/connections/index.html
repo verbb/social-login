@@ -27,8 +27,14 @@
                                 {% if user.cpEditUrl and not user.trashed %}<a href="{{ user.cpEditUrl }}">{{ 'View user' | t('social-login') }}</a>{% endif %}
                             </div>
                         {% endfor %}
+                        <div class="field">
+                            <label>
+                                <input type="radio" name="userId" value="0" required>
+                                {{ 'None of these users' | t('social-login') }}
+                            </label>
+                        </div>
                     </fieldset>
-                    <p>{{ 'The selected user will keep this connection. The other listed users will need another sign-in method.' | t('social-login') }}</p>
+                    <p>{{ 'The selected user will keep this connection. The other listed users will need another sign-in method. Choosing none removes the connection, so the next sign-in with this provider account is treated as new.' | t('social-login') }}</p>
                     {% if conflict.users | filter(user => user.trashed) %}
                         <p>{{ 'A selected deleted user only keeps this connection if they are restored first. Otherwise, the next sign-in with this provider account can register a new user, which removes the connection.' | t('social-login') }}</p>
                     {% endif %}
@@ -40,7 +46,7 @@
         {% do view.registerAssetBundle('verbb\\sociallogin\\web\\assets\\cp\\PluginKitAsset') %}
 
         <pk-state-panel heading="{{ 'No account connections need review' | t('social-login') }}" heading-level="2">
-            {{ 'Provider accounts connected to more than one Craft user will appear here.' | t('social-login') }}
+            {{ 'Provider accounts connected to more than one Craft user, or waiting for an administrator to confirm their owner, will appear here.' | t('social-login') }}
         </pk-state-panel>
     {% endif %}
 {% endblock %}

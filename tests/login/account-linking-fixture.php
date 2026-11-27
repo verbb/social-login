@@ -19,6 +19,8 @@ use verbb\auth\clients\microsoftentra\provider\MicrosoftEntraResourceOwner;
 use verbb\auth\helpers\Session;
 use verbb\auth\models\Token;
 use verbb\auth\models\UserProfile;
+use verbb\sociallogin\helpers\ConnectionIdentities;
+use verbb\sociallogin\models\Connection;
 use verbb\sociallogin\providers\MicrosoftEntra;
 use verbb\sociallogin\SocialLogin;
 
@@ -160,6 +162,36 @@ try {
         $after = linkingCounts();
         linkingCheck("returning $label user signs in through the saved identity", $plugin->getUsers()->loginOrRegisterUser($provider, linkingToken()) && $app->getUser()->loggedInUserId === $created->id && linkingCounts() === $after);
     }
+
+    // Forced activation trusts an email the provider didn't verify, so a later match by that email may be its real owner.
+    // The match is held for an administrator instead of joining the owner to the account the registration created.
+    $email = "claimed-$suffix@example.test";
+    $claimant = linkingProfile("claimant-$suffix", $email);
+    $app->getUser()->loggedInUserId = null;
+    linkingCheck('unknown-verification registration signs in under forced activation', $plugin->getUsers()->loginOrRegisterUser($claimant, linkingToken()));
+    $claimed = User::find()->status(null)->email($email)->one();
+    linkingCheck('the registration records that its email was not verified', $plugin->getConnections()->getConnectionByUserAndProvider($claimed->id, $claimant->handle)?->unverifiedRegistration === true);
+    linkingCheck('a returning sign-in keeps the record', $plugin->getUsers()->loginOrRegisterUser($claimant, linkingToken()) && $plugin->getConnections()->getConnectionByUserAndProvider($claimed->id, $claimant->handle)?->unverifiedRegistration === true);
+    $before = linkingCounts();
+    $app->getUser()->loggedInUserId = null;
+    $emailOwner = linkingProfile("claimed-owner-$suffix", $email, true);
+    linkingCheck('the verified owner of the email is not signed in to the registered account', !$plugin->getUsers()->loginOrRegisterUser($emailOwner, linkingToken()) && $app->getUser()->loggedInUserId === null);
+    linkingCheck('the verified owner is told the account needs an ownership review', str_contains((string)Session::getError('social-login'), 'ownership review'));
+    linkingCheck('the owner\'s provider account is held for review without a user or token', linkingCounts() === [$before[0], $before[1] + 1, $before[2]]);
+    $claimantKey = Connection::identityKey($claimant->handle, "claimant-$suffix");
+    $ownerKey = Connection::identityKey($emailOwner->handle, "claimed-owner-$suffix");
+    $conflicts = $plugin->getConnections()->getOwnershipConflicts();
+    linkingCheck('both provider accounts are listed for administrator review', isset($conflicts[$claimantKey], $conflicts[$ownerKey]));
+    linkingCheck('the registration\'s provider account can no longer sign in until reviewed', !$plugin->getUsers()->loginOrRegisterUser($claimant, linkingToken()) && $app->getUser()->loggedInUserId === null);
+    $before = linkingCounts();
+    linkingCheck('the owner retrying stays in review without adding records', !$plugin->getUsers()->loginOrRegisterUser($emailOwner, linkingToken()) && linkingCounts() === $before);
+    $plugin->getConnections()->resolveOwnershipConflict($ownerKey, $claimed->id, ConnectionIdentities::fingerprint($conflicts[$ownerKey]));
+    $plugin->getConnections()->resolveOwnershipConflict($claimantKey, 0, ConnectionIdentities::fingerprint($plugin->getConnections()->getOwnershipConflicts()[$claimantKey]));
+    linkingCheck('choosing none removes the registration\'s connection and token', !$plugin->getConnections()->getAllConnectionsByProviderIdentifier($claimant->handle, "claimant-$suffix") && linkingCounts()[1] === $before[1] - 1);
+    linkingCheck('the confirmed owner signs in to the account', $plugin->getUsers()->loginOrRegisterUser($emailOwner, linkingToken()) && $app->getUser()->loggedInUserId === $claimed->id);
+    $app->getUser()->loggedInUserId = null;
+    linkingCheck('the removed provider account can no longer sign in to the account', !$plugin->getUsers()->loginOrRegisterUser($claimant, linkingToken()) && $app->getUser()->loggedInUserId === null);
+    linkingCheck('a verified match still reaches an account registered with a verified email', $plugin->getUsers()->loginOrRegisterUser(linkingProfile("forced-verified-second-$suffix", "forced-verified-$suffix@example.test", true), linkingToken()) && $app->getUser()->loggedInUserId === User::find()->status(null)->email("forced-verified-$suffix@example.test")->one()?->id);
 
     // A provider stating the email is unverified must not be overridden, or its verified owner could later share the account.
     $email = "forced-unverified-$suffix@example.test";

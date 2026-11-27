@@ -21,6 +21,8 @@ class Connection extends Model
     public ?string $providerHandle = null;
     public ?string $identifier = null;
     public ?string $identityKey = null;
+    // Whether this connection registered its user from an email the provider didn't verify.
+    public bool $unverifiedRegistration = false;
 
     private ?User $_user = null;
 
