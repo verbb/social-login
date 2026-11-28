@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.1.0 - 2026-11-29
 
 ### Added
 - Added a **None of these users** choice to the **Review Account Connections** page, which removes a provider account’s connection from every listed user.
